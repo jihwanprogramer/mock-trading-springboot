@@ -1,10 +1,9 @@
-package com.example.mockstalk.domain.holdings.entity;
+package com.example.mockstalk.domain.account.entity;
 
 import java.math.BigDecimal;
 
 import com.example.mockstalk.common.baseEntity.BaseEntity;
-import com.example.mockstalk.domain.account.entity.Account;
-import com.example.mockstalk.domain.stock.entity.Stock;
+import com.example.mockstalk.domain.user.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,25 +20,31 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "holdings")
+@Table(name = "accounts")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Holdings extends BaseEntity {
+public class Account extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column
-	private Long quantity;
+	@Column(length = 50)
+	private String accountName;
+
+	@Column(length = 50)
+	private String password;
 
 	@Column
-	private BigDecimal averagePrice;
+	private BigDecimal initialBalance;
+
+	@Column
+	private BigDecimal currentBalance;
+
+	@Column
+	private Boolean isActive;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "account_id")
-	private Account account;
+	@JoinColumn(name = "user_id")
+	private User user;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "stock_id")
-	private Stock stock;
 }
