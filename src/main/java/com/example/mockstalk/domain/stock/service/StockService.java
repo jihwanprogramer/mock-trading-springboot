@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -31,6 +32,8 @@ public class StockService {
 
 	@Transactional
 	public void saveStockCsv(String filePath) {
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
 		em.createNativeQuery("TRUNCATE TABLE stock").executeUpdate();
 		em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate(); //db 초기화 id값도 1로처음부터
@@ -50,11 +53,11 @@ public class StockService {
 				}
 
 				Stock stock = Stock.builder()
-					.stockName(tokens[0])
-					.stockCode(tokens[1])
-					.listedDate(LocalDate.parse(tokens[2]))
-					.delistedDate(tokens.length > 3 && !tokens[3].isEmpty() ? LocalDate.parse(tokens[3]) : null)
-					.stockStatus(tokens.length > 3 && !tokens[3].isEmpty() ? StockStatus.DELISTED : StockStatus.ACTIVE)
+					.stockCode(tokens[0])
+					.stockName(tokens[2])
+					.listedDate(LocalDate.parse(tokens[3], formatter))
+					.delistedDate(tokens.length > 4 && !tokens[4].isEmpty() ? LocalDate.parse(tokens[3]) : null)
+					.stockStatus(tokens.length > 4 && !tokens[4].isEmpty() ? StockStatus.DELISTED : StockStatus.ACTIVE)
 					.build();
 
 				em.persist(stock);  //영속성 컨텍스트에 1차저장
