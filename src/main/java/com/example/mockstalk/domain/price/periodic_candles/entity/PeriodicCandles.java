@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "periodic_candles")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Periodic_candles extends BaseEntity {
+public class PeriodicCandles extends BaseEntity {
     @Id
     private Long id;
 

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "intraday_candles")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Intraday_candle extends BaseEntity {
+public class IntradayCandle extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
