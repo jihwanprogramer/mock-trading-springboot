@@ -2,6 +2,7 @@ package com.example.mockstalk.common.error;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -31,19 +32,19 @@ public enum ExceptionCode implements ErrorCode {
     // 409 Conflict = 서버와 충돌, 데이터가 이미 존재할때(400 보다 명확함)
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 등록된 회원입니다."),
 
-    // 500 Server Error
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류 혹은 예기치 못한 예외가 발생했습니다.");
+	// 500 Server Error
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류 혹은 예기치 못한 예외가 발생했습니다.");
 
-    private final HttpStatus httpStatus;
-    private final String message;
+	private final HttpStatus httpStatus;
+	private final String message;
 
-    @Override
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
+	@Override
+	public HttpStatus getHttpStatus() {
+		return httpStatus;
+	}
 
-    @Override
-    public int getErrorCode() {
-        return httpStatus.value();
-    }
+	@Override
+	public int getErrorCode() {
+		return httpStatus.value();
+	}
 }
