@@ -1,4 +1,4 @@
-package com.example.mockstalk.domain.price.entity;
+package com.example.mockstalk.domain.price.intraday_candles.entity;
 
 import com.example.mockstalk.common.baseEntity.BaseEntity;
 import jakarta.persistence.*;
@@ -10,28 +10,37 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "price")
+@Table(name = "intraday_candles")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Price extends BaseEntity {
+public class Intraday_candle extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private Long openingPrice;
 
+    @Column
     private Long closingPrice;
 
+    @Column
     private Long highPrice;
 
+    @Column
     private Long lowPrice;
 
+    @Column
     private Long tradingVolume;
 
+    @Column
     private Long tradingValue;
 
+    @Column
     private Long marketCap;
 
+    @Column
     private LocalDateTime timeStamp;
 
     @Enumerated(EnumType.STRING)

@@ -1,6 +1,8 @@
-package com.example.mockstalk.domain.interest_stocks.entity;
+package com.example.mockstalk.domain.interest_stock.entity;
 
 import com.example.mockstalk.common.baseEntity.BaseEntity;
+import com.example.mockstalk.domain.stock.entity.Stock;
+import com.example.mockstalk.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +17,14 @@ public class InterestStock extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stock_id")
+    private Stock stock;
 
 
 }
