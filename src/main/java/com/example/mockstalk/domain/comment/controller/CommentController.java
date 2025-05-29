@@ -61,8 +61,8 @@ public class CommentController {
     public ResponseEntity<ResponseMessage<?>> deleteComment(
         @AuthenticationPrincipal UserDetails userDetails,
         @PathVariable Long boardId,
-        @PathVariable Long coomentId) {
-        commentService.deleteComment(userDetails, boardId, coomentId);
+        @PathVariable Long commentId) {
+        commentService.deleteComment(userDetails, boardId, commentId);
         return ResponseEntity.ok(ResponseMessage.success("댓글이 삭제되었습니다."));
     }
 
