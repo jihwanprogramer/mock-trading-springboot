@@ -13,6 +13,7 @@ import com.example.mockstalk.domain.board.dto.BoardUpdateRequestDto;
 import com.example.mockstalk.domain.board.entity.Board;
 import com.example.mockstalk.domain.board.repository.BoardRepository;
 import com.example.mockstalk.domain.stock.entity.Stock;
+import com.example.mockstalk.domain.stock.repository.StockRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -20,9 +21,11 @@ import jakarta.transaction.Transactional;
 public class BoardServiceImpl implements BoardService {
 
 	private final BoardRepository boardRepository;
+	private final StockRepository stockRepository;
 
-	public BoardServiceImpl(BoardRepository boardRepository) {
+	public BoardServiceImpl(BoardRepository boardRepository, StockRepository stockRepository) {
 		this.boardRepository = boardRepository;
+		this.stockRepository = stockRepository;
 	}
 
 	@Override
@@ -49,7 +52,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<BoardResponseDto> findPostByBoardId(Long stockId) {
+	public List<BoardResponseDto> findPostByStockId(Long stockId) {
 		Stock stock = stockRepository.findById(stockId)
 			.orElseThrow(() -> new IllegalArgumentException("종목을 찾을 수 없습니다"));
 

@@ -11,7 +11,7 @@ import jakarta.transaction.Transactional;
 public interface BoardService {
 	BoardResponseDto createPost(Long stockId, BoardRequestDto boardRequestDto);
 
-	List<BoardResponseDto> findPostByBoardId(Long stockId);
+	List<BoardResponseDto> findPostByStockId(Long stockId);
 
 	@Transactional
 	void updatePost(Long stockId, Long boardId, BoardUpdateRequestDto boardUpdateRequestDto);
