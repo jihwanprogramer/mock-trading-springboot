@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -22,6 +23,7 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public void saveComment(UserDetails userDetails, Long boardId,
         CommentRequestDto commentRequestDto) {
 
@@ -34,16 +36,19 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
+    @Transactional(readOnly = true)
     public Slice<CommentResponseDto> findCommentByBoardId(Long boardId, Pageable pageable) {
         return commentRepository.findAllByBoardId(boardId, pageable).map(CommentResponseDto::from);
     }
 
+    @Transactional
     public void updateComment(UserDetails userDetails, Long boardId, Long commentId,
         CommentRequestDto commentRequestDto) {
         Comment comment = validComment(userDetails, boardId, commentId);
         comment.update(commentRequestDto.getContent());
     }
-
+    
+    @Transactional
     public void deleteComment(UserDetails userDetails, Long boardId, Long commentId) {
         Comment comment = validComment(userDetails, boardId, commentId);
         commentRepository.delete(comment);
