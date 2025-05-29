@@ -4,7 +4,7 @@ import com.example.mockstalk.common.baseEntity.BaseEntity;
 import com.example.mockstalk.domain.account.entity.Accounts;
 import com.example.mockstalk.domain.board.entity.Board;
 import com.example.mockstalk.domain.comment.entity.Comment;
-import com.example.mockstalk.domain.interest_stocks.entity.InterestStock;
+import com.example.mockstalk.domain.interest_stock.entity.InterestStock;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Getter
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends BaseEntity {

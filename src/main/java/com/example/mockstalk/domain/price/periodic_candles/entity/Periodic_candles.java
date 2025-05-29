@@ -1,7 +1,7 @@
-package com.example.mockstalk.domain.candlesticks.entity;
+package com.example.mockstalk.domain.price.periodic_candles.entity;
 
 import com.example.mockstalk.common.baseEntity.BaseEntity;
-import com.example.mockstalk.domain.price.entity.CandleType;
+import com.example.mockstalk.domain.price.intraday_candles.entity.CandleType;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "candleSticks")
+@Table(name = "periodic_candles")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CandleSticks extends BaseEntity {
+public class Periodic_candles extends BaseEntity {
     @Id
     private Long id;
 

@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Getter
 @Entity
 @Table(name = "holdings")
@@ -22,7 +24,7 @@ public class Holdings extends BaseEntity {
     private Long quantity;
 
     @Column
-    private double averagePrice;
+    private BigDecimal averagePrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")

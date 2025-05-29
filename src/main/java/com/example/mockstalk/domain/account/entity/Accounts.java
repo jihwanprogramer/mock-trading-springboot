@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,19 +29,16 @@ public class Accounts extends BaseEntity {
     private String password;
 
     @Column
-    private double initialBalance;
+    private BigDecimal initialBalance;
 
     @Column
-    private double currentBalance;
+    private BigDecimal currentBalance;
 
     @Column
-    private boolean active;
+    private boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
-    @OneToMany(mappedBy = "accounts")
-    private List<Order> orders = new ArrayList<>();
 
 }
