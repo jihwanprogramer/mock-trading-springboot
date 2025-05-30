@@ -22,14 +22,10 @@ public class JwtUtil {
 
     @Value("${jwt.secret.key}")
     private String secretKey;
-    private Key key;
+
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    @PostConstruct
-    public void init() {
-        byte[] bytes = Base64.getDecoder().decode(secretKey);
-        key = Keys.hmacShaKeyFor(bytes);
-    }
+
 
     public String createToken(Long userId, String email, UserRole userRole) {
         Date date = new Date();
@@ -41,7 +37,7 @@ public class JwtUtil {
                         .claim("userRole", userRole)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                        .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), signatureAlgorithm) // 암호화 알고리즘
                         .compact();
     }
 
@@ -54,7 +50,7 @@ public class JwtUtil {
 
     public Claims extractClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
