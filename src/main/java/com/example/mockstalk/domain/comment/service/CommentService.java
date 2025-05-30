@@ -1,3 +1,4 @@
+/*
 package com.example.mockstalk.domain.comment.service;
 
 import com.example.mockstalk.common.error.CustomRuntimeException;
@@ -71,3 +72,4 @@ public class CommentService {
 
 
 }
+*/

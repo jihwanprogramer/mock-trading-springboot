@@ -29,13 +29,13 @@ public class BoardController {
 	@PostMapping("/stocks/{stockId}/board")
 	public ResponseEntity<BoardResponseDto> savePost(@PathVariable Long stockId,
 		@RequestBody BoardRequestDto boardRequestDto) {
-		BoardResponseDto boardResponseDto = BoardService.saveBoard(stockId, boardRequestDto);
+		BoardResponseDto boardResponseDto = boardService.savePost(stockId, boardRequestDto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(boardResponseDto);
 	}
 
 	@GetMapping("/stocks/{stockId}/board")
 	public ResponseEntity<List<BoardResponseDto>> findPostByBoardId(@PathVariable Long stockId) {
-		return ResponseEntity.ok(boardService.findAllByStock(stockId));
+		return ResponseEntity.ok(boardService.findPostByStockId(stockId));
 	}
 
 	@PatchMapping("/stocks/{stockId}/board/{boardId}")

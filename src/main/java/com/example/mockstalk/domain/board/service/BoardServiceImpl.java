@@ -29,7 +29,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public BoardResponseDto createPost(Long stockId, BoardRequestDto boardRequestDto) {
+	public BoardResponseDto savePost(Long stockId, BoardRequestDto boardRequestDto) {
 
 		if (boardRequestDto.getTitle() == null || boardRequestDto.getTitle().isBlank()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "제목은 필수입니다!");
@@ -56,7 +56,7 @@ public class BoardServiceImpl implements BoardService {
 		Stock stock = stockRepository.findById(stockId)
 			.orElseThrow(() -> new IllegalArgumentException("종목을 찾을 수 없습니다"));
 
-		List<Board> boardList = boardRepository.findPostByStockId(stock);
+		List<Board> boardList = boardRepository.findPostByStockId(stockId);
 		List<BoardResponseDto> responseDtoList = new ArrayList<>();
 
 		for (Board board : boardList) {
@@ -72,16 +72,16 @@ public class BoardServiceImpl implements BoardService {
 
 	@Transactional
 	@Override
-	public void updatePost(Long stockId, Long boardId, BoardUpdateRequestDto boardUpdateRequestDto) {
-		Board board = boardRepository.findById(boardId)
+	public void updatePost(Long stockId, Long id, BoardUpdateRequestDto boardUpdateRequestDto) {
+		Board board = boardRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
 
 		board.updatedAt(boardUpdateRequestDto);
 	}
 
 	@Override
-	public void deletePost(Long stockId, Long boardId) {
-		Board board = boardRepository.findById(boardId)
+	public void deletePost(Long stockId, Long id) {
+		Board board = boardRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
 
 		boardRepository.delete(board);

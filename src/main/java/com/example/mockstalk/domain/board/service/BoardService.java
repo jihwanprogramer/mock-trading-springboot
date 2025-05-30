@@ -9,7 +9,8 @@ import com.example.mockstalk.domain.board.dto.BoardUpdateRequestDto;
 import jakarta.transaction.Transactional;
 
 public interface BoardService {
-	BoardResponseDto createPost(Long stockId, BoardRequestDto boardRequestDto);
+
+	BoardResponseDto savePost(Long stockId, BoardRequestDto boardRequestDto);
 
 	List<BoardResponseDto> findPostByStockId(Long stockId);
 

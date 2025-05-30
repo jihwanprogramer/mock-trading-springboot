@@ -44,7 +44,9 @@ public class Board extends BaseEntity {
 	private Stock stock;
 
 	public Board(String title, String content, Stock stock) {
-		super();
+		this.title = title;
+		this.content = content;
+		this.stock = stock;
 	}
 
 	public void updatedAt(BoardUpdateRequestDto boardUpdateRequestDto) {

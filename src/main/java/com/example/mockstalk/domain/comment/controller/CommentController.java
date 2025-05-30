@@ -1,3 +1,4 @@
+/*
 package com.example.mockstalk.domain.comment.controller;
 
 
@@ -67,3 +68,4 @@ public class CommentController {
     }
 
 }
+*/

@@ -7,12 +7,14 @@ import lombok.Setter;
 @Setter
 public class BoardResponseDto {
 
-	private Long boardId;
+	private Long id;
 	private Long userId;
-	private Long stockId;
 	private String title;
 	private String content;
 
 	public BoardResponseDto(Long id, String title, String content) {
+		this.id = id;
+		this.title = title;
+		this.content = content;
 	}
 }
