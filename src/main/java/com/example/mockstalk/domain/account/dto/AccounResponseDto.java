@@ -7,8 +7,10 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class AccountRequestDto {
+public class AccounResponseDto {
 	private final String accountName;
-	private final String password;
 	private final BigDecimal initialBalance;
+	private final BigDecimal currentBalance;
+	// 캐싱으로 구현 예정이므로 보류
+	// private final BigDecimal profitRate;
 }

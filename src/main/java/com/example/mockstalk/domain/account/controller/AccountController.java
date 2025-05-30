@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.mockstalk.common.response.ResponseMessage;
+import com.example.mockstalk.domain.account.dto.AccountRequestDto;
+import com.example.mockstalk.domain.account.dto.UpdateAccountRequestDto;
 import com.example.mockstalk.domain.account.service.AccountService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,13 +26,14 @@ public class AccountController {
 	 계좌 생성
 	 **/
 	@PostMapping
-	public ResponseMessage<?> saveAccount() {
-
+	public ResponseMessage<?> saveAccount(AccountRequestDto requestDto) {
+		accountService.saveAccount(requestDto);
 		return null;
 	}
 
 	/**
 	 계좌 정보 가져오기. <- 해당 계좌로 로그인
+	 인증 인가 관련 코드이므로 userdetails 코드 넘어오면 진행할 생각
 	 **/
 	@PostMapping("/signin")
 	public ResponseMessage<?> signInAccount() {
@@ -43,7 +46,7 @@ public class AccountController {
 	 **/
 	@GetMapping("/{id}")
 	public ResponseMessage<?> getAccount(@PathVariable Long id) {
-
+		accountService.findAccountById(id);
 		return null;
 	}
 
@@ -52,7 +55,7 @@ public class AccountController {
 	 **/
 	@GetMapping
 	public ResponseMessage<?> getAccounts() {
-
+		accountService.findAccount();
 		return null;
 	}
 
@@ -61,7 +64,7 @@ public class AccountController {
 	 **/
 	@GetMapping("/{id}/holdings")
 	public ResponseMessage<?> getHoldings(@PathVariable Long id) {
-
+		accountService.findHoldingsById(id);
 		return null;
 	}
 
@@ -70,7 +73,7 @@ public class AccountController {
 	 **/
 	@DeleteMapping("/{id}")
 	public ResponseMessage<?> deleteAccount(@PathVariable Long id) {
-
+		accountService.deleteAccount(id);
 		return null;
 	}
 
@@ -78,8 +81,8 @@ public class AccountController {
 	 선택 계좌 비밀번호 변경
 	 **/
 	@PatchMapping("/{id}")
-	public ResponseMessage<?> updateAccountPassword(@PathVariable Long id) {
-
+	public ResponseMessage<?> updateAccountPassword(@PathVariable Long id, UpdateAccountRequestDto requestDto) {
+		accountService.updateAccountPassword(id, requestDto);
 		return null;
 	}
 
