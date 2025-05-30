@@ -48,7 +48,7 @@ public class UserService {
             throw new IllegalArgumentException("인증된 사용자가 없습니다");
         }
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         return new FindResponseDto(user);
     }

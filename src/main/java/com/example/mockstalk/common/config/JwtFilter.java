@@ -16,14 +16,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Slf4j
-@RequiredArgsConstructor
+
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
+    public JwtFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+
+    }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
+        log.info("JwtFilter 시작");
         String url = request.getRequestURI();
 
         if (url.startsWith("/users")) {
@@ -31,8 +35,9 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String bearerJwt = request.getHeader("Authorization");
 
+        String bearerJwt = request.getHeader("Authorization");
+        log.info("Authorization 헤더: {}", bearerJwt);
         if (bearerJwt == null) {
             // 토큰이 없는 경우 400을 반환합니다.
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT 토큰이 필요합니다.");
@@ -50,8 +55,11 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             UserRole userRole = UserRole.valueOf(claims.get("userRole", String.class));
+            log.info("Claims email: {}", claims.get("email"));
 
             request.setAttribute("userId", Long.parseLong(claims.getSubject()));
+            log.info("Claims email: {}", claims.get("email"));
+
             request.setAttribute("email", claims.get("email"));
             request.setAttribute("userRole", claims.get("userRole"));
 
@@ -79,6 +87,8 @@ public class JwtFilter extends OncePerRequestFilter {
             log.error("Invalid JWT token, 유효하지 않는 JWT 토큰 입니다.", e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "유효하지 않는 JWT 토큰입니다.");
         }
+
+
 
 
     }
