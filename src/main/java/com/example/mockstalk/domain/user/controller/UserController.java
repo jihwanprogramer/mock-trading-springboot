@@ -1,5 +1,6 @@
 package com.example.mockstalk.domain.user.controller;
 
+import com.example.mockstalk.domain.user.dto.request.DeleteRequestDto;
 import com.example.mockstalk.domain.user.dto.request.LoginRequestDto;
 import com.example.mockstalk.domain.user.dto.request.SignupRequestDto;
 import com.example.mockstalk.domain.user.dto.response.FindResponseDto;
@@ -38,5 +39,12 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<FindResponseDto> findMe(HttpServletRequest request){
         return ResponseEntity.ok(userService.findMe(request));
+    }
+
+    // 회원탈퇴
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteMe(HttpServletRequest request, @RequestBody DeleteRequestDto dto) {
+        userService.deleteMe(request,dto);
+        return ResponseEntity.noContent().build();
     }
 }

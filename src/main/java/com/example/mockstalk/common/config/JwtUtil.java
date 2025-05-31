@@ -21,7 +21,16 @@ public class JwtUtil {
     private static final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
 
     @Value("${jwt.secret.key}")
-    private String secretKey;
+    private String secretKeyPlain;
+
+    private Key secretKey;
+
+
+    @PostConstruct
+    public void init() {
+        byte[] keyBytes = Base64.getEncoder().encode(secretKeyPlain.getBytes());
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+    }
 
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
@@ -37,7 +46,7 @@ public class JwtUtil {
                         .claim("userRole", userRole)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date) // 발급일
-                        .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), signatureAlgorithm) // 암호화 알고리즘
+                        .signWith(secretKey, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
     }
 
@@ -50,13 +59,11 @@ public class JwtUtil {
 
     public Claims extractClaims(String token) {
         Claims body = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        // ✅ 여기서 Claims 바로 로그 찍기
-        log.info("Decoded JWT Claims: {}", body);
         return body;
     }
 }
