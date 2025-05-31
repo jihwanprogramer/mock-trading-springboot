@@ -77,4 +77,12 @@ public class UserService {
         userRepository.deleteUserByEmail(email);
 
     }
+
+
+    public FindResponseDto findByWallet(String walletAddress) {
+        User user = userRepository.findByWalletAddress(walletAddress)
+                .orElseThrow(() -> new IllegalArgumentException("지갑주소를 찾을 수 없습니다."));
+
+        return new FindResponseDto(user);
+    }
 }

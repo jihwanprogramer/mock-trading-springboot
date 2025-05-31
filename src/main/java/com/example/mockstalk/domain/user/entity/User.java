@@ -64,4 +64,7 @@ public class User extends BaseEntity {
        this.walletAddress = walletAddress;
        this.userRole = userRole;
     }
+
+
+
 }

@@ -47,4 +47,11 @@ public class UserController {
         userService.deleteMe(request,dto);
         return ResponseEntity.noContent().build();
     }
+    //타 유저조회 지갑주소로
+    @GetMapping("/wallet/{walletAddress}")
+    public ResponseEntity<FindResponseDto> findByWallet(@PathVariable String walletAddress){
+
+        return ResponseEntity.ok(userService.findByWallet(walletAddress));
+
+    }
 }
