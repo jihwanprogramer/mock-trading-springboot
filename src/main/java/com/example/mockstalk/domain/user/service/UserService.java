@@ -10,9 +10,10 @@ import com.example.mockstalk.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -43,6 +44,7 @@ public class UserService {
 
     public FindResponseDto findMe(HttpServletRequest request) {
         String email = (String) request.getAttribute("email");
+        System.out.println("현재 이메일: " + email);
 
         if(email == null){
             throw new IllegalArgumentException("인증된 사용자가 없습니다");
@@ -51,5 +53,6 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         return new FindResponseDto(user);
+
     }
 }

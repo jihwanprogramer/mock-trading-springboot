@@ -49,10 +49,14 @@ public class JwtUtil {
     }
 
     public Claims extractClaims(String token) {
-        return Jwts.parserBuilder()
+        Claims body = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+
+        // ✅ 여기서 Claims 바로 로그 찍기
+        log.info("Decoded JWT Claims: {}", body);
+        return body;
     }
 }
