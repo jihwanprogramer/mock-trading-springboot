@@ -19,25 +19,27 @@ import java.util.Date;
 public class JwtUtil {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
-    private static final long REFRESH_TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L;
+    private static final long REFRESH_TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L; // 리프레시 토큰 7일
 
 
     @Value("${jwt.secret.key}")
     private String secretKeyPlain;
 
     private Key secretKey;
-
-
-    @PostConstruct
-    public void init() {
-        byte[] keyBytes = Base64.getEncoder().encode(secretKeyPlain.getBytes());
-        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
-    }
-
+    // 알고리즘 지정
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
 
+    // 비밀키 초기화(Key 객체로 변환)
+    @PostConstruct
+    public void init() {
 
+        byte[] keyBytes = Base64.getDecoder().decode(secretKeyPlain);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+    }
+
+
+    // Access Token 생성
     public String createToken(Long userId, String email, UserRole userRole) {
         Date date = new Date();
 
@@ -53,6 +55,7 @@ public class JwtUtil {
                         .signWith(secretKey, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
     }
+    // Refresh Token 생성
     public String createRefreshToken(Long userId) {
         Date date = new Date();
 
@@ -66,6 +69,7 @@ public class JwtUtil {
                         .compact();
     }
 
+    // "Bearer" 접두어 제거
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
             return tokenValue.substring(7);
@@ -73,6 +77,7 @@ public class JwtUtil {
         throw new IllegalArgumentException("Not Found Token");
     }
 
+    // 토큰에서 claims을 추출
     public Claims extractClaims(String token) {
         Claims body = Jwts.parserBuilder()
                 .setSigningKey(secretKey)
