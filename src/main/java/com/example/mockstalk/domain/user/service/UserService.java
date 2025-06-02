@@ -90,14 +90,14 @@ public class UserService {
 
     @Transactional
     public void updateMe(HttpServletRequest request, UpdateRequestDto dto) {
+        String email = (String) request.getAttribute("email");
 
-        Long getId = (Long) request.getAttribute("userId");
-        if(getId == null){
-            throw new IllegalArgumentException("requestId");
+        if(email == null){
+            throw new IllegalArgumentException("인증된 사용자가 없습니다");
         }
 
-        User user = userRepository.findById(getId)
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("이메일을 찾을 수 없습니다."));
 
         if(!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
