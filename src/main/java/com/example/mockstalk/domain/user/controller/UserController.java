@@ -3,6 +3,7 @@ package com.example.mockstalk.domain.user.controller;
 import com.example.mockstalk.domain.user.dto.request.DeleteRequestDto;
 import com.example.mockstalk.domain.user.dto.request.LoginRequestDto;
 import com.example.mockstalk.domain.user.dto.request.SignupRequestDto;
+import com.example.mockstalk.domain.user.dto.request.UpdateRequestDto;
 import com.example.mockstalk.domain.user.dto.response.FindResponseDto;
 import com.example.mockstalk.domain.user.dto.response.LoginResponseDto;
 import com.example.mockstalk.domain.user.entity.User;
@@ -53,5 +54,11 @@ public class UserController {
 
         return ResponseEntity.ok(userService.findByWallet(walletAddress));
 
+    }
+    // 유저 정보 수정
+    @PatchMapping("/me")
+    public ResponseEntity<String> updateMe(HttpServletRequest request,@RequestBody UpdateRequestDto dto){
+        userService.updateMe(request, dto);
+        return ResponseEntity.ok("정보 수정 완료");
     }
 }

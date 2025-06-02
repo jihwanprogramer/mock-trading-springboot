@@ -4,6 +4,7 @@ import com.example.mockstalk.common.config.JwtUtil;
 import com.example.mockstalk.domain.user.dto.request.DeleteRequestDto;
 import com.example.mockstalk.domain.user.dto.request.LoginRequestDto;
 import com.example.mockstalk.domain.user.dto.request.SignupRequestDto;
+import com.example.mockstalk.domain.user.dto.request.UpdateRequestDto;
 import com.example.mockstalk.domain.user.dto.response.FindResponseDto;
 import com.example.mockstalk.domain.user.dto.response.LoginResponseDto;
 import com.example.mockstalk.domain.user.entity.User;
@@ -51,6 +52,7 @@ public class UserService {
 
     public FindResponseDto findMe(HttpServletRequest request) {
         String email = (String) request.getAttribute("email");
+
         if(email == null){
             throw new IllegalArgumentException("인증된 사용자가 없습니다");
         }
@@ -84,5 +86,26 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("지갑주소를 찾을 수 없습니다."));
 
         return new FindResponseDto(user);
+    }
+
+    @Transactional
+    public void updateMe(HttpServletRequest request, UpdateRequestDto dto) {
+
+        Long getId = (Long) request.getAttribute("userId");
+        if(getId == null){
+            throw new IllegalArgumentException("requestId");
+        }
+
+        User user = userRepository.findById(getId)
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        if(!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())){
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
+
+
+        user.updateUser(dto.getNickname(),encodedNewPassword);
     }
 }

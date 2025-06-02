@@ -8,6 +8,7 @@ public class FindResponseDto {
 
 
     private Long id;
+
     private String email;
 
     private String nickname;
