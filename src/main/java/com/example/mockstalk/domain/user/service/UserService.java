@@ -9,17 +9,13 @@ import com.example.mockstalk.domain.user.dto.response.FindResponseDto;
 import com.example.mockstalk.domain.user.dto.response.LoginResponseDto;
 import com.example.mockstalk.domain.user.entity.User;
 import com.example.mockstalk.domain.user.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -51,12 +47,12 @@ public class UserService {
     }
 
 
-    public FindResponseDto findMe(HttpServletRequest request) {
-        String email = (String) request.getAttribute("email");
-
-        if(email == null){
+    public FindResponseDto findMe(String email) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null || authentication.getPrincipal() == null){
             throw new IllegalArgumentException("인증된 사용자가 없습니다");
         }
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("이메일을 찾을 수 없습니다."));
 
@@ -66,8 +62,8 @@ public class UserService {
 
 
     @Transactional
-    public void deleteMe(HttpServletRequest request, DeleteRequestDto dto) {
-        String email = (String) request.getAttribute("email");
+    public void deleteMe(String email, DeleteRequestDto dto) {
+
         if(email == null){
             throw new IllegalArgumentException("인증된 사용자가 없습니다");
         }
@@ -90,8 +86,8 @@ public class UserService {
     }
 
     @Transactional
-    public void updateMe(HttpServletRequest request, UpdateRequestDto dto) {
-        String email = (String) request.getAttribute("email");
+    public void updateMe(String email, UpdateRequestDto dto) {
+
 
         if(email == null){
             throw new IllegalArgumentException("인증된 사용자가 없습니다");
