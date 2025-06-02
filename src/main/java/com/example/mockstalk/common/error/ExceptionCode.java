@@ -1,9 +1,9 @@
 package com.example.mockstalk.common.error;
 
-import org.springframework.http.HttpStatus;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
@@ -24,7 +24,6 @@ public enum ExceptionCode implements ErrorCode {
 	// 404 Not Found
 	NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND, "해당 토큰을 찾을 수 없습니다."),
 	NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),
-	NOT_FOUND_ACCOUNT(HttpStatus.NOT_FOUND, "해당 계좌를 찾을 수 없습니다."),
 	CSV_FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "CSV 파일을 찾을 수 없습니다."),
 
 	// 409 Conflict = 서버와 충돌, 데이터가 이미 존재할때(400 보다 명확함)
