@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -28,10 +29,12 @@ import java.util.Collections;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
 
 
-    public JwtFilter(JwtUtil jwtUtil) {
+    public JwtFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
 
 
     }
@@ -42,12 +45,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String url = request.getRequestURI();
 
+        // 로그인/회원가입 필터 통과
         if (url.equals("/users/login") || url.equals("/users/signup")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-
+        // Authorization 헤더에서 JWT 추출
         String bearerJwt = request.getHeader("Authorization");
         if (bearerJwt == null) {
             // 토큰이 없는 경우 400을 반환합니다.
@@ -55,44 +59,35 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
+        // "Brarer" 제거
         String jwt = jwtUtil.substringToken(bearerJwt);
 
         try {
-            // JWT 유효성 검사와 claims 추출
+            // Claims = JWT 안에 담긴 사용자 정보
             Claims claims = jwtUtil.extractClaims(jwt);
+
+            //Access 토큰 타입 검사
             String tokenType = claims.get("tokenType", String.class);
             if(!"access".equals(tokenType)){
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Token이 필요합니다.");
                 return;
             }
-            if (claims == null) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
-                return;
-            }
 
-            // JWT Claims에서 추출한 값
+            // email로 유저 조회
             String email = claims.get("email", String.class);
-            String userRole = claims.get("userRole", String.class);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            // 권한 리스트 생성
-            Collection<? extends GrantedAuthority> authorities =
-                    Arrays.stream(claims.get("auth").toString().split(","))
-                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                            .toList();
 
-            request.setAttribute("userId", Long.parseLong(claims.getSubject()));
-            request.setAttribute("email", claims.get("email"));
-            request.setAttribute("userRole", claims.get("userRole"));
-
-            // SecurityContext 인증 객체 등록
-
+            // SecurityContext 인증 정보 설정 -> 인증 통과됨
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(email, null, authorities);
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
+
+            //관리자 접근 체크
             if (url.startsWith("/admin")) {
-                // 관리자 권한이 없는 경우 403을 반환합니다.
-                if (!UserRole.ADMIN.equals(userRole)) {
+                String userRole = claims.get("userRole", String.class);
+                if (!UserRole.ADMIN.name().equals(userRole)) {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자 권한이 없습니다.");
                     return;
                 }
