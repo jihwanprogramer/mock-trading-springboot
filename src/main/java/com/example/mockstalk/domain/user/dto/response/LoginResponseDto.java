@@ -8,10 +8,13 @@ public class LoginResponseDto {
 
     private Long id;
 
-    private String token;
+    private String accessToken;
 
-    public LoginResponseDto(Long id, String token) {
+    private String refreshToken;
+
+    public LoginResponseDto(Long id, String accessToken, String refreshToken) {
         this.id = id;
-        this.token = token;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

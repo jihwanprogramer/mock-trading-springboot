@@ -43,9 +43,10 @@ public class UserService {
     public LoginResponseDto login(LoginRequestDto dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일 입니다."));
-        String token = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
+        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
+        String refreshToken = jwtUtil.createRefreshToken(user.getId());
 
-        return new LoginResponseDto(user.getId(),token);
+        return new LoginResponseDto(user.getId(),accessToken,refreshToken);
 
     }
 

@@ -53,6 +53,11 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             // JWT 유효성 검사와 claims 추출
             Claims claims = jwtUtil.extractClaims(jwt);
+            String tokenType = claims.get("tokenType", String.class);
+            if(!"access".equals(tokenType)){
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Token이 필요합니다.");
+                return;
+            }
             if (claims == null) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "잘못된 JWT 토큰입니다.");
                 return;
