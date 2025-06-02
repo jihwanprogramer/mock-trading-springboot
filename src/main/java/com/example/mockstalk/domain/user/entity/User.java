@@ -64,4 +64,14 @@ public class User extends BaseEntity {
        this.walletAddress = walletAddress;
        this.userRole = userRole;
     }
+
+    //수정
+    public void updateUser(String nickname,String password){
+        this.nickname = nickname;
+        this.password = password;
+
+    }
+
+
+
 }
