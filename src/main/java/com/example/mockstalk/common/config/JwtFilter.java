@@ -12,10 +12,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 @Slf4j
@@ -24,8 +29,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
+
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
+
 
     }
     @Override
@@ -63,17 +70,24 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
 
-            String email = claims.get("email", String.class); //첨가
-            UserRole userRole = UserRole.valueOf(claims.get("userRole", String.class));
+            // JWT Claims에서 추출한 값
+            String email = claims.get("email", String.class);
+            String userRole = claims.get("userRole", String.class);
 
+            // 권한 리스트 생성
+            Collection<? extends GrantedAuthority> authorities =
+                    Arrays.stream(claims.get("auth").toString().split(","))
+                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                            .toList();
 
             request.setAttribute("userId", Long.parseLong(claims.getSubject()));
             request.setAttribute("email", claims.get("email"));
             request.setAttribute("userRole", claims.get("userRole"));
 
             // SecurityContext 인증 객체 등록
+
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+                    new UsernamePasswordAuthenticationToken(email, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             if (url.startsWith("/admin")) {
