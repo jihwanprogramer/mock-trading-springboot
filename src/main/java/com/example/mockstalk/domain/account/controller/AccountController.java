@@ -1,10 +1,13 @@
 package com.example.mockstalk.domain.account.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,17 +29,21 @@ public class AccountController {
 	 계좌 생성
 	 **/
 	@PostMapping
-	public ResponseMessage<?> saveAccount(AccountRequestDto requestDto) {
-		accountService.saveAccount(requestDto);
-		return null;
+	public ResponseEntity<ResponseMessage<?>> saveAccount(@RequestBody AccountRequestDto requestDto, Long userId) {
+
+		accountService.saveAccount(requestDto, userId);
+
+		return ResponseEntity
+			.status(HttpStatus.CREATED)
+			.body(ResponseMessage.success("계좌가 정상적으로 생성되었습니다."));
 	}
 
 	/**
-	 계좌 정보 가져오기. <- 해당 계좌로 로그인
-	 인증 인가 관련 코드이므로 userdetails 코드 넘어오면 진행할 생각
+	 계좌 정보 가져오기. <- 해당 계좌로 로그인 <- 관련 계좌 정보 가져오기
+	 1차 통합 이후 구현 예정
 	 **/
 	@PostMapping("/signin")
-	public ResponseMessage<?> signInAccount() {
+	public ResponseEntity<ResponseMessage<?>> signInAccount() {
 
 		return null;
 	}
@@ -45,45 +52,62 @@ public class AccountController {
 	 계좌 단건 조회
 	 **/
 	@GetMapping("/{id}")
-	public ResponseMessage<?> getAccount(@PathVariable Long id) {
+	public ResponseEntity<ResponseMessage<?>> getAccount(@PathVariable Long id) {
+
 		accountService.findAccountById(id);
-		return null;
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success("해당 계좌 정보가 정상적으로 조회되었습니다.", accountService.findAccountById(id)));
 	}
 
 	/**
 	 계좌 다건 조회
 	 **/
 	@GetMapping
-	public ResponseMessage<?> getAccounts() {
-		accountService.findAccount();
-		return null;
+	public ResponseEntity<ResponseMessage<?>> getAccounts(Long userId) {
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success("해당 사용자님의 계좌목록이 정상적으로 조회되었습니다.", accountService.findAccount(userId)));
 	}
 
 	/**
 	 선택 계좌 보유 종목 조회
 	 **/
 	@GetMapping("/{id}/holdings")
-	public ResponseMessage<?> getHoldings(@PathVariable Long id) {
-		accountService.findHoldingsById(id);
-		return null;
+	public ResponseEntity<ResponseMessage<?>> getHoldings(@PathVariable Long id) {
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success("해당 계좌의 보유 종목이 정상적으로 조회되었습니다.", accountService.findHoldingsById(id)));
 	}
 
 	/**
 	 선택 계좌 삭제
 	 **/
 	@DeleteMapping("/{id}")
-	public ResponseMessage<?> deleteAccount(@PathVariable Long id) {
+	public ResponseEntity<ResponseMessage<?>> deleteAccount(@PathVariable Long id) {
+
 		accountService.deleteAccount(id);
-		return null;
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success("해당 계좌가 정상적으로 삭제되었습니다."));
 	}
 
 	/**
 	 선택 계좌 비밀번호 변경
 	 **/
 	@PatchMapping("/{id}")
-	public ResponseMessage<?> updateAccountPassword(@PathVariable Long id, UpdateAccountRequestDto requestDto) {
+	public ResponseEntity<ResponseMessage<?>> updateAccountPassword
+	(@PathVariable Long id, @RequestBody UpdateAccountRequestDto requestDto) {
+
 		accountService.updateAccountPassword(id, requestDto);
-		return null;
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success("해당 계좌의 비밀번호가 정상적으로 변경되었습니다."));
 	}
 
 }
