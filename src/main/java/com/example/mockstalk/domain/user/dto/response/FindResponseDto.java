@@ -7,6 +7,7 @@ import lombok.Getter;
 public class FindResponseDto {
 
 
+    private Long id;
 
     private String email;
 
@@ -16,6 +17,7 @@ public class FindResponseDto {
 
 
     public FindResponseDto(User user){
+        this.id = user.getId();
         this.email = user.getEmail();
         this.nickname = user.getNickname();
         this.walletAddress = user.getWalletAddress();
