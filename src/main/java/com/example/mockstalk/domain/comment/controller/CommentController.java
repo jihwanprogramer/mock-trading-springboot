@@ -1,13 +1,17 @@
 package com.example.mockstalk.domain.comment.controller;
 
-import static org.springframework.data.domain.Sort.Direction.*;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
+import com.example.mockstalk.common.response.ResponseMessage;
+import com.example.mockstalk.domain.comment.dto.CommentRequestDto;
+import com.example.mockstalk.domain.comment.service.CommentService;
+import com.example.mockstalk.domain.user.service.CustomUserDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,28 +21,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.mockstalk.common.response.ResponseMessage;
-import com.example.mockstalk.domain.comment.dto.CommentRequestDto;
-import com.example.mockstalk.domain.comment.service.CommentService;
-
-import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequestMapping("/boards")
 @RequiredArgsConstructor
 public class CommentController {
 
-	private final CommentService commentService;
+    private final CommentService commentService;
 
-	@PostMapping("/{boardId}/comments")
-	public ResponseEntity<ResponseMessage<?>> saveComment(
-		@AuthenticationPrincipal UserDetails userDetails,
-		@PathVariable Long boardId,
-		@RequestBody CommentRequestDto commentRequestDto
-	) {
-		commentService.saveComment(userDetails, boardId, commentRequestDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(ResponseMessage.success());
-	}
+    @PostMapping("/{boardId}/comments")
+    public ResponseEntity<ResponseMessage<?>> saveComment(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @PathVariable Long boardId,
+        @RequestBody CommentRequestDto commentRequestDto
+    ) {
+        commentService.saveComment(userDetails, boardId, commentRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseMessage.success());
+    }
 
     @GetMapping("/{boardId}/comments")
     public ResponseEntity<ResponseMessage<?>> findBoardByBoardId(
@@ -50,7 +48,7 @@ public class CommentController {
 
     @PatchMapping("/{boardId}/comments/{commentId}")
     public ResponseEntity<ResponseMessage<?>> updateComment(
-        @AuthenticationPrincipal UserDetails userDetails,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable Long boardId,
         @PathVariable Long commentId,
         @RequestBody CommentRequestDto commentRequestDto) {
@@ -60,7 +58,7 @@ public class CommentController {
 
     @DeleteMapping("/{boardId}/comments/{commentId}")
     public ResponseEntity<ResponseMessage<?>> deleteComment(
-        @AuthenticationPrincipal UserDetails userDetails,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable Long boardId,
         @PathVariable Long commentId) {
         commentService.deleteComment(userDetails, boardId, commentId);
