@@ -7,6 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CommentRequestDto {
 
-    private String content;
+	private String content;
 
 }
