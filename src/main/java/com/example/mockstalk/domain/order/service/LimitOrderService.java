@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
-import com.example.mockstalk.domain.account.entity.Accounts;
+import com.example.mockstalk.domain.account.entity.Account;
 import com.example.mockstalk.domain.account.repository.AccountRepository;
 import com.example.mockstalk.domain.holdings.entity.Holdings;
 import com.example.mockstalk.domain.holdings.repository.HoldingsRepository;
@@ -40,7 +40,7 @@ public class LimitOrderService {
 	//6.주문 생성하고 저장
 	public LimitOrderResponseDto saveLimitBuy(UserDetails userDetails, Long accountId,
 		LimitOrderRequestDto limitOrderRequestDto) {
-		Accounts account = accountRepository.findById(accountId)
+		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		if (!account.getUser().getEmail().equals(userDetails.getUsername())) {
@@ -80,7 +80,7 @@ public class LimitOrderService {
 	//6. 주문 생성하고 저장
 	public LimitOrderResponseDto saveLimitSell(UserDetails userDetails, Long accountId,
 		LimitOrderRequestDto limitOrderRequestDto) {
-		Accounts account = accountRepository.findById(accountId)
+		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		if (!account.getUser().getEmail().equals(userDetails.getUsername())) {
@@ -90,7 +90,7 @@ public class LimitOrderService {
 		Stock stock = stockRepository.findById(limitOrderRequestDto.getStockId())
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
 
-		Holdings holding = holdingsRepository.findByAccountsAndStock(account, stock)
+		Holdings holding = holdingsRepository.findByAccountAndStock(account, stock)
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.HOLDINGS_NOT_FOUND));
 
 		if (holding.getQuantity() < limitOrderRequestDto.getQuantity()) {

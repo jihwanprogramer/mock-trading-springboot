@@ -1,5 +1,6 @@
 package com.example.mockstalk.domain.order.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,8 +29,11 @@ public class MarketOrderController {
 		@PathVariable Long accountId,
 		@RequestBody MarketOrderRequestDto marketOrderRequestDto
 	) {
-		return ResponseEntity.ok(
-			ResponseMessage.success(marketOrderService.saveMarketBuy(userDetails, accountId, marketOrderRequestDto)));
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success(
+				marketOrderService.saveMarketBuy(userDetails, accountId, marketOrderRequestDto)));
 	}
 
 	//시장가 매도
@@ -39,8 +43,12 @@ public class MarketOrderController {
 		@PathVariable Long accountId,
 		@RequestBody MarketOrderRequestDto marketOrderRequestDto
 	) {
-		return ResponseEntity.ok(
-			ResponseMessage.success(marketOrderService.saveMarketSell(userDetails, accountId, marketOrderRequestDto)));
-	}
 
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success(
+				marketOrderService.saveMarketSell(userDetails, accountId, marketOrderRequestDto)));
+	}
 }
+
+

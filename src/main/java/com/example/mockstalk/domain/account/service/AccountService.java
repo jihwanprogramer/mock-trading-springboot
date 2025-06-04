@@ -54,7 +54,7 @@ public class AccountService {
 	public AccountResponseDto findAccountById(Long id) {
 
 		Account account = accountRepository.findById(id).
-			orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_ACCOUNT));
+			orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		// 접근 권한 <- 로그인 한 유저가 계좌 생성한 사람과 동일한 지 체크하는 로직
 
@@ -89,7 +89,7 @@ public class AccountService {
 	@Transactional
 	public void updateAccountPassword(Long id, UpdateAccountRequestDto requestDto) {
 		Account account = accountRepository.findById(id).
-			orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_ACCOUNT));
+			orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		account.updatePassword(requestDto.getPassword());
 
@@ -99,7 +99,7 @@ public class AccountService {
 	@Transactional
 	public void deleteAccount(Long id) {
 		Account account = accountRepository.findById(id).
-			orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_ACCOUNT));
+			orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		accountRepository.delete(account);
 	}

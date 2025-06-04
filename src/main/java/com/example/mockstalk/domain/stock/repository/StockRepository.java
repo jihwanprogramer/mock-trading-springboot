@@ -1,11 +1,16 @@
 package com.example.mockstalk.domain.stock.repository;
 
-import com.example.mockstalk.domain.stock.entity.Stock;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.example.mockstalk.domain.stock.entity.Stock;
 
 @Repository
 public interface StockRepository extends JpaRepository<Stock, Long> {
 
-    Stock findByStockCode(String stockCode);
+	Optional<Stock> findByStockNameAndStockCode(String stockName, String stockCode);
+
+	Stock findByStockCode(String stockCode);
 }

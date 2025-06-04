@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
-import com.example.mockstalk.domain.account.entity.Accounts;
+import com.example.mockstalk.domain.account.entity.Account;
 import com.example.mockstalk.domain.account.repository.AccountRepository;
 import com.example.mockstalk.domain.holdings.entity.Holdings;
 import com.example.mockstalk.domain.holdings.repository.HoldingsRepository;
@@ -34,7 +34,7 @@ public class MarketOrderService {
 	public MarketOrderResponseDto saveMarketBuy(UserDetails userDetails, Long accountId,
 		MarketOrderRequestDto marketOrderRequestDto) {
 
-		Accounts account = accountRepository.findById(accountId).orElseThrow(() -> new CustomRuntimeException(
+		Account account = accountRepository.findById(accountId).orElseThrow(() -> new CustomRuntimeException(
 			ExceptionCode.ACCOUNT_NOT_FOUND //임시 예외처리코드
 		));
 
@@ -66,7 +66,7 @@ public class MarketOrderService {
 	public MarketOrderResponseDto saveMarketSell(UserDetails userDetails, Long accountId,
 		MarketOrderRequestDto marketOrderRequestDto) {
 
-		Accounts account = accountRepository.findById(accountId).orElseThrow(() -> new CustomRuntimeException(
+		Account account = accountRepository.findById(accountId).orElseThrow(() -> new CustomRuntimeException(
 			ExceptionCode.ACCOUNT_NOT_FOUND //임시 예외처리코드
 		));
 
@@ -77,7 +77,7 @@ public class MarketOrderService {
 		Stock stock = stockRepository.findById(marketOrderRequestDto.getStockId())
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
 
-		Holdings holding = holdingsRepository.findByAccountsAndStock(account, stock)
+		Holdings holding = holdingsRepository.findByAccountAndStock(account, stock)
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.HOLDINGS_NOT_FOUND));
 
 		holding.decreaseQuantity(marketOrderRequestDto.getQuantity());

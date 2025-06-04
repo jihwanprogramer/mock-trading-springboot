@@ -22,12 +22,12 @@ public class UserController {
 
     private final UserService userService;
 
-    // 회원가입
-    @PostMapping("/signup")
-    public ResponseEntity<String> signup(@Valid @RequestBody SignupRequestDto dto){
-        userService.signup(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 완료되었습니다.");
-    }
+	// 회원가입
+	@PostMapping("/signup")
+	public ResponseEntity<ResponseMessage<?>> signup(@Valid @RequestBody SignupRequestDto dto) {
+		userService.signup(dto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(ResponseMessage.success("유저 등록이 완료되었습니다."));
+	}
 
     // 로그인
     @PostMapping("/login")

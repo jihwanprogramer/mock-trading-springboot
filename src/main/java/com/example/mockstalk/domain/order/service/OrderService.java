@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
-import com.example.mockstalk.domain.account.entity.Accounts;
+import com.example.mockstalk.domain.account.entity.Account;
 import com.example.mockstalk.domain.account.repository.AccountRepository;
 import com.example.mockstalk.domain.order.dto.OrderListResponseDto;
 import com.example.mockstalk.domain.order.entity.Order;
@@ -27,7 +27,7 @@ public class OrderService {
 
 	public Slice<OrderListResponseDto> findOrderByUserId(UserDetails userDetails, Long accountId, Long lastId,
 		int size) {
-		Accounts account = accountRepository.findById(accountId)
+		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		if (!account.getUser().getEmail().equals(userDetails.getUsername())) {
@@ -40,7 +40,7 @@ public class OrderService {
 	}
 
 	public void deleteOrder(UserDetails userDetails, Long accountId, Long orderId) {
-		Accounts account = accountRepository.findById(accountId)
+		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		if (!account.getUser().getEmail().equals(userDetails.getUsername())) {

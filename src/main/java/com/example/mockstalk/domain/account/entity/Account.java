@@ -3,6 +3,8 @@ package com.example.mockstalk.domain.account.entity;
 import java.math.BigDecimal;
 
 import com.example.mockstalk.common.baseEntity.BaseEntity;
+import com.example.mockstalk.common.error.CustomRuntimeException;
+import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -51,6 +53,29 @@ public class Account extends BaseEntity {
 
 	public void updatePassword(String password) {
 		this.password = password;
+	}
+
+	public void increaseCurrentBalance(BigDecimal balance) {
+		if (balance.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("차감할 금액은 0보다 커야 합니다.");
+		}
+		if (this.currentBalance.compareTo(balance) < 0) {
+			throw new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION); //임시코드
+		}
+		this.currentBalance = this.currentBalance.add(balance);
+	}
+
+	//-1: this < other
+	// 0: this == other
+	// 1: this > other
+	public void decreaseCurrentBalance(BigDecimal balance) {
+		if (balance.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("차감할 금액은 0보다 커야 합니다.");
+		}
+		if (this.currentBalance.compareTo(balance) < 0) {
+			throw new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION); //임시코드
+		}
+		this.currentBalance = this.currentBalance.subtract(balance);
 	}
 
 }

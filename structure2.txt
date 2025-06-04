@@ -23,7 +23,7 @@ src/main/java
             └── domain
                 ├── account
                 │   ├── entity
-                │   │   └── Accounts.java
+                │   │   └── Account.java
                 │   └── repository
                 │       └── AccountRepository.java
                 ├── board

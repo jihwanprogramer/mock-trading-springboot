@@ -68,7 +68,7 @@ public class AccountController {
 	 계좌 다건 조회
 	 **/
 	@GetMapping
-	public ResponseEntity<ResponseMessage<?>> getAccounts(@AuthenticationPrincipal CustomUserDetails userDetails) {
+	public ResponseEntity<ResponseMessage<?>> getAccount(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		return ResponseEntity
 			.status(HttpStatus.OK)

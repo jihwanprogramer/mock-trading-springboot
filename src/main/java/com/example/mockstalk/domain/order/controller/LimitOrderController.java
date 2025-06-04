@@ -1,5 +1,6 @@
 package com.example.mockstalk.domain.order.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,9 +28,11 @@ public class LimitOrderController {
 		@PathVariable Long accountId,
 		@RequestBody LimitOrderRequestDto limitOrderRequestDto
 	) {
-		System.out.println(userDetails);
-		return ResponseEntity.ok(
-			ResponseMessage.success(limitOrderService.saveLimitBuy(userDetails, accountId, limitOrderRequestDto)));
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(
+				ResponseMessage.success(limitOrderService.saveLimitBuy(userDetails, accountId, limitOrderRequestDto)));
 	}
 
 	@PostMapping("/accounts/{accountId}/orders/limit_sell")
@@ -38,8 +41,11 @@ public class LimitOrderController {
 		@PathVariable Long accountId,
 		@RequestBody LimitOrderRequestDto limitOrderRequestDto
 	) {
-		return ResponseEntity.ok(
-			ResponseMessage.success(limitOrderService.saveLimitSell(userDetails, accountId, limitOrderRequestDto)));
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(
+				ResponseMessage.success(limitOrderService.saveLimitSell(userDetails, accountId, limitOrderRequestDto)));
 	}
 
 }

@@ -1,6 +1,13 @@
 package com.example.mockstalk.domain.user.service;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.example.mockstalk.common.config.JwtUtil;
+import com.example.mockstalk.common.error.CustomRuntimeException;
+import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.user.dto.request.DeleteRequestDto;
 import com.example.mockstalk.domain.user.dto.request.LoginRequestDto;
 import com.example.mockstalk.domain.user.dto.request.SignupRequestDto;
@@ -9,13 +16,10 @@ import com.example.mockstalk.domain.user.dto.response.FindResponseDto;
 import com.example.mockstalk.domain.user.dto.response.LoginResponseDto;
 import com.example.mockstalk.domain.user.entity.User;
 import com.example.mockstalk.domain.user.repository.UserRepository;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service

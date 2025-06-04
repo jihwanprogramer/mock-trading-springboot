@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
-import com.example.mockstalk.domain.account.entity.Accounts;
+import com.example.mockstalk.domain.account.entity.Account;
 import com.example.mockstalk.domain.account.repository.AccountRepository;
 import com.example.mockstalk.domain.holdings.entity.Holdings;
 import com.example.mockstalk.domain.holdings.repository.HoldingsRepository;
@@ -41,14 +41,14 @@ public class TradeService {
 			throw new CustomRuntimeException(ExceptionCode.ORDER_ALREADY_COMPLETED);
 		}
 
-		Accounts account = accountRepository.findById(order.getAccount().getId())
+		Account account = accountRepository.findById(order.getAccount().getId())
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		BigDecimal totalPrice = currentPrice.multiply(BigDecimal.valueOf(order.getQuantity()));
 
 		switch (order.getType()) {
 			case LIMIT_BUY:
-				Holdings holding = holdingsRepository.findByAccountsAndStock(account, stock)
+				Holdings holding = holdingsRepository.findByAccountAndStock(account, stock)
 					.orElseGet(() -> Holdings.builder()
 						.accounts(account)
 						.stock(stock)
@@ -58,7 +58,7 @@ public class TradeService {
 				holdingsRepository.save(holding);
 				break;
 			case LIMIT_SELL:
-				Holdings sellHolding = holdingsRepository.findByAccountsAndStock(account, stock)
+				Holdings sellHolding = holdingsRepository.findByAccountAndStock(account, stock)
 					.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.HOLDINGS_NOT_FOUND));
 
 				sellHolding.decreaseQuantity(order.getQuantity());
@@ -87,6 +87,7 @@ public class TradeService {
 
 	@Scheduled(fixedRate = 1000) // 1초마다 실행
 	public void settleOrders() {
+		//주문완료 보유 주식 리스트
 		List<Order> completeOrders = orderRepository.findByOrderStatus(OrderStatus.COMPLETED);
 
 		for (Order order : completeOrders) {
@@ -94,6 +95,7 @@ public class TradeService {
 			Stock currentStock = stockRepository.findById(stock.getId()).
 				orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
 
+			//이코드는 주식 가격 실시간으로 가져와서 일치하면 반복문 CONTINUE
 			// if (order.getPrice().compareTo(currentStock.getPrice()) != 0) {
 			// 	continue;
 			// }
