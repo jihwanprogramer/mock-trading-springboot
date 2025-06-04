@@ -2,6 +2,7 @@ package com.example.mockstalk.domain.account.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,6 +16,7 @@ import com.example.mockstalk.common.response.ResponseMessage;
 import com.example.mockstalk.domain.account.dto.AccountRequestDto;
 import com.example.mockstalk.domain.account.dto.UpdateAccountRequestDto;
 import com.example.mockstalk.domain.account.service.AccountService;
+import com.example.mockstalk.domain.user.service.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,9 +31,10 @@ public class AccountController {
 	 계좌 생성
 	 **/
 	@PostMapping
-	public ResponseEntity<ResponseMessage<?>> saveAccount(@RequestBody AccountRequestDto requestDto, Long userId) {
+	public ResponseEntity<ResponseMessage<?>> saveAccount(@RequestBody AccountRequestDto requestDto,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-		accountService.saveAccount(requestDto, userId);
+		accountService.saveAccount(requestDto, userDetails);
 
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
@@ -65,11 +68,11 @@ public class AccountController {
 	 계좌 다건 조회
 	 **/
 	@GetMapping
-	public ResponseEntity<ResponseMessage<?>> getAccounts(Long userId) {
+	public ResponseEntity<ResponseMessage<?>> getAccounts(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		return ResponseEntity
 			.status(HttpStatus.OK)
-			.body(ResponseMessage.success("해당 사용자님의 계좌목록이 정상적으로 조회되었습니다.", accountService.findAccount(userId)));
+			.body(ResponseMessage.success("해당 사용자님의 계좌목록이 정상적으로 조회되었습니다.", accountService.findAccount(userDetails)));
 	}
 
 	/**
