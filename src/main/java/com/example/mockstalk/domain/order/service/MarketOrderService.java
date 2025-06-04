@@ -1,5 +1,6 @@
 package com.example.mockstalk.domain.order.service;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.example.mockstalk.common.error.CustomRuntimeException;
@@ -30,15 +31,19 @@ public class MarketOrderService {
 
 	//로직 흐름 정리
 	// 계좌 조회 -> 주식정보 조회 -> 현재 주식 가격조회 ->총 매수 금액 계산 -> 계좌 잔고 차감(엔티티에서 예외처리) ->주문객체 생성 및 저장 -> 응답 dto 반환
-	public MarketOrderResponseDto saveMarketBuy(Long accountId, MarketOrderRequestDto marketOrderRequestDto) {
+	public MarketOrderResponseDto saveMarketBuy(UserDetails userDetails, Long accountId,
+		MarketOrderRequestDto marketOrderRequestDto) {
 
 		Accounts account = accountRepository.findById(accountId).orElseThrow(() -> new CustomRuntimeException(
-			ExceptionCode.USER_MISMATCH_EXCEPTION //임시 예외처리코드
+			ExceptionCode.ACCOUNT_NOT_FOUND //임시 예외처리코드
 		));
 
+		if (!account.getUser().getEmail().equals(userDetails.getUsername())) {
+			throw new CustomRuntimeException(ExceptionCode.UNAUTHORIZED_ACCOUNT_ACCESS);
+		}
+
 		Stock stock = stockRepository.findById(marketOrderRequestDto.getStockId())
-			.orElseThrow(() -> new CustomRuntimeException(
-				ExceptionCode.USER_MISMATCH_EXCEPTION)); //임시 예외처리코드
+			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND)); //임시 예외처리코드
 		//BigDecimal totalPrice =stock 가격 * marketOrderRequestDto.getQuantity();
 
 		//account.decreaseCurrentBalance(BigDecimal.valueOf(totalPrice));
@@ -58,17 +63,22 @@ public class MarketOrderService {
 		return MarketOrderResponseDto.from(order);
 	}
 
-	public MarketOrderResponseDto saveMarketSell(Long accountId, MarketOrderRequestDto marketOrderRequestDto) {
+	public MarketOrderResponseDto saveMarketSell(UserDetails userDetails, Long accountId,
+		MarketOrderRequestDto marketOrderRequestDto) {
 
 		Accounts account = accountRepository.findById(accountId).orElseThrow(() -> new CustomRuntimeException(
-			ExceptionCode.USER_MISMATCH_EXCEPTION //임시 예외처리코드
+			ExceptionCode.ACCOUNT_NOT_FOUND //임시 예외처리코드
 		));
 
+		if (!account.getUser().getEmail().equals(userDetails.getUsername())) {
+			throw new CustomRuntimeException(ExceptionCode.UNAUTHORIZED_ACCOUNT_ACCESS);
+		}
+
 		Stock stock = stockRepository.findById(marketOrderRequestDto.getStockId())
-			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION)); //임시 예외처리코드
+			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
 
 		Holdings holding = holdingsRepository.findByAccountsAndStock(account, stock)
-			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION)); //임시 예외처리코드
+			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.HOLDINGS_NOT_FOUND));
 
 		holding.decreaseQuantity(marketOrderRequestDto.getQuantity());
 
@@ -79,7 +89,7 @@ public class MarketOrderService {
 			//주식 가격 불러오는거 추후 추가
 			.quantity(marketOrderRequestDto.getQuantity())
 			.price(null)
-			.orderStatus(OrderStatus.PENDING)
+			.orderStatus(OrderStatus.COMPLETED)
 			.build();
 
 		orderRepository.save(order);
