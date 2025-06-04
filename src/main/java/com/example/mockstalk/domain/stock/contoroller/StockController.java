@@ -19,8 +19,8 @@ public class StockController {
 
 	@PostMapping("/savestock")
 	public ResponseEntity<ResponseMessage<String>> saveStockCsv() {
-		String filePath = "src/main/resources/kospi_code_csv.csv";
-		stockService.saveStockCsv(filePath);
+		InputStream is = getClass().getClassLoader().getResourceAsStream("kospi_code_csv.csv");
+		stockService.saveStockCsv(is);
 		return ResponseEntity.ok(ResponseMessage.success());
 	}
 }

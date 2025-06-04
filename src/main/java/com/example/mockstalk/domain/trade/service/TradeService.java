@@ -50,11 +50,12 @@ public class TradeService {
 			case LIMIT_BUY:
 				Holdings holding = holdingsRepository.findByAccountAndStock(account, stock)
 					.orElseGet(() -> Holdings.builder()
-						.accounts(account)
+						.account(account)
 						.stock(stock)
 						.quantity(0L)
 						.build());
-				holding.increaseQuantity(order.getQuantity());
+				// holding.increaseQuantity(order.getQuantity());
+				holding.updateAveragePrice(order.getQuantity(), totalPrice);
 				holdingsRepository.save(holding);
 				break;
 			case LIMIT_SELL:

@@ -44,6 +44,7 @@ public class AccountService {
 			.accountName(accountRequestDto.getAccountName())
 			.password(accountRequestDto.getPassword())
 			.initialBalance(accountRequestDto.getInitialBalance())
+			.currentBalance(accountRequestDto.getInitialBalance())
 			.user(user)
 			.build();
 		accountRepository.save(account);

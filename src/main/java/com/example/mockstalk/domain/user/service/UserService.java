@@ -26,87 +26,82 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final JwtUtil jwtUtil;
 
-    public void signup(SignupRequestDto dto) {
-        if(userRepository.existsByEmail(dto.getEmail())){
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
-        }
-        String encode = passwordEncoder.encode(dto.getPassword());
-        User user = new User(dto.getEmail(), encode, dto.getNickname(), dto.getWalletAddress(), dto.getUserRole());
-        userRepository.save(user);
+	public void signup(SignupRequestDto dto) {
+		if (userRepository.existsByEmail(dto.getEmail())) {
+			throw new CustomRuntimeException(ExceptionCode.EMAIL_ALREADY_EXISTS);
+		}
+		String encode = passwordEncoder.encode(dto.getPassword());
+		User user = new User(dto.getEmail(), encode, dto.getNickname(), dto.getWalletAddress(), dto.getUserRole());
+		userRepository.save(user);
 
-    }
+	}
 
-    public LoginResponseDto login(LoginRequestDto dto) {
-        User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일 입니다."));
-        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
-        String refreshToken = jwtUtil.createRefreshToken(user.getId());
+	public LoginResponseDto login(LoginRequestDto dto) {
+		User user = userRepository.findByEmail(dto.getEmail())
+			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_EMAIL));
+		String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
+		String refreshToken = jwtUtil.createRefreshToken(user.getId());
 
-        return new LoginResponseDto(user.getId(),accessToken,refreshToken);
+		return new LoginResponseDto(user.getId(), accessToken, refreshToken);
 
-    }
+	}
 
+	public FindResponseDto findMe(String email) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || authentication.getPrincipal() == null) {
+			throw new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION);
+		}
 
-    public FindResponseDto findMe(String email) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null || authentication.getPrincipal() == null){
-            throw new IllegalArgumentException("인증된 사용자가 없습니다");
-        }
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_EMAIL));
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("이메일을 찾을 수 없습니다."));
+		return new FindResponseDto(user);
 
-        return new FindResponseDto(user);
+	}
 
-    }
+	@Transactional
+	public void deleteMe(String email, DeleteRequestDto dto) {
 
+		if (email == null) {
+			throw new IllegalArgumentException("인증된 사용자가 없습니다");
+		}
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(() -> new IllegalArgumentException("이메일을 찾을 수 없습니다."));
+		if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+		}
 
-    @Transactional
-    public void deleteMe(String email, DeleteRequestDto dto) {
+		userRepository.deleteUserByEmail(email);
 
-        if(email == null){
-            throw new IllegalArgumentException("인증된 사용자가 없습니다");
-        }
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("이메일을 찾을 수 없습니다."));
-        if(!passwordEncoder.matches(dto.getPassword(), user.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
+	}
 
-        userRepository.deleteUserByEmail(email);
+	public FindResponseDto findByWallet(String walletAddress) {
+		User user = userRepository.findByWalletAddress(walletAddress)
+			.orElseThrow(() -> new IllegalArgumentException("지갑주소를 찾을 수 없습니다."));
 
-    }
+		return new FindResponseDto(user);
+	}
 
+	@Transactional
+	public void updateMe(String email, UpdateRequestDto dto) {
 
-    public FindResponseDto findByWallet(String walletAddress) {
-        User user = userRepository.findByWalletAddress(walletAddress)
-                .orElseThrow(() -> new IllegalArgumentException("지갑주소를 찾을 수 없습니다."));
+		if (email == null) {
+			throw new IllegalArgumentException("인증된 사용자가 없습니다");
+		}
 
-        return new FindResponseDto(user);
-    }
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(() -> new IllegalArgumentException("이메일을 찾을 수 없습니다."));
 
-    @Transactional
-    public void updateMe(String email, UpdateRequestDto dto) {
+		if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+		}
 
+		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
 
-        if(email == null){
-            throw new IllegalArgumentException("인증된 사용자가 없습니다");
-        }
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("이메일을 찾을 수 없습니다."));
-
-        if(!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-
-        String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
-
-
-        user.updateUser(dto.getNickname(),encodedNewPassword);
-    }
+		user.updateUser(dto.getNickname(), encodedNewPassword);
+	}
 }

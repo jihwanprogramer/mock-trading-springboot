@@ -16,11 +16,11 @@ public class PeriodicCandleApiService {
 	private final PeriodicCandleRepository candleRepository;
 	private final StockRepository stockRepository;
 
-    @Value("${openapi.token}")
-    private String token;
-
-    @Value("${openapi.base-url}")
-    private String baseUrl;
+	// @Value("${openapi.token}")
+	// private String token;
+	//
+	// @Value("${openapi.base-url}")
+	// private String baseUrl;
 
 	public void fetchAndSaveCandles(String stockCode, String candleType, String startDate,
 		String endDate) {

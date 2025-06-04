@@ -35,7 +35,10 @@ public enum ExceptionCode implements ErrorCode {
 	ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "계정을 찾을 수 없습니다."),
 	STOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "주식을 찾을 수 없습니다."),
 	HOLDINGS_NOT_FOUND(HttpStatus.NOT_FOUND, "보유 주식을 찾을 수 없습니다."),
-	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 종목입니다."),
+	NOT_FOUND_CANDLE(HttpStatus.NOT_FOUND, "해당 봉을 찾을 수 없습니다."),
+	NOT_FOUND_USER(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
+	NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND, "해당 이메일을 찾을 수 없습니다."),
 
 	// 409 Conflict = 서버와 충돌, 데이터가 이미 존재할때(400 보다 명확함)
 	EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 등록된 회원입니다."),
