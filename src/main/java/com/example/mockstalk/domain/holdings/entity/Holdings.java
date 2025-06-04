@@ -18,12 +18,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "holdings")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Holdings extends BaseEntity {
@@ -50,7 +52,7 @@ public class Holdings extends BaseEntity {
 			throw new IllegalArgumentException("차감할 수량은 0보다 커야 합니다.");
 		}
 		if (this.quantity < orderQuantity) {
-			throw new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION); //임시코드
+			throw new CustomRuntimeException(ExceptionCode.INSUFFICIENT_HOLDINGS); //임시코드
 		}
 		this.quantity += orderQuantity;
 	}
@@ -60,7 +62,7 @@ public class Holdings extends BaseEntity {
 			throw new IllegalArgumentException("차감할 수량은 0보다 커야 합니다.");
 		}
 		if (this.quantity < orderQuantity) {
-			throw new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION); //임시코드
+			throw new CustomRuntimeException(ExceptionCode.INSUFFICIENT_HOLDINGS); //임시코드
 		}
 		this.quantity -= orderQuantity;
 	}
