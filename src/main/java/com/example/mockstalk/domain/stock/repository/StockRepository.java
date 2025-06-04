@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface StockRepository extends JpaRepository<Stock,Long> {
 
     Optional<Stock>findByStockNameAndStockCode(String stockName, String stockCode);
+    Stock findByStockCode(String stockCode);
 }
