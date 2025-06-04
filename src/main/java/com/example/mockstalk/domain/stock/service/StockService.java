@@ -9,21 +9,22 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import org.springframework.stereotype.Service;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.entity.StockStatus;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-
 @Service
 @RequiredArgsConstructor
+
 public class StockService {
 	@PersistenceContext
 	private EntityManager em;
@@ -57,7 +58,8 @@ public class StockService {
 					.stockCode(tokens[0])
 					.stockName(tokens[2])
 					.listedDate(LocalDate.parse(tokens[3], formatter))
-					.delistedDate(tokens.length > 4 && !tokens[4].isEmpty() ? LocalDate.parse(tokens[3]) : null)
+					.delistedDate(
+						tokens.length > 4 && !tokens[4].isEmpty() ? LocalDate.parse(tokens[4], formatter) : null)
 					.stockStatus(tokens.length > 4 && !tokens[4].isEmpty() ? StockStatus.DELISTED : StockStatus.ACTIVE)
 					.build();
 

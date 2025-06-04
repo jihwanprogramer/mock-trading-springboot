@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,8 @@ public class StockController {
 	public ResponseEntity<ResponseMessage<String>> saveStockCsv() {
 		InputStream is = getClass().getClassLoader().getResourceAsStream("kospi_code_csv.csv");
 		stockService.saveStockCsv(is);
-		return ResponseEntity.ok(ResponseMessage.success());
+		return ResponseEntity
+			.status(HttpStatus.CREATED)
+			.body(ResponseMessage.success());
 	}
 }
