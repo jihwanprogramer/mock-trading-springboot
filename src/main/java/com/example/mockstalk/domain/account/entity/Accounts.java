@@ -54,7 +54,7 @@ public class Accounts extends BaseEntity {
 			throw new IllegalArgumentException("차감할 금액은 0보다 커야 합니다.");
 		}
 		if (this.currentBalance.compareTo(balance) < 0) {
-			throw new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION); //임시코드
+			throw new CustomRuntimeException(ExceptionCode.INSUFFICIENT_BALANCE); //임시코드
 		}
 		this.currentBalance = this.currentBalance.add(balance);
 	}
@@ -67,7 +67,7 @@ public class Accounts extends BaseEntity {
 			throw new IllegalArgumentException("차감할 금액은 0보다 커야 합니다.");
 		}
 		if (this.currentBalance.compareTo(balance) < 0) {
-			throw new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION); //임시코드
+			throw new CustomRuntimeException(ExceptionCode.INSUFFICIENT_BALANCE); //임시코드
 		}
 		this.currentBalance = this.currentBalance.subtract(balance);
 	}
