@@ -3,6 +3,7 @@ package com.example.mockstalk.domain.account.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,9 @@ import com.example.mockstalk.domain.account.entity.Account;
 import com.example.mockstalk.domain.account.repository.AccountRepository;
 import com.example.mockstalk.domain.holdings.entity.Holdings;
 import com.example.mockstalk.domain.holdings.repository.HoldingsRepository;
+import com.example.mockstalk.domain.user.entity.User;
 import com.example.mockstalk.domain.user.repository.UserRepository;
+import com.example.mockstalk.domain.user.service.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,12 +35,16 @@ public class AccountService {
 
 	// 계좌 생성
 	@Transactional
-	public void saveAccount(AccountRequestDto accountRequestDto, Long userId) {
+	public void saveAccount(AccountRequestDto accountRequestDto,
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+		User user = userDetails.getUser();
+
 		Account account = Account.builder()
 			.accountName(accountRequestDto.getAccountName())
 			.password(accountRequestDto.getPassword())
 			.initialBalance(accountRequestDto.getInitialBalance())
-			.user(userRepository.findById(userId).orElseThrow())
+			.user(user)
 			.build();
 		accountRepository.save(account);
 	}
@@ -56,7 +63,9 @@ public class AccountService {
 
 	// 계좌 조회(다건)
 	@Transactional(readOnly = true)
-	public List<AccountResponseDto> findAccount(Long userId) {
+	public List<AccountResponseDto> findAccount(@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+		Long userId = userDetails.getId();
 
 		List<Account> accounts = accountRepository.findAllByUser_Id(userId);
 
