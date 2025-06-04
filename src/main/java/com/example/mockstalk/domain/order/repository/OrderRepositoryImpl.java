@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import com.example.mockstalk.domain.order.dto.LimitOrderResponseDto;
 import com.example.mockstalk.domain.order.dto.MarketOrderResponseDto;
 import com.example.mockstalk.domain.order.dto.OrderListResponseDto;
+import com.example.mockstalk.domain.order.entity.Order;
+import com.example.mockstalk.domain.order.entity.OrderStatus;
 import com.example.mockstalk.domain.order.entity.QOrder;
 import com.example.mockstalk.domain.order.entity.Type;
 import com.querydsl.core.types.Projections;
@@ -75,5 +77,14 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 		boolean isCheck = limitOrders.size() > pageable.getPageSize() || marketOrders.size() > pageable.getPageSize();
 
 		return new SliceImpl<>(List.of(dto), pageable, isCheck);
+	}
+
+	public List<Order> findByOrderStatus(OrderStatus orderStatus) {
+		QOrder order = QOrder.order;
+
+		return jpaQueryFactory
+			.selectFrom(order)
+			.where(order.orderStatus.eq(orderStatus))
+			.fetch();
 	}
 }
