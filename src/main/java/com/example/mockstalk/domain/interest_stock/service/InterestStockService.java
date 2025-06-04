@@ -8,6 +8,7 @@ import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 import com.example.mockstalk.domain.user.entity.User;
 import com.example.mockstalk.domain.user.service.CustomUserDetails;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ public class InterestStockService {
     }
 
 
+    @Transactional
     public List<InterestResponseDto> findInterest(User user) {
         List<InterestResponseDto> responseList = new ArrayList<>();
         List<InterestStock> list = interestStockRepository.findAllByUser(user);
@@ -45,7 +47,6 @@ public class InterestStockService {
         }
 
         return responseList;
-
 
     }
 
