@@ -14,6 +14,7 @@ public class CustomUserDetails implements UserDetails {
 
     private User user;
 
+
     public CustomUserDetails(User user) {
         this.user = user;
     }
@@ -63,4 +64,6 @@ public class CustomUserDetails implements UserDetails {
     public String getNickname(){
         return user.getNickname();
     }
+
+
 }
