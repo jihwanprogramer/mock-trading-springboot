@@ -1,0 +1,142 @@
+src/main/java
+└── com
+    └── example
+        └── mockstalk
+            ├── MockstalkApplication.java
+            ├── common
+            │   ├── baseEntity
+            │   │   └── BaseEntity.java
+            │   ├── config
+            │   │   ├── JwtFilter.java
+            │   │   ├── JwtUtil.java
+            │   │   ├── RedisCacheConfig.java
+            │   │   ├── RestTemlateConfig.java
+            │   │   └── SecurityConfig.java
+            │   ├── error
+            │   │   ├── BaseException.java
+            │   │   ├── CustomRuntimeException.java
+            │   │   ├── ErrorCode.java
+            │   │   ├── ExceptionCode.java
+            │   │   └── GlobalExceptionHandler.java
+            │   └── response
+            │       └── ResponseMessage.java
+            └── domain
+                ├── account
+                │   ├── entity
+                │   │   └── Accounts.java
+                │   └── repository
+                │       └── AccountRepository.java
+                ├── board
+                │   ├── controller
+                │   │   └── BoardController.java
+                │   ├── dto
+                │   │   ├── BoardRequestDto.java
+                │   │   ├── BoardResponseDto.java
+                │   │   └── BoardUpdateRequestDto.java
+                │   ├── entity
+                │   │   └── Board.java
+                │   ├── repository
+                │   │   └── BoardRepository.java
+                │   └── service
+                │       ├── BoardService.java
+                │       └── BoardServiceImpl.java
+                ├── comment
+                │   ├── controller
+                │   │   └── CommentController.java
+                │   ├── dto
+                │   │   ├── CommentRequestDto.java
+                │   │   └── CommentResponseDto.java
+                │   ├── entity
+                │   │   └── Comment.java
+                │   ├── repository
+                │   │   └── CommentRepository.java
+                │   └── service
+                │       └── CommentService.java
+                ├── holdings
+                │   ├── entity
+                │   │   └── Holdings.java
+                │   └── repository
+                │       └── HoldingsRepository.java
+                ├── interest_stock
+                │   ├── entity
+                │   │   └── InterestStock.java
+                │   └── repository
+                │       └── InterestStockRepository.java
+                ├── news
+                │   ├── controller
+                │   │   └── NewsController.java
+                │   ├── entity
+                │   │   └── News.java
+                │   ├── naver
+                │   │   ├── NaverApiConfig.java
+                │   │   └── response
+                │   │       ├── NaverNewsResponse.java
+                │   │       ├── NewsResponse.java
+                │   │       └── NewsSearchResponse.java
+                │   ├── repository
+                │   │   └── NewsRepository.java
+                │   └── service
+                │       └── NewsService.java
+                ├── order
+                │   ├── entity
+                │   │   ├── Order.java
+                │   │   ├── OrderStatus.java
+                │   │   └── Type.java
+                │   └── repository
+                │       └── OrderRepository.java
+                ├── price
+                │   ├── intraday_candles
+                │   │   ├── OpenapiApplication.java
+                │   │   ├── controller
+                │   │   │   └── IntradayCandleController.java
+                │   │   ├── entity
+                │   │   │   ├── CandleType.java
+                │   │   │   └── IntradayCandle.java
+                │   │   ├── repository
+                │   │   │   └── IntradayCandleRepository.java
+                │   │   └── service
+                │   │       └── IntradayCandleService.java
+                │   └── periodic_candles
+                │       ├── entity
+                │       │   ├── CandleType.java
+                │       │   └── PeriodicCandles.java
+                │       └── repository
+                │           └── CandleSticksRepository.java
+                ├── stock
+                │   ├── contoroller
+                │   │   └── StockController.java
+                │   ├── entity
+                │   │   ├── Stock.java
+                │   │   └── StockStatus.java
+                │   ├── repository
+                │   │   └── StockRepository.java
+                │   └── service
+                │       └── StockService.java
+                ├── trade
+                │   ├── entity
+                │   │   └── Trade.java
+                │   └── repository
+                │       └── TradeRepository.java
+                └── user
+                    ├── controller
+                    │   └── UserController.java
+                    ├── dto
+                    │   ├── request
+                    │   │   ├── DeleteRequestDto.java
+                    │   │   ├── LoginRequestDto.java
+                    │   │   ├── SignupRequestDto.java
+                    │   │   └── UpdateRequestDto.java
+                    │   └── response
+                    │       ├── FindResponseDto.java
+                    │       └── LoginResponseDto.java
+                    ├── entity
+                    │   ├── User.java
+                    │   └── UserRole.java
+                    ├── repository
+                    │   └── UserRepository.java
+                    └── service
+                        ├── CustomUserDetailService.java
+                        ├── CustomUserDetails.java
+                        └── UserService.java
+
+66 directories, 74 files
