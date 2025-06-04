@@ -1,5 +1,7 @@
 package com.example.mockstalk.domain.stock.contoroller;
 
+import java.io.InputStream;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,8 @@ public class StockController {
 
 	@PostMapping("/savestock")
 	public ResponseEntity<ResponseMessage<String>> saveStockCsv() {
-		String filePath = "src/main/resources/kospi_code.csv";
-		stockService.saveStockCsv(filePath);
+		InputStream is = getClass().getClassLoader().getResourceAsStream("kospi_code_csv.csv");
+		stockService.saveStockCsv(is);
 		return ResponseEntity.ok(ResponseMessage.success());
 	}
 }
