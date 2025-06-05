@@ -1,4 +1,4 @@
-package com.example.mockstalk.domain.price.token;
+package com.example.mockstalk.common.hantutoken;
 
 import lombok.RequiredArgsConstructor;
 
@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/token")
 @RequiredArgsConstructor
 public class TokenContorller {
-	private final TokenScheduler tokenScheduler;
+	private final TokenService tokenService;
 
 	@PostMapping
 	public ResponseEntity<TokenResponseDto> getToken() {
-		TokenResponseDto tokenResponse = tokenScheduler.getAccessToken();
+		TokenResponseDto tokenResponse = tokenService.getAccessToken();
 		return ResponseEntity.ok(tokenResponse);
 	}
 }

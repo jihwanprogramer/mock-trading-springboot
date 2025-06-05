@@ -16,8 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import com.example.mockstalk.domain.price.token.TokenResponseDto;
-import com.example.mockstalk.domain.price.token.TokenScheduler;
+import com.example.mockstalk.common.hantutoken.TokenResponseDto;
+import com.example.mockstalk.common.hantutoken.TokenService;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,7 +34,7 @@ public class LivePriceService {
 	@Value("${hantu-openapi.appsecret}")
 	private String appSecret;
 
-	private final TokenScheduler tokenScheduler;
+	private final TokenService tokenService;
 	private final StockRepository stockRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 

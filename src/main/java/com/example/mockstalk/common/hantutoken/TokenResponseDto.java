@@ -1,4 +1,4 @@
-package com.example.mockstalk.domain.price.token;
+package com.example.mockstalk.common.hantutoken;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.mockstalk.domain.price.token;
+package com.example.mockstalk.common.hantutoken;
 
 import java.time.Duration;
 
@@ -21,7 +21,7 @@ import com.example.mockstalk.common.error.ExceptionCode;
 @Service
 @Component
 @RequiredArgsConstructor
-public class TokenScheduler {
+public class TokenService {
 
 	@Value("${hantu-openapi.domain}")
 	private String apiDomain;
@@ -34,8 +34,6 @@ public class TokenScheduler {
 
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	// @Scheduled(initialDelay = 0, fixedRate = 1000 * 60 * 60 * 24)
-	// 나중에 프로젝트 정상 실행될때 스케줄드 적용해서 자동 토큰 생성으로 변경 예정
 	public TokenResponseDto getAccessToken() {
 		// Redis에 토큰 존재하는지 확인
 		TokenResponseDto cached = (TokenResponseDto)redisTemplate.opsForValue().get("accessToken::koreainvestment");
