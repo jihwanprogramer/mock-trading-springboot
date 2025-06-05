@@ -1,9 +1,9 @@
 package com.example.mockstalk.common.error;
 
-import org.springframework.http.HttpStatus;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
@@ -19,6 +19,7 @@ public enum ExceptionCode implements ErrorCode {
 	ORDER_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "이미 취소된 주문입니다."),
 	ORDER_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 주문입니다."),
 	ORDER_ALREADY_SETTLED(HttpStatus.BAD_REQUEST, "이미 체결된 주문입니다."),
+	HANTU_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, "한국투자증권 접근 토큰생성 실패"),
 
 	// 401 Unauthorized = 인증이 안될 때
 	INVALID_JWT_SIGNATURE(HttpStatus.UNAUTHORIZED, "유효하지 않는 JWT 서명입니다."),
