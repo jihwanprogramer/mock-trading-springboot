@@ -10,13 +10,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "interststock")
+@Table(name = "interestStock")
 @NoArgsConstructor
 @AllArgsConstructor
 public class InterestStock extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -26,5 +27,9 @@ public class InterestStock extends BaseEntity {
     @JoinColumn(name = "stock_id")
     private Stock stock;
 
-
+    // 관심종목 등록
+    public InterestStock(User user, Stock stock) {
+        this.user = user;
+        this.stock = stock;
+    }
 }
