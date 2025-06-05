@@ -78,4 +78,20 @@ public class Account extends BaseEntity {
 		this.currentBalance = this.currentBalance.subtract(balance);
 	}
 
+	// Account 2차 통합 전 개발 예정 사항
+	//
+	// 1. 메서드별 유효성 및 권한 검증 로직 추가
+	//
+	// 2. 계좌 로그인 인증/인가 작업
+	//
+	//
+	// 3. 레디스 캐싱 처리할 데이터 작업
+	// 	1) 계좌 - 수익률(profitRate)
+	// 	2) 보유종목 - 현재가(currentPrice), 수익률(profitRate), 실현 손익(realizedProfit)
+	//
+	// 4. 기능별 비즈니스 고도화 및 성능 개선
+	// ex) 계좌 다건 조회 기능
+	// 사용자의 계좌 전체 조회 시 보유 종목 표기 필요성 판단
+	// -> 계좌별 보유 종목 전체를 조회하는 것은 비효율적
+	// -> service 단에서 가장 수익률 높은 보유종목 3개 선정하는 메서드 구현 및 적용
 }
