@@ -3,6 +3,7 @@ package com.example.mockstalk.common.hantutoken;
 import java.time.Duration;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,6 +22,7 @@ import com.example.mockstalk.common.error.ExceptionCode;
 @Service
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TokenService {
 
 	@Value("${hantu-openapi.domain}")
@@ -74,6 +76,7 @@ public class TokenService {
 
 			throw new CustomRuntimeException(ExceptionCode.HANTU_TOKEN_REQUIRED);
 		} catch (Exception e) {
+			log.error("토큰 발급 실패 - 사유: {}", e.getMessage(), e);
 			throw new CustomRuntimeException(ExceptionCode.HANTU_TOKEN_REQUIRED);
 		}
 	}

@@ -17,22 +17,30 @@ public class scheduler {
 
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final TokenService tokenService;
+	private final Object tokenLock = new Object();
 
 	@PostConstruct
 	public void init() {
-		livePriceService.cacheAllStockPrices();
 		tokenService.getAccessToken(); // 시작 시 1회 실행
+		livePriceService.cacheAllStockPrices();
 	}
 
 	@Scheduled(cron = "0 */5 * * * *") // 매 5분마다
 	public void updateStockPrices() {
-		livePriceService.cacheAllStockPrices();
+		synchronized (tokenLock) {
+			livePriceService.cacheAllStockPrices();
+		}
 	}
 
 	@Scheduled(fixedRate = 1000 * 60 * 60 * 24) // 24시간마다 강제로 발급
 	public void refreshToken() {
-		// 강제로 재발급 → 기존 캐시 삭제
-		redisTemplate.delete("accessToken::koreainvestment");
-		tokenService.getAccessToken(); // 다시 발급 + 캐싱
+		synchronized (tokenLock) {
+			Boolean exists = redisTemplate.hasKey("accessToken::koreainvestment");
+			if (Boolean.TRUE.equals(exists))
+				return;
+
+			redisTemplate.delete("accessToken::koreainvestment");
+			tokenService.getAccessToken();
+		}
 	}
 }
