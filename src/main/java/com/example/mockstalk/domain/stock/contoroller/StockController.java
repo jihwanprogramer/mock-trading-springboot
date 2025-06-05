@@ -19,10 +19,11 @@ public class StockController {
 
 	@PostMapping("/savestock")
 	public ResponseEntity<ResponseMessage<String>> saveStockCsv() {
-		InputStream is = getClass().getClassLoader().getResourceAsStream("kospi_code_csv.csv");
+		InputStream is = getClass().getClassLoader().getResourceAsStream("kospi_code.csv");
 		stockService.saveStockCsv(is);
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
 			.body(ResponseMessage.success());
 	}
+
 }

@@ -24,7 +24,6 @@ import com.example.mockstalk.domain.stock.repository.StockRepository;
 
 @Service
 @RequiredArgsConstructor
-
 public class StockService {
 	@PersistenceContext
 	private EntityManager em;
