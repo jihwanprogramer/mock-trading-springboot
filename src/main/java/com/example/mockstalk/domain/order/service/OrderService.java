@@ -1,5 +1,7 @@
 package com.example.mockstalk.domain.order.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -25,8 +27,9 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final AccountRepository accountRepository;
 
-	public Slice<OrderListResponseDto> findOrderByUserId(UserDetails userDetails, Long accountId, Long lastId,
-		int size) {
+	public Slice<OrderListResponseDto> findOrderByUserId(UserDetails userDetails, Long accountId, Type orderType,
+		OrderStatus orderStatus,
+		LocalDateTime startDate, LocalDateTime endDate, Long lastId, int size) {
 		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
@@ -36,7 +39,8 @@ public class OrderService {
 
 		Pageable pageable = PageRequest.of(0, size);
 
-		return orderRepository.findCursorOrderByAccount(accountId, lastId, pageable);
+		return orderRepository.findCursorOrderByAccount(accountId, orderType, orderStatus, startDate, endDate, lastId,
+			pageable);
 	}
 
 	public void deleteOrder(UserDetails userDetails, Long accountId, Long orderId) {
