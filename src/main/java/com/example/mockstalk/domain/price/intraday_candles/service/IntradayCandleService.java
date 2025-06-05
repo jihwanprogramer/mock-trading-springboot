@@ -1,4 +1,3 @@
-/*
 package com.example.mockstalk.domain.price.intraday_candles.service;
 
 import java.time.LocalDateTime;
@@ -19,6 +18,7 @@ import com.example.mockstalk.domain.price.intraday_candles.entity.IntradayCandle
 import com.example.mockstalk.domain.price.intraday_candles.repository.IntradayCandleRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -37,22 +37,38 @@ public class IntradayCandleService {
 	@Value("${hantu-openapi.accesstoken}")
 	private String accessToken;
 
-	@Scheduled(cron = "0 0 9,11,13 * * MON-FRI")
-	public void fetchAndSaveIntradayCandles() {
-		String stockCode = "005930"; // 삼성전자
-		String interval = "1"; // 1분봉
+	@Value("${hantu-openapi.base-url}")
+	private String baseUrl;
 
-		for (int i = 0; i < 3; i++) {
+	@Value("#{'${hantu-openapi.stock-codes}'.split(',')}")
+	private List<String> stockCodes;
+
+	@Value("${hantu-openapi.candle-interval}")
+	private String interval;
+
+	@Value("${hantu-openapi.intervals}")
+	private List<String> requestTimes;
+
+	// 스케줄링: 기본 종목코드로 자동 실행
+	@Scheduled(cron = "0 0 9,11,13 * * MON-FRI")
+	public void fetchDefaultCandleJob() {
+		for (String stockCode : stockCodes) {
+			fetchAndSaveIntradayCandles(stockCode);
+		}
+	}
+
+	// API 요청 -> 저장
+	@Transactional
+	public void fetchAndSaveIntradayCandles(String stockCode) {
+		for (String startTime : requestTimes) {
 			try {
-				String startTime = getStartTime(i);
-				String url =
-					"https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice"
-						+ "?fid_cond_mrkt_div_code=J"
-						+ "&fid_input_iscd=" + stockCode
-						+ "&fid_period_div_code=M"
-						+ "&fid_time_interval=" + interval
-						+ "&fid_org_adj_prc=0"
-						+ "&fid_input_hour_1=" + startTime;
+				String url = baseUrl + "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice"
+					+ "?fid_cond_mrkt_div_code=J"
+					+ "&fid_input_iscd=" + stockCode
+					+ "&fid_period_div_code=M"
+					+ "&fid_time_interval=" + interval
+					+ "&fid_org_adj_prc=0"
+					+ "&fid_input_hour_1=" + startTime;
 
 				HttpHeaders headers = new HttpHeaders();
 				headers.set("authorization", "Bearer " + accessToken);
@@ -70,16 +86,17 @@ public class IntradayCandleService {
 					try {
 						IntradayCandle candleEntity = new IntradayCandle(
 							null,
-							candle.get("stck_oprc").asLong(),
-							candle.get("stck_clpr").asLong(),
-							candle.get("stck_hgpr").asLong(),
-							candle.get("stck_lwpr").asLong(),
-							candle.get("acml_vol").asLong(),
-							candle.get("acml_tr_pbmn").asLong(),
-							candle.get("hts_avls").asLong(),
+							stockCode,
+							candle.get("stck_oprc").asLong(), //openingPrice: 시가
+							candle.get("stck_clpr").asLong(), //closingPrice: 종가
+							candle.get("stck_hgpr").asLong(), //highPrice: 고가
+							candle.get("stck_lwpr").asLong(), //lowPrice: 저가
+							candle.get("acml_vol").asLong(), //tradingVolume: 누적 거래량
+							candle.get("acml_tr_pbmn").asLong(), //tradingValue: 누적 거래대금
+							candle.get("hts_avls").asLong(), //marketCap :HTS 체결강도
 							parseDateTime(
-								candle.get("stck_bsop_date").asText(),
-								candle.get("stck_bsop_hour").asText()
+								candle.get("stck_bsop_date").asText(), // 날짜
+								candle.get("stck_bsop_hour").asText() //시간
 							),
 							CandleType.MIN
 						);
@@ -94,18 +111,9 @@ public class IntradayCandleService {
 		}
 	}
 
-	private String getStartTime(int idx) {
-		return switch (idx) {
-			case 0 -> "0900";
-			case 1 -> "1100";
-			case 2 -> "1300";
-			default -> "0900";
-		};
-	}
-
 	private LocalDateTime parseDateTime(String date, String hour) {
 		try {
-			String combined = date + hour; // "202506041300"
+			String combined = date + hour;
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 			return LocalDateTime.parse(combined, formatter);
 		} catch (Exception e) {
@@ -114,10 +122,10 @@ public class IntradayCandleService {
 		}
 	}
 
+	// 조회용
 	public List<IntradayCandle> getCandles(String stockCode, String date, int interval) {
 		LocalDateTime start = LocalDateTime.parse(date + "0000", DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
 		LocalDateTime end = LocalDateTime.parse(date + "2359", DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
 		return intradayCandleRepository.findByStockCodeAndTimeStampBetween(stockCode, start, end);
 	}
 }
-*/

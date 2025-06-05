@@ -1,4 +1,3 @@
-/*
 package com.example.mockstalk.domain.price.intraday_candles.repository;
 
 import java.time.LocalDateTime;
@@ -14,4 +13,3 @@ public interface IntradayCandleRepository extends JpaRepository<IntradayCandle, 
 
 	List<IntradayCandle> findByStockCodeAndTimeStampBetween(String stockCode, LocalDateTime start, LocalDateTime end);
 }
-*/

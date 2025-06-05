@@ -1,12 +1,20 @@
 package com.example.mockstalk.domain.price.intraday_candles.entity;
 
+import java.time.LocalDateTime;
+
 import com.example.mockstalk.common.baseEntity.BaseEntity;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -15,35 +23,38 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class IntradayCandle extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column
-    private Long openingPrice;
+	@Column
+	String stockCode;
 
-    @Column
-    private Long closingPrice;
+	@Column
+	private Long openingPrice;
 
-    @Column
-    private Long highPrice;
+	@Column
+	private Long closingPrice;
 
-    @Column
-    private Long lowPrice;
+	@Column
+	private Long highPrice;
 
-    @Column
-    private Long tradingVolume;
+	@Column
+	private Long lowPrice;
 
-    @Column
-    private Long tradingValue;
+	@Column
+	private Long tradingVolume;
 
-    @Column
-    private Long marketCap;
+	@Column
+	private Long tradingValue;
 
-    @Column
-    private LocalDateTime timeStamp;
+	@Column
+	private Long marketCap;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private CandleType candleType;
+	@Column
+	private LocalDateTime timeStamp;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private CandleType candleType;
 }
