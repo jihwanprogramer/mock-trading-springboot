@@ -40,11 +40,13 @@ public class TokenService {
 		// Redis에 토큰 존재하는지 확인
 		TokenResponseDto cached = (TokenResponseDto)redisTemplate.opsForValue().get("accessToken::koreainvestment");
 		if (cached != null) {
+			System.out.println("캐싱 데이터 가져옴");
 			return cached;
 		}
 
 		// 없으면 토큰 발급 요청
 		try {
+			System.out.println("토큰 발급 시작");
 			RestTemplate restTemplate = new RestTemplate();
 
 			HttpHeaders headers = new HttpHeaders();

@@ -23,6 +23,7 @@ public class scheduler {
 	public void init() {
 		tokenService.getAccessToken(); // 시작 시 1회 실행
 		livePriceService.cacheAllStockPrices();
+		System.out.println("처음 실행");
 	}
 
 	@Scheduled(cron = "0 */5 * * * *") // 매 5분마다
@@ -38,7 +39,7 @@ public class scheduler {
 			Boolean exists = redisTemplate.hasKey("accessToken::koreainvestment");
 			if (Boolean.TRUE.equals(exists))
 				return;
-
+			
 			redisTemplate.delete("accessToken::koreainvestment");
 			tokenService.getAccessToken();
 		}
