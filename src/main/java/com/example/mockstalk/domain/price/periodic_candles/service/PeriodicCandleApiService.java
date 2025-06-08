@@ -39,8 +39,12 @@ public class PeriodicCandleApiService {
     @Value("${openapi.base-url}")
     private String baseUrl;
 
-    public void fetchAndSaveCandles(String stockCode, String candleType, String startDate,
+    public void fetchAndSaveCandles(Stock stock, String candleType,
+        String startDate,
         String endDate) {
+
+        String stockCode = stock.getStockCode();
+
         String url = baseUrl + "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice";
 
         TokenResponseDto tokenResponse = (TokenResponseDto) redisTemplate.opsForValue()
@@ -85,8 +89,6 @@ public class PeriodicCandleApiService {
         List<PeriodicCandleApiResponseDto> dtoList = outputs.stream()
             .map(data -> mapper.convertValue(data, PeriodicCandleApiResponseDto.class))
             .toList();
-
-        Stock stock = stockRepository.findByStockCode(stockCode);
 
         List<PeriodicCandles> entityList = dtoList.stream()
             .map(dto -> dto.toEntity(PeriodicCandleType.valueOf(candleType), stock)).toList();
