@@ -31,8 +31,7 @@ public class PeriodicCandleApiResponseDto {
             .highPrice(parseLong(this.getStck_hgpr()))
             .lowPrice(parseLong(this.getStck_lwpr()))
             .volume(parseLong(this.getAcml_vol()))
-            .stockCode(stock.getStockCode())
-            .stockCode(stock.getStockName())
+            .stock(stock)
             .build();
     }
 
