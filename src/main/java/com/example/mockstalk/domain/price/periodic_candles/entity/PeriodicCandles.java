@@ -1,11 +1,14 @@
 package com.example.mockstalk.domain.price.periodic_candles.entity;
 
 import com.example.mockstalk.common.baseEntity.BaseEntity;
+import com.example.mockstalk.domain.stock.entity.Stock;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -46,10 +49,8 @@ public class PeriodicCandles extends BaseEntity {
     @Column
     private Long volume;
 
-    @Column
-    private String stockCode;
-
-    @Column
-    private String stockName;
+    @ManyToOne
+    @JoinColumn
+    private Stock stock;
 
 }

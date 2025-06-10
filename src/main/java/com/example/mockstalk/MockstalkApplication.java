@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableCaching //레디스 캐싱을 활요하기위해 활성화
-@EnableScheduling
+@EnableScheduling //스케줄드 어노테이션을 활용하기위해 활성화
 public class MockstalkApplication {
 
 	public static void main(String[] args) {
