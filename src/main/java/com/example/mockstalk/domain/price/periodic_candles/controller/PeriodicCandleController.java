@@ -24,7 +24,6 @@ public class PeriodicCandleController {
 
         return ResponseEntity.ok(
             ResponseMessage.success(periodicCandleService.findPeriodicCandle(stockCode, candle)));
-
     }
 
 

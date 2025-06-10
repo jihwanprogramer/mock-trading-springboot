@@ -36,7 +36,7 @@ public class PeriodicCandleApiService {
     @Value("${hantu-openapi.appsecret}")
     private String appSecret;
 
-    @Value("${openapi.base-url}")
+    @Value("${hantu-openapi.domain}")
     private String baseUrl;
 
     public void fetchAndSaveCandles(Stock stock, String candleType,

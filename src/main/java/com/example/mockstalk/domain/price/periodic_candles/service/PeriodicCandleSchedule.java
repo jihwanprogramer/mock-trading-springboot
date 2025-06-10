@@ -169,7 +169,7 @@ public class PeriodicCandleSchedule {
         return LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
     }
 
-    /*
+/*
     //csv 에서 정보 가져오는 방식
     public List<StockCsvDto> loadKospiStockDtos() {
         List<StockCsvDto> stockList = new ArrayList<>();
@@ -196,6 +196,7 @@ public class PeriodicCandleSchedule {
         return stockList;
     }
 
-     */
+
+ */
 
 }
