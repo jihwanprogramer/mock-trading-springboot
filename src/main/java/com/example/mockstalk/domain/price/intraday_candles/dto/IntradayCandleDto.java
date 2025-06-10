@@ -31,7 +31,6 @@ public class IntradayCandleDto {
 			candle.getLowPrice(),
 			candle.getTradingVolume(),
 			candle.getTradingValue(),
-			candle.getMarketCap(),
 			candle.getTimeStamp(),
 			candle.getCandleType()
 		);
