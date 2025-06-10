@@ -33,8 +33,8 @@ public class PeriodicCandleResponseDto {
             periodicCandles.getHighPrice(),
             periodicCandles.getLowPrice(),
             periodicCandles.getVolume(),
-            periodicCandles.getStockCode(),
-            periodicCandles.getStockName()
+            periodicCandles.getStock().getStockCode(),
+            periodicCandles.getStock().getStockName()
         );
     }
 
