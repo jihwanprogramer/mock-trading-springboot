@@ -21,7 +21,7 @@ public class PeriodicCandleService {
 
 		PeriodicCandleType periodicCandleType = PeriodicCandleType.valueOf(candleType);
 
-		PeriodicCandles periodicCandles = candleRepository.findByCandleTypeAndStockCode(
+		PeriodicCandles periodicCandles = candleRepository.findByCandleTypeAndStock_StockCode(
 			periodicCandleType, stockCode).orElseThrow(() -> new CustomRuntimeException(
 			ExceptionCode.NOT_FOUND_CANDLE));
 
