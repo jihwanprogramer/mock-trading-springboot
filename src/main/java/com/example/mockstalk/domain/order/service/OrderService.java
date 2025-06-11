@@ -28,8 +28,7 @@ public class OrderService {
 	private final AccountRepository accountRepository;
 
 	public Slice<OrderListResponseDto> findOrderByUserId(UserDetails userDetails, Long accountId, Type orderType,
-		OrderStatus orderStatus,
-		LocalDateTime startDate, LocalDateTime endDate, Long lastId, int size) {
+		OrderStatus orderStatus, LocalDateTime startDate, LocalDateTime endDate, Long lastId, int size) {
 		Account account = accountRepository.findById(accountId)
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
