@@ -7,5 +7,5 @@ import lombok.Getter;
 @Getter
 public class AccountSignInRequestDto {
 	private final Long accountId;
-	private final Long password;
+	private final String password;
 }

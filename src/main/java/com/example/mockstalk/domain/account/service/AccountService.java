@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,7 @@ public class AccountService {
 	private final AccountRepository accountRepository;
 
 	private final UserRepository userRepository;
-
+	private final PasswordEncoder passwordEncoder;
 	private final HoldingsRepository holdingsRepository;
 	private final AccountJwtUtil accountJwtUtil;
 
@@ -42,10 +43,10 @@ public class AccountService {
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		User user = userDetails.getUser();
-
+		String encode = passwordEncoder.encode(accountRequestDto.getPassword());
 		Account account = Account.builder()
 			.accountName(accountRequestDto.getAccountName())
-			.password(accountRequestDto.getPassword())
+			.password(encode)
 			.initialBalance(accountRequestDto.getInitialBalance())
 			.currentBalance(accountRequestDto.getInitialBalance())
 			.user(user)
@@ -58,11 +59,22 @@ public class AccountService {
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		Long accountId = requestDto.getAccountId();
+		String password = requestDto.getPassword();
 		Long userId = userDetails.getId();
 
-		// 사용자 계좌 목록에 해당 계좌 존재하는 지 검사 로직
+		// 계좌 객체 생성
+		Account account = accountRepository.findById(accountId).
+			orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
-		// 계좌 비밀번호 일치 여부 로직
+		// 사용자 계좌 중에 해당 계좌가 존재하는 지 검사 로직
+		if (!userId.equals(account.getUser().getId())) {
+			throw new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND); // 예외 처리 변경 예정
+		}
+
+		// 계좌 비밀번호 일치 여부 로직 ( 입력 비밀번호 vs 입력한 계좌 ID의 실제 비밀번호 )
+		if (!passwordEncoder.matches(password, account.getPassword())) {
+			throw new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND); // 예외 처리 변경 예정
+		}
 
 		return accountJwtUtil.createAccountToken(accountId);
 	}
