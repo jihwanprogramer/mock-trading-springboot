@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.example.mockstalk.common.config.AccountJwtUtil;
 import com.example.mockstalk.common.error.CustomRuntimeException;
@@ -87,6 +88,16 @@ public class AccountService {
 			orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		// 접근 권한 <- 로그인 한 유저가 계좌 생성한 사람과 동일한 지 체크하는 로직
+
+		return AccountResponseDto.of(account);
+	}
+
+	// 로그인한 계좌 정보 조회
+	public AccountResponseDto findAccountByToken(@RequestHeader("Authorization") String token) {
+		Long accountId = accountJwtUtil.extractAccountId(token);
+
+		Account account = accountRepository.findById(accountId).
+			orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		return AccountResponseDto.of(account);
 	}

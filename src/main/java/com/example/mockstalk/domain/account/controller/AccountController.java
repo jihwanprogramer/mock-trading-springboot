@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,6 +60,7 @@ public class AccountController {
 
 	/**
 	 계좌 단건 조회
+	 로그인 한 User가 해당 계좌의 주인인지 검증하는 로직이 필요.
 	 **/
 	@GetMapping("/{id}")
 	public ResponseEntity<ResponseMessage<?>> getAccount(@PathVariable Long id) {
@@ -68,6 +70,18 @@ public class AccountController {
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(ResponseMessage.success("해당 계좌 정보가 정상적으로 조회되었습니다.", accountService.findAccountById(id)));
+	}
+
+	/**
+	 현재 로그인 계좌 정보 조회
+	 **/
+	@GetMapping("/info")
+	public ResponseEntity<ResponseMessage<?>> getLoginAccountInfo(@RequestHeader("Authorization") String token) {
+		accountService.findAccountByToken(token);
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success("해당 계좌 정보가 정상적으로 조회되었습니다.", accountService.findAccountByToken(token)));
 	}
 
 	/**

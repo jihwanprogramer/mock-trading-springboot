@@ -68,6 +68,7 @@ public class AccountJwtUtil {
 
 	// 계좌 ID 추출
 	public Long extractAccountId(String token) {
+		String substrToken = substringToken(token);
 		return extractClaims(token).get("accountId", Long.class);
 	}
 }
