@@ -48,6 +48,7 @@ public class TradeServiceTest {
 
 		account = Account.builder()
 			.currentBalance(new BigDecimal("1000"))
+			.initialBalance(new BigDecimal("1000"))
 			.build();
 		account = accountRepository.save(account);
 
@@ -70,7 +71,7 @@ public class TradeServiceTest {
 			.stock(stock)
 			.type(Type.LIMIT_SELL)
 			.quantity(1L)
-			.price(new BigDecimal("600"))
+			.price(new BigDecimal("500"))
 			.orderStatus(OrderStatus.COMPLETED)
 			.build();
 
@@ -79,7 +80,7 @@ public class TradeServiceTest {
 			.stock(stock)
 			.type(Type.LIMIT_SELL)
 			.quantity(1L)
-			.price(new BigDecimal("600"))
+			.price(new BigDecimal("500"))
 			.orderStatus(OrderStatus.COMPLETED)
 			.build();
 
@@ -92,15 +93,16 @@ public class TradeServiceTest {
 	void test_lock() {
 		Arrays.asList(order1, order2)
 			.parallelStream()
-			.forEach(order -> tradeService.tradeOrder(order, stock, new BigDecimal("600")));
+			.forEach(order -> tradeService.tradeOrder(order, stock, new BigDecimal("500")));
 
 		Account updatedAccount = accountRepository.findById(account.getId()).get();
 		Holdings updatedholdings = holdingsRepository.findById(holdings.getId()).get();
 
-		System.out.println("최종 잔고: " + updatedAccount.getCurrentBalance());
+		System.out.println("기존 잔고:" + account.getInitialBalance());
+		System.out.println("최종 잔고:" + updatedAccount.getCurrentBalance());
 		System.out.println("최종 수량:" + updatedholdings.getQuantity());
 
-		assertNotEquals(new BigDecimal("2200"), updatedAccount.getCurrentBalance(),
+		assertNotEquals(new BigDecimal("2000"), updatedAccount.getCurrentBalance(),
 			"동시서 오류로 계좌 잔고가 예상대로 업데이트되지 않음");
 	}
 }
