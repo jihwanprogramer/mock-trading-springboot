@@ -7,10 +7,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.mockstalk.common.config.AccountJwtUtil;
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.account.dto.AccountRequestDto;
 import com.example.mockstalk.domain.account.dto.AccountResponseDto;
+import com.example.mockstalk.domain.account.dto.AccountSignInRequestDto;
 import com.example.mockstalk.domain.account.dto.HoldingsResponseDto;
 import com.example.mockstalk.domain.account.dto.UpdateAccountRequestDto;
 import com.example.mockstalk.domain.account.entity.Account;
@@ -32,6 +34,7 @@ public class AccountService {
 	private final UserRepository userRepository;
 
 	private final HoldingsRepository holdingsRepository;
+	private final AccountJwtUtil accountJwtUtil;
 
 	// 계좌 생성
 	@Transactional
@@ -48,6 +51,20 @@ public class AccountService {
 			.user(user)
 			.build();
 		accountRepository.save(account);
+	}
+
+	// 계좌 로그인
+	public String loginAccount(AccountSignInRequestDto requestDto,
+		@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		Long accountId = requestDto.getAccountId();
+		Long userId = userDetails.getId();
+
+		// 사용자 계좌 목록에 해당 계좌 존재하는 지 검사 로직
+
+		// 계좌 비밀번호 일치 여부 로직
+
+		return accountJwtUtil.createAccountToken(accountId);
 	}
 
 	// 계좌 조회(단건)

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.mockstalk.common.response.ResponseMessage;
 import com.example.mockstalk.domain.account.dto.AccountRequestDto;
+import com.example.mockstalk.domain.account.dto.AccountSignInRequestDto;
 import com.example.mockstalk.domain.account.dto.UpdateAccountRequestDto;
 import com.example.mockstalk.domain.account.service.AccountService;
 import com.example.mockstalk.domain.user.service.CustomUserDetails;
@@ -46,9 +47,14 @@ public class AccountController {
 	 1차 통합 이후 구현 예정
 	 **/
 	@PostMapping("/signin")
-	public ResponseEntity<ResponseMessage<?>> signInAccount() {
-
-		return null;
+	public ResponseEntity<ResponseMessage<?>> signInAccount(
+		@RequestBody AccountSignInRequestDto requestDto,
+		@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		accountService.loginAccount(requestDto, userDetails);
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success("", accountService.loginAccount(requestDto, userDetails)));
 	}
 
 	/**
