@@ -4,9 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.account.entity.Account;
@@ -15,11 +19,15 @@ import com.example.mockstalk.domain.holdings.entity.Holdings;
 import com.example.mockstalk.domain.holdings.repository.HoldingsRepository;
 import com.example.mockstalk.domain.order.entity.Order;
 import com.example.mockstalk.domain.order.entity.OrderStatus;
+import com.example.mockstalk.domain.order.entity.Type;
 import com.example.mockstalk.domain.order.repository.OrderRepository;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
+import com.example.mockstalk.domain.trade.dto.TradeResponseDto;
 import com.example.mockstalk.domain.trade.entity.Trade;
 import com.example.mockstalk.domain.trade.repository.TradeRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -84,7 +92,7 @@ public class TradeService {
 		tradeRepository.save(trade);
 	}
 
-	// @Scheduled(fixedRate = 1000) // 1초마다 실행
+	@Scheduled(fixedRate = 1000) // 1초마다 실행
 	public void settleOrders() {
 		//주문완료 보유 주식 리스트
 		List<Order> completeOrders = orderRepository.findByOrderStatus(OrderStatus.COMPLETED);
@@ -94,13 +102,29 @@ public class TradeService {
 			Stock currentStock = stockRepository.findById(stock.getId()).
 				orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
 
-			//이코드는 주식 가격 실시간으로 가져와서 일치하면 반복문 CONTINUE
-			// if (order.getPrice().compareTo(currentStock.getPrice()) != 0) {
+			// if (order.getType() == Type.LIMIT_BUY && currentStock.getPrice().compareTo(order.getPrice()) > 0) {
 			// 	continue;
 			// }
-			//
+			// if (order.getType() == Type.LIMIT_SELL && currentStock.getPrice().compareTo(order.getPrice()) < 0) {
+			// 	continue;
+			// }
+			
 			// tradeOrder(order, stock, currentStock.getPrice());
 		}
+	}
+
+	public Slice<TradeResponseDto> findTradeByUserId(UserDetails userDetails, Long accountId, Type orderType,
+		LocalDateTime startDate, LocalDateTime endDate, Long lastId, int size) {
+		Account account = accountRepository.findById(accountId)
+			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.ACCOUNT_NOT_FOUND));
+
+		if (!account.getUser().getEmail().equals(userDetails.getUsername())) {
+			throw new CustomRuntimeException(ExceptionCode.UNAUTHORIZED_ACCOUNT_ACCESS);
+		}
+
+		Pageable pageable = PageRequest.of(0, size);
+
+		return tradeRepository.findCursorTradeByAccount(accountId, orderType, startDate, endDate, lastId, pageable);
 	}
 }
 
