@@ -38,7 +38,7 @@ public class LivePriceService {
 	private final StockRepository stockRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	public String getStockPriceData(String stockCode) {
+	public Long getStockPriceData(String stockCode) {
 		RestTemplate restTemplate = new RestTemplate();
 
 		HttpHeaders headers = new HttpHeaders();
@@ -76,7 +76,7 @@ public class LivePriceService {
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			JsonNode root = objectMapper.readTree(response.getBody());
-			String price = root.path("output").path("stck_prpr").asText();
+			Long price = root.path("output").path("stck_prpr").asLong();
 			return price;
 		} catch (Exception e) {
 			System.err.println("JSON 파싱 실패: " + e.getMessage());
@@ -92,7 +92,7 @@ public class LivePriceService {
 		for (int i = 0; i < codes.size(); i++) {
 			String code = codes.get(i);
 			try {
-				String priceData = getStockPriceData(code);
+				Long priceData = getStockPriceData(code);
 				redisTemplate.opsForValue().set("stockPrice::" + code, priceData, Duration.ofMinutes(5));
 				System.out.printf("[%03d/%03d] 캐싱 완료: %s%n", i + 1, codes.size(), code);
 			} catch (Exception e) {
