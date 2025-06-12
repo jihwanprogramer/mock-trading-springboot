@@ -165,10 +165,8 @@ public class IntradayCandleService {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 			LocalDateTime start = LocalDateTime.parse(date + "0000", formatter);
 			LocalDateTime end = LocalDateTime.parse(date + "2359", formatter);
-			
-			CandleType type = getCandleTypeByInterval(interval);
 
-			System.out.println("🕐 조회 요청 → 종목: " + stockCode + ", 타입: " + type + ", 기간: " + start + " ~ " + end);
+			CandleType type = getCandleTypeByInterval(interval);
 
 			// DB 조회
 			return intradayCandleRepository.findByStock_StockCodeAndCandleTypeAndTimeStampBetween(
