@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.account.entity.Account;
@@ -26,8 +26,6 @@ import com.example.mockstalk.domain.stock.repository.StockRepository;
 import com.example.mockstalk.domain.trade.dto.TradeResponseDto;
 import com.example.mockstalk.domain.trade.entity.Trade;
 import com.example.mockstalk.domain.trade.repository.TradeRepository;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -92,7 +90,7 @@ public class TradeService {
 		tradeRepository.save(trade);
 	}
 
-	@Scheduled(fixedRate = 1000) // 1초마다 실행
+	// @Scheduled(fixedRate = 1000) // 1초마다 실행
 	public void settleOrders() {
 		//주문완료 보유 주식 리스트
 		List<Order> completeOrders = orderRepository.findByOrderStatus(OrderStatus.COMPLETED);
@@ -108,7 +106,7 @@ public class TradeService {
 			// if (order.getType() == Type.LIMIT_SELL && currentStock.getPrice().compareTo(order.getPrice()) < 0) {
 			// 	continue;
 			// }
-			
+
 			// tradeOrder(order, stock, currentStock.getPrice());
 		}
 	}
