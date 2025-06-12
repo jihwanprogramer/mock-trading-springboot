@@ -18,13 +18,12 @@ public class IntradayCandleDto {
 	private Long lowPrice;
 	private Long tradingVolume;
 	private Long tradingValue;
-	private Long marketCap;
 	private LocalDateTime timeStamp;
 	private CandleType candleType;
 
 	public static IntradayCandleDto fromEntity(IntradayCandle candle) {
 		return new IntradayCandleDto(
-			candle.getStockCode(),
+			candle.getStock().getStockCode(),
 			candle.getOpeningPrice(),
 			candle.getClosingPrice(),
 			candle.getHighPrice(),

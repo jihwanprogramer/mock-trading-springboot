@@ -24,13 +24,12 @@ public class IntradayCandleController {
 	private final StockRepository stockRepository;
 
 	@PostMapping("/api/candles/fetch/all")
-	public ResponseEntity<String> fetchCandlesForAllStocks(@AuthenticationPrincipal CustomUserDetails userDetails) {
-		Long userId = userDetails.getUser().getId();
+	public ResponseEntity<String> fetchCandlesForAllStocks() {
 		List<String> stockCodes = stockRepository.findAllStockCodes();
 
 		for (String stockCode : stockCodes) {
 			try {
-				intradayCandleService.fetchAndSaveIntradayCandles(stockCode, userId);
+				intradayCandleService.fetchAndSaveIntradayCandles(stockCode);
 			} catch (Exception e) {
 				System.err.println("실패: " + stockCode + " → " + e.getMessage());
 			}

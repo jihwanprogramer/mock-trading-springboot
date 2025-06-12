@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.mockstalk.common.hantutoken.TokenResponseDto;
 import com.example.mockstalk.common.hantutoken.TokenService;
+import com.example.mockstalk.domain.price.intraday_candles.dto.IntradayCandleApiResponseDto;
 import com.example.mockstalk.domain.price.intraday_candles.entity.CandleType;
 import com.example.mockstalk.domain.price.intraday_candles.entity.IntradayCandle;
 import com.example.mockstalk.domain.price.intraday_candles.repository.IntradayCandleRepository;
@@ -75,12 +77,9 @@ public class IntradayCandleService {
 				HttpHeaders headers = createHeaders(token);
 
 				try {
-					ResponseEntity<JsonNode> response = sendApiRequest(url, headers);
+					ResponseEntity<Map> response = sendApiRequest(url, headers);
 
-					JsonNode body = response.getBody();
-					handleApiResponse(body);
-
-					saveCandlesIfNotExist(body, stockCode, user);
+					saveCandlesIfNotExist(response, stockCode);
 
 				} catch (Exception e) {
 					System.err.println("API 호출 실패: " + e.getMessage());
@@ -111,9 +110,9 @@ public class IntradayCandleService {
 		return headers;
 	}
 
-	private ResponseEntity<JsonNode> sendApiRequest(String url, HttpHeaders headers) {
+	private ResponseEntity<Map> sendApiRequest(String url, HttpHeaders headers) {
 		HttpEntity<Void> entity = new HttpEntity<>(headers);
-		return restTemplate.exchange(url, HttpMethod.GET, entity, JsonNode.class);
+		return restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
 	}
 
 	private void saveCandlesIfNotExist(ResponseEntity<Map> response, String stockCode) {
