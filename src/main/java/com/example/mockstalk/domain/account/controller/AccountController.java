@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -76,12 +75,12 @@ public class AccountController {
 	 현재 로그인 계좌 정보 조회
 	 **/
 	@GetMapping("/info")
-	public ResponseEntity<ResponseMessage<?>> getLoginAccountInfo(@RequestHeader("Authorization") String token) {
-		accountService.findAccountByToken(token);
+	public ResponseEntity<ResponseMessage<?>> getLoginAccountInfo() {
+		accountService.findAccountByToken();
 
 		return ResponseEntity
 			.status(HttpStatus.OK)
-			.body(ResponseMessage.success("해당 계좌 정보가 정상적으로 조회되었습니다.", accountService.findAccountByToken(token)));
+			.body(ResponseMessage.success("해당 계좌 정보가 정상적으로 조회되었습니다.", accountService.findAccountByToken()));
 	}
 
 	/**

@@ -14,12 +14,25 @@ import lombok.Getter;
 @Builder
 public class AccountResponseDto {
 	private final String accountName;
-	private final BigDecimal initialBalance;
-	private final BigDecimal currentBalance;
+	private final BigDecimal initialBalance;  // 초기 설정 잔고
+	private final BigDecimal currentBalance;  // 현재 잔고
+	private final BigDecimal totalAsset;     // 총 자산
+	private final BigDecimal profitRate;     // 수익률
 	private final LocalDateTime createdAt;
-	// 캐싱으로 구현 예정이므로 보류
-	// private final BigDecimal profitRate;
 
+	// 단건 조회용 of
+	public static AccountResponseDto of(Account account, BigDecimal totalAsset, BigDecimal profitRate) {
+		return AccountResponseDto.builder()
+			.accountName(account.getAccountName())
+			.initialBalance(account.getInitialBalance())
+			.currentBalance(account.getCurrentBalance())
+			.totalAsset(totalAsset)
+			.profitRate(profitRate)
+			.createdAt(account.getCreatedAt())
+			.build();
+	}
+
+	// 다건 조회용 of
 	public static AccountResponseDto of(Account account) {
 		return AccountResponseDto.builder()
 			.accountName(account.getAccountName())
@@ -28,5 +41,4 @@ public class AccountResponseDto {
 			.createdAt(account.getCreatedAt())
 			.build();
 	}
-
 }

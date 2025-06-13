@@ -3,7 +3,6 @@ package com.example.mockstalk.common.config;
 public class AccountContextHolder {
 
 	private static final ThreadLocal<Long> accountIdHolder = new ThreadLocal<>();
-	private static final ThreadLocal<Long> userIdHolder = new ThreadLocal<>();
 
 	public static void set(Long accountId) {
 		accountIdHolder.set(accountId);
@@ -15,6 +14,5 @@ public class AccountContextHolder {
 
 	public static void clear() {
 		accountIdHolder.remove();
-		userIdHolder.remove();
 	}
 }

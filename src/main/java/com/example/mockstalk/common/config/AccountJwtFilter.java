@@ -26,7 +26,7 @@ public class AccountJwtFilter extends OncePerRequestFilter {
 		FilterChain filterChain
 	) throws ServletException, IOException {
 
-		String tokenValue = request.getHeader("Authorization");
+		String tokenValue = request.getHeader("X-ACCOUNT-Authorization");
 
 		if (StringUtils.hasText(tokenValue) && tokenValue.startsWith("Bearer ")) {
 			try {

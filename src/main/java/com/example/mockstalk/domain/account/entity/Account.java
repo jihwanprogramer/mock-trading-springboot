@@ -39,10 +39,12 @@ public class Account extends BaseEntity {
 	private String password;
 
 	@Column
-	private BigDecimal initialBalance;
+	private BigDecimal initialBalance;  // 초기 자산
 
 	@Column
-	private BigDecimal currentBalance;
+	private BigDecimal currentBalance; // 현재 계좌의 잔고 (보유 종목 평가 금액 제외)
+
+	// CurrentAsset <- 현재 총 자산 ( 현재 잔고 + 보유 종목 평가 금액의 합 )   해당 필드를 레디스 캐싱 처리 할 예정임.
 
 	@Column
 	private Boolean isActive;

@@ -18,4 +18,5 @@ public interface HoldingsRepository extends JpaRepository<Holdings, Long> {
 	//매도를 위한 메소드(임시 설명)
 	Optional<Holdings> findByAccountAndStock(Account accounts, Stock stock);
 
+	List<Holdings> findByAccountId(Long accountId);
 }
