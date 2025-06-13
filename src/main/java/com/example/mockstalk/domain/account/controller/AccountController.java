@@ -46,15 +46,14 @@ public class AccountController {
 	 계좌 정보 가져오기. <- 해당 계좌로 로그인 <- 관련 계좌 정보 가져오기
 	 1차 통합 이후 구현 예정
 	 **/
-	@PostMapping("/signin")
+	@PostMapping("/sign")
 	public ResponseEntity<ResponseMessage<?>> signInAccount(
 		@RequestBody AccountSignInRequestDto requestDto,
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		accountService.loginAccount(requestDto, userDetails);
 		return ResponseEntity
 			.status(HttpStatus.OK)
-			.body(ResponseMessage.success("", accountService.loginAccount(requestDto, userDetails)));
+			.body(ResponseMessage.success(accountService.loginAccount(requestDto, userDetails)));
 	}
 
 	/**

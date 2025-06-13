@@ -35,7 +35,7 @@ public class Account extends BaseEntity {
 	@Column(length = 50)
 	private String accountName;
 
-	@Column(length = 50)
+	@Column(nullable = false)
 	private String password;
 
 	@Column
@@ -44,7 +44,7 @@ public class Account extends BaseEntity {
 	@Column
 	private BigDecimal currentBalance; // 현재 계좌의 잔고 (보유 종목 평가 금액 제외)
 
-	// CurrentAsset <- 현재 총 자산 ( 현재 잔고 + 보유 종목 평가 금액의 합 )   해당 필드를 레디스 캐싱 처리 할 예정임.
+	// CurrentAsset <- 현재 총 자산 ( 현재 잔고 + 보유 종목 평가 금액의 합 ) 해당 필드는 레디스 캐싱 처리
 
 	@Column
 	private Boolean isActive;
@@ -82,16 +82,16 @@ public class Account extends BaseEntity {
 
 	// Account 2차 통합 전 개발 예정 사항
 	//
-	// 1. 메서드별 유효성 및 권한 검증 로직 추가
+	// 1. 메서드별 유효성 및 권한 검증 로직 추가 - 진행중
 	//
-	// 2. 계좌 로그인 인증/인가 작업
+	// 2. 계좌 로그인 인증/인가 작업  - 완료
 	//
 	//
-	// 3. 레디스 캐싱 처리할 데이터 작업
+	// 3. 레디스 캐싱 처리할 데이터 작업 - 실현 손익 제외 완료
 	// 	1) 계좌 - 수익률(profitRate)
 	// 	2) 보유종목 - 현재가(currentPrice), 수익률(profitRate), 실현 손익(realizedProfit)
 	//
-	// 4. 기능별 비즈니스 고도화 및 성능 개선
+	// 4. 기능별 비즈니스 고도화 및 성능 개선 - 미진행
 	// ex) 계좌 다건 조회 기능
 	// 사용자의 계좌 전체 조회 시 보유 종목 표기 필요성 판단
 	// -> 계좌별 보유 종목 전체를 조회하는 것은 비효율적
