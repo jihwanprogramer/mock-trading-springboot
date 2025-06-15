@@ -17,4 +17,6 @@ public interface OrderRepositoryCustom {
 		LocalDateTime startDate, LocalDateTime endDate, Long lastId, Pageable pageable);
 
 	List<Order> findByOrderStatus(OrderStatus orderStatus);
+
+	List<Order> findAllReadyOrdersWithFetchJoin(OrderStatus status);
 }

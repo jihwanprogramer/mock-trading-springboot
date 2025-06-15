@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.example.mockstalk.common.baseEntity.BaseEntity;
+import com.example.mockstalk.domain.order.entity.Type;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +33,9 @@ public class Trade extends BaseEntity {
 
 	@Column
 	private Long accountId;
+
+	@Column
+	private Type orderType;
 
 	@Column
 	private Long quantity;

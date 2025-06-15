@@ -77,6 +77,18 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 			.fetch();
 	}
 
+	@Override
+	public List<Order> findAllReadyOrdersWithFetchJoin(OrderStatus status) {
+		QOrder order = QOrder.order;
+
+		return jpaQueryFactory
+			.selectFrom(order)
+			.leftJoin(order.account).fetchJoin()
+			.leftJoin(order.stock).fetchJoin()
+			.where(order.orderStatus.eq(status))
+			.fetch();
+	}
+
 	private BooleanExpression accountIdEq(Long accountId) {
 		return accountId != null ? QOrder.order.account.id.eq(accountId) : null;
 	}
