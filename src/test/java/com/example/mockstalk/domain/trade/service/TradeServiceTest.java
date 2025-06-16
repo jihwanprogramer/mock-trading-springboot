@@ -21,6 +21,7 @@ import com.example.mockstalk.domain.order.entity.Type;
 import com.example.mockstalk.domain.order.repository.OrderRepository;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.entity.StockStatus;
+import com.example.mockstalk.domain.stock.repository.StockRepository;
 
 @SpringBootTest
 public class TradeServiceTest {
@@ -35,6 +36,9 @@ public class TradeServiceTest {
 	private OrderRepository orderRepository;
 
 	@Autowired
+	private StockRepository stockRepository;
+
+	@Autowired
 	private HoldingsRepository holdingsRepository;
 
 	private Account account;
@@ -47,8 +51,9 @@ public class TradeServiceTest {
 	void setUp() {
 
 		account = Account.builder()
-			.currentBalance(new BigDecimal("1000"))
-			.initialBalance(new BigDecimal("1000"))
+			.currentBalance(new BigDecimal("1000000"))
+			.initialBalance(new BigDecimal("1000000"))
+			.password("test1234")
 			.build();
 		account = accountRepository.save(account);
 
@@ -58,6 +63,7 @@ public class TradeServiceTest {
 			.stockCode("TEST")
 			.stockStatus(StockStatus.ACTIVE)
 			.build();
+		stock = stockRepository.save(stock);
 
 		holdings = Holdings.builder()
 			.account(account)
@@ -105,4 +111,41 @@ public class TradeServiceTest {
 		assertNotEquals(new BigDecimal("2000"), updatedAccount.getCurrentBalance(),
 			"동시서 오류로 계좌 잔고가 예상대로 업데이트되지 않음");
 	}
+
+	// @Test
+	// @DisplayName("100개의 동시 매수 주문 처리 테스트")
+	// void test_concurrent_buy_orders() {
+	// 	BigDecimal orderPrice = new BigDecimal("500");
+	// 	Long quantity = 1L;
+	// 	int numberOfOrders = 100;
+	//
+	// 	// 100개의 주문 생성 및 저장
+	// 	Order[] orders = new Order[numberOfOrders];
+	// 	for (int i = 0; i < numberOfOrders; i++) {
+	// 		orders[i] = orderRepository.save(Order.builder()
+	// 			.account(account)
+	// 			.stock(stock)
+	// 			.type(Type.LIMIT_BUY)
+	// 			.quantity(quantity)
+	// 			.price(orderPrice)
+	// 			.orderStatus(OrderStatus.COMPLETED)
+	// 			.build());
+	// 	}
+	//
+	// 	// 병렬 처리로 주문 체결
+	// 	Arrays.stream(orders)
+	// 		.parallel()
+	// 		.forEach(order -> tradeService.tradeOrder(order, stock, orderPrice));
+	//
+	// 	// 결과 출력
+	// 	Holdings updatedHoldings = holdingsRepository.findByAccountAndStock(account, stock)
+	// 		.orElse(null);
+	//
+	// 	Account updatedAccount = accountRepository.findById(account.getId()).orElse(null);
+	//
+	// 	System.out.println("===== 병렬 매수 주문 처리 결과 =====");
+	// 	System.out.println("✅ 최종 보유 수량: " + updatedHoldings.getQuantity());
+	// 	System.out.println("✅ 최종 계좌 잔고: " + updatedAccount.getCurrentBalance());
+	// 	System.out.println("==================================");
+	// }
 }

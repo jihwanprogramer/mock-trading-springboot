@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.example.mockstalk.common.aop.DistributedLock;
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.account.entity.Account;
@@ -39,6 +40,7 @@ public class TradeService {
 	private final TradeRepository tradeRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 
+	@DistributedLock(key = "'trade:' + #tradeId")
 	public void tradeOrder(Order order, Stock stock, BigDecimal currentPrice) {
 		if (order.getOrderStatus() == OrderStatus.CANCELED) {
 			throw new CustomRuntimeException(ExceptionCode.ORDER_ALREADY_CANCELED);

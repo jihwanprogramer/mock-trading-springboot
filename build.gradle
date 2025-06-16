@@ -47,6 +47,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
 
+    //redisson
+    implementation 'org.redisson:redisson-spring-boot-starter:3.27.2'
+    
     //QueryDSL
     implementation "com.querydsl:querydsl-jpa:5.1.0:jakarta"
     annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
