@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.mockstalk.common.aop.DistributedLock;
 import com.example.mockstalk.common.error.CustomRuntimeException;
@@ -41,6 +42,7 @@ public class TradeService {
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	@DistributedLock(key = "'trade:' + #tradeId")
+	@Transactional
 	public void tradeOrder(Order order, Stock stock, BigDecimal currentPrice) {
 		if (order.getOrderStatus() == OrderStatus.CANCELED) {
 			throw new CustomRuntimeException(ExceptionCode.ORDER_ALREADY_CANCELED);
