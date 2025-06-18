@@ -41,8 +41,6 @@ public class TradeServiceTest {
 
 	private Account account;
 	private Stock stock;
-	private Order order1;
-	private Order order2;
 	private Holdings holdings;
 
 	@BeforeEach
