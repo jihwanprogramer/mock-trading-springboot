@@ -13,15 +13,10 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 
 @SpringBootTest
-@ActiveProfiles("test") // application-test.properties 사용
-@Transactional
-@Rollback(false)
 class StockServiceTest {
 
 	@Autowired
@@ -34,6 +29,7 @@ class StockServiceTest {
 	private EntityManager em;
 
 	@Test
+	@Transactional
 	void saveStockCsv_데이터_정상_입력() {
 		// given
 		String csv = "종목코드,표준코드,종목명,상장일자,상장폐지일자\n" +
