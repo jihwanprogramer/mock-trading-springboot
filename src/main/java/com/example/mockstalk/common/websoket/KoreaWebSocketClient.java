@@ -38,6 +38,12 @@ public class KoreaWebSocketClient {
 	private final RedisTemplate redisTemplate;
 	private final StockRepository stockRepository;
 	private boolean reconnecting = false;
+	private final String hantuUri = "ws://ops.koreainvestment.com:21000/tryitout/H0STCNT0";
+	private final BlockingQueue<RetryMessage> messageQueue = new LinkedBlockingQueue<>();
+
+	private static final int THREAD_COUNT = 10;
+	private static final int MAX_RETRY = 5;
+	private static final int WS_CONNECT_DELAY_MS = 200;
 
 	public String getApprovalKey() {
 		String approvalKey = (String)redisTemplate.opsForValue().get("approvalKey::koreainvestment");
@@ -47,19 +53,19 @@ public class KoreaWebSocketClient {
 		return approvalKey;
 	}
 
-	public void connect() throws Exception {
-		String approvalKey = getApprovalKey();
+	private void connectWebSocket() throws Exception {
 		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-		URI uri = new URI("ws://ops.koreainvestment.com:21000/tryitout/H0STCNT0");
+		URI uri = new URI(hantuUri);
 		container.connectToServer(this, uri);
-		Thread.sleep(200);
+		Thread.sleep(WS_CONNECT_DELAY_MS);
+	}
 
-		List<String> stockCodes = stockRepository.findAllStockCodes();
-		long startTime = System.currentTimeMillis();
+	private List<String> getAllStockCodes() {
+		return stockRepository.findAllStockCodes();
+	}
 
-		// 메시지 큐 및 재시도 큐
-		BlockingQueue<RetryMessage> messageQueue = new LinkedBlockingQueue<>();
-		ExecutorService generatorPool = Executors.newFixedThreadPool(10);
+	private BlockingQueue<RetryMessage> generateSubscribeMessages(List<String> stockCodes, String approvalKey,
+		ExecutorService generatorPool) {
 
 		// 병렬 메시지 생성
 		for (String code : stockCodes) {
@@ -74,6 +80,10 @@ public class KoreaWebSocketClient {
 		}
 		generatorPool.shutdown();
 
+		return messageQueue;
+	}
+
+	private void startSenderThread(List<String> stockCodes, Long startTime, ExecutorService generatorPool) {
 		// 전송 스레드
 		new Thread(() -> {
 			try {
@@ -84,7 +94,7 @@ public class KoreaWebSocketClient {
 
 					session.getAsyncRemote().sendText(retryMessage.message, result -> {
 						if (!result.isOK()) {
-							if (retryMessage.attempt < 5) {
+							if (retryMessage.attempt < MAX_RETRY) {
 								System.err.printf("전송 실패 (%d회차), 재시도 중...\n", retryMessage.attempt + 1);
 								messageQueue.offer(new RetryMessage(retryMessage.message, retryMessage.attempt + 1));
 							} else {
@@ -103,6 +113,16 @@ public class KoreaWebSocketClient {
 				System.err.println("전송 스레드 오류: " + e.getMessage());
 			}
 		}).start();
+	}
+
+	public void connect() throws Exception {
+		String approvalKey = getApprovalKey();
+		connectWebSocket();
+		List<String> stockCodes = getAllStockCodes();
+		long startTime = System.currentTimeMillis();
+		ExecutorService generatorPool = Executors.newFixedThreadPool(THREAD_COUNT);
+		generateSubscribeMessages(stockCodes, approvalKey, generatorPool);
+		startSenderThread(stockCodes, startTime, generatorPool);
 	}
 
 	@OnOpen
