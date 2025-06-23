@@ -1,4 +1,4 @@
-package com.example.mockstalk.common.aop;
+package com.example.mockstalk.common.customAnotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
