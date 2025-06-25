@@ -1,13 +1,5 @@
 package com.example.mockstalk.common.scheduled;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.annotation.PostConstruct;
-
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -29,8 +21,6 @@ public class scheduler {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final TokenService tokenService;
 	private final Object tokenLock = new Object();
-
-	private final RedisTemplate<String, String> redisTemplates;
 
 	@PostConstruct
 	public void init() throws Exception {
