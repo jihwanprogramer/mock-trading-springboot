@@ -26,6 +26,7 @@ public class RedisCacheConfig {
 
 		Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
 		cacheConfigs.put("accessToken", defaultConfig.entryTtl(Duration.ofHours(24)));
+		cacheConfigs.put("approvalKey", defaultConfig.entryTtl(Duration.ofHours(24)));
 
 		return RedisCacheManager.builder(connectionFactory)
 			.cacheDefaults(defaultConfig)
