@@ -45,6 +45,7 @@ public enum ExceptionCode implements ErrorCode {
 	NOT_FOUND_CANDLE(HttpStatus.NOT_FOUND, "해당 봉을 찾을 수 없습니다."),
 	NOT_FOUND_USER(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
 	NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND, "해당 이메일을 찾을 수 없습니다."),
+	NOT_FOUND_APPROVALKEY(HttpStatus.NOT_FOUND, "approvalKey를 찾을 수 없습니다."),
 
 
 	// 409 Conflict = 서버와 충돌, 데이터가 이미 존재할때(400 보다 명확함)

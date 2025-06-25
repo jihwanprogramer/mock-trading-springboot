@@ -8,14 +8,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/token")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class TokenContorller {
 	private final TokenService tokenService;
 
-	@PostMapping
+	@PostMapping("/token")
 	public ResponseEntity<TokenResponseDto> getToken() {
 		TokenResponseDto tokenResponse = tokenService.getAccessToken();
 		return ResponseEntity.ok(tokenResponse);
+	}
+
+	@PostMapping("/key")
+	public ResponseEntity<String> getKey() {
+		String response = tokenService.getApprovalKey();
+		return ResponseEntity.ok(response);
 	}
 }

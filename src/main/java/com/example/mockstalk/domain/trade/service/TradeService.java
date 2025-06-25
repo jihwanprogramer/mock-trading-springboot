@@ -4,14 +4,18 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.example.mockstalk.common.customAnotation.DistributedLock;
+
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.account.entity.Account;
@@ -26,8 +30,6 @@ import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.trade.dto.TradeResponseDto;
 import com.example.mockstalk.domain.trade.entity.Trade;
 import com.example.mockstalk.domain.trade.repository.TradeRepository;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -96,6 +98,7 @@ public class TradeService {
 		tradeRepository.save(trade);
 	}
 
+
 	// @Scheduled(fixedRate = 10000) // 1초마다 실행
 	// public void settleOrders() {
 	// 	List<Order> completeOrders = orderRepository.findAllReadyOrdersWithFetchJoin(OrderStatus.COMPLETED);
@@ -115,6 +118,7 @@ public class TradeService {
 	// 		tradeOrder(order, stock, currentPrice);
 	// 	}
 	// }
+
 
 	public Slice<TradeResponseDto> findTradeByUserId(UserDetails userDetails, Long accountId, Type orderType,
 		LocalDateTime startDate, LocalDateTime endDate, Long lastId, int size) {
