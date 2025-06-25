@@ -23,11 +23,16 @@ public enum ExceptionCode implements ErrorCode {
 
 	// 401 Unauthorized = 인증이 안될 때
 	INVALID_JWT_SIGNATURE(HttpStatus.UNAUTHORIZED, "유효하지 않는 JWT 서명입니다."),
+	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 올바르지 않습니다."),
+	INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 유효하지 않습니다."),
 
 	// 403 Forbidden = 권한이 없을 때
 	USER_MISMATCH_EXCEPTION(HttpStatus.BAD_REQUEST, "권한이 없습니다."),
 	UNAUTHORIZED_ACCOUNT_ACCESS(HttpStatus.FORBIDDEN, "계정에 접근할 권한이 없습니다."),
 	UNAUTHORIZED_ORDER_ACCESS(HttpStatus.FORBIDDEN, "주문에 접근할 권한이 없습니다."),
+
+
+
 
 	// 404 Not Found
 	NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND, "해당 토큰을 찾을 수 없습니다."),
@@ -42,8 +47,10 @@ public enum ExceptionCode implements ErrorCode {
 	NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND, "해당 이메일을 찾을 수 없습니다."),
 	NOT_FOUND_APPROVALKEY(HttpStatus.NOT_FOUND, "approvalKey를 찾을 수 없습니다."),
 
+
 	// 409 Conflict = 서버와 충돌, 데이터가 이미 존재할때(400 보다 명확함)
 	EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 등록된 회원입니다."),
+	INTEREST_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 관심 등록된 항목입니다."),
 
 	// 500 Server Error
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류 혹은 예기치 못한 예외가 발생했습니다.");

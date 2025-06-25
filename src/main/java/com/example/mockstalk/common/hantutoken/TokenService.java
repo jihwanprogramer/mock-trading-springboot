@@ -2,9 +2,6 @@ package com.example.mockstalk.common.hantutoken;
 
 import java.time.Duration;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
@@ -16,10 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Component
@@ -43,6 +44,7 @@ public class TokenService {
 		TokenResponseDto cached = (TokenResponseDto)redisTemplate.opsForValue().get("accessToken::koreainvestment");
 		if (cached != null) {
 			System.out.println("캐싱 데이터 가져옴");
+			System.out.println("🧊 캐시된 토큰: " + cached.getAccess_token());
 			return cached;
 		}
 

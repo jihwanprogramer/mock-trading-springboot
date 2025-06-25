@@ -3,12 +3,17 @@ package com.example.mockstalk.domain.price.periodic_candles.dto;
 import com.example.mockstalk.domain.price.periodic_candles.entity.PeriodicCandleType;
 import com.example.mockstalk.domain.price.periodic_candles.entity.PeriodicCandles;
 import com.example.mockstalk.domain.stock.entity.Stock;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Slf4j
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -44,6 +49,10 @@ public class PeriodicCandleApiResponseDto {
     }
 
     private static LocalDateTime parseDateTime(String date) {
+        if (date == null || date.isBlank()) {
+            log.warn("기준일자가 없어 기본값(오늘)으로 대체합니다.");
+            return LocalDate.now().atStartOfDay();
+        }
         return LocalDateTime.parse(date + "000000", DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     }
 

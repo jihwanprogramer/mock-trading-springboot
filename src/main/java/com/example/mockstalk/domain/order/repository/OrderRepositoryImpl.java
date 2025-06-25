@@ -9,11 +9,13 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
+import com.example.mockstalk.domain.account.entity.QAccount;
 import com.example.mockstalk.domain.order.dto.OrderListResponseDto;
 import com.example.mockstalk.domain.order.entity.Order;
 import com.example.mockstalk.domain.order.entity.OrderStatus;
 import com.example.mockstalk.domain.order.entity.QOrder;
 import com.example.mockstalk.domain.order.entity.Type;
+import com.example.mockstalk.domain.stock.entity.QStock;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -74,6 +76,36 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 		return jpaQueryFactory
 			.selectFrom(order)
 			.where(order.orderStatus.eq(orderStatus))
+			.fetch();
+	}
+
+	@Override
+	public List<Order> findAllReadyOrdersByStock(Long stockId) {
+
+		QOrder order = QOrder.order;
+		QStock stock = QStock.stock;
+		QAccount account = QAccount.account;
+
+		return jpaQueryFactory
+			.selectFrom(order)
+			.leftJoin(order.stock, stock).fetchJoin()
+			.leftJoin(order.account, account).fetchJoin()
+			.where(
+				order.orderStatus.eq(OrderStatus.COMPLETED),
+				order.stock.id.eq(stockId)
+			)
+			.fetch();
+	}
+
+	@Override
+	public List<Order> findAllReadyOrdersWithFetchJoin(OrderStatus status) {
+		QOrder order = QOrder.order;
+
+		return jpaQueryFactory
+			.selectFrom(order)
+			.leftJoin(order.account).fetchJoin()
+			.leftJoin(order.stock).fetchJoin()
+			.where(order.orderStatus.eq(status))
 			.fetch();
 	}
 

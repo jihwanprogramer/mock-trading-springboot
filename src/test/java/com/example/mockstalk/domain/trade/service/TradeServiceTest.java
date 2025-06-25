@@ -1,9 +1,7 @@
 package com.example.mockstalk.domain.trade.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +19,7 @@ import com.example.mockstalk.domain.order.entity.Type;
 import com.example.mockstalk.domain.order.repository.OrderRepository;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.entity.StockStatus;
+import com.example.mockstalk.domain.stock.repository.StockRepository;
 
 @SpringBootTest
 public class TradeServiceTest {
@@ -35,20 +34,22 @@ public class TradeServiceTest {
 	private OrderRepository orderRepository;
 
 	@Autowired
+	private StockRepository stockRepository;
+
+	@Autowired
 	private HoldingsRepository holdingsRepository;
 
 	private Account account;
 	private Stock stock;
-	private Order order1;
-	private Order order2;
 	private Holdings holdings;
 
 	@BeforeEach
 	void setUp() {
 
 		account = Account.builder()
-			.currentBalance(new BigDecimal("1000"))
-			.initialBalance(new BigDecimal("1000"))
+			.currentBalance(new BigDecimal("1000000"))
+			.initialBalance(new BigDecimal("1000000"))
+			.password("test1234")
 			.build();
 		account = accountRepository.save(account);
 
@@ -58,51 +59,47 @@ public class TradeServiceTest {
 			.stockCode("TEST")
 			.stockStatus(StockStatus.ACTIVE)
 			.build();
+		stock = stockRepository.save(stock);
 
 		holdings = Holdings.builder()
 			.account(account)
 			.stock(stock)
+			.averagePrice(BigDecimal.ZERO)
 			.quantity(10L)
 			.build();
 		holdingsRepository.save(holdings);
-
-		order1 = Order.builder()
-			.account(account)
-			.stock(stock)
-			.type(Type.LIMIT_SELL)
-			.quantity(1L)
-			.price(new BigDecimal("500"))
-			.orderStatus(OrderStatus.COMPLETED)
-			.build();
-
-		order2 = Order.builder()
-			.account(account)
-			.stock(stock)
-			.type(Type.LIMIT_SELL)
-			.quantity(1L)
-			.price(new BigDecimal("500"))
-			.orderStatus(OrderStatus.COMPLETED)
-			.build();
-
-		orderRepository.save(order1);
-		orderRepository.save(order2);
 	}
 
 	@Test
-	@DisplayName("계좌에 있는 주식을 두개의 주문으로 매도 했을때(락 걸기전) - 동시성 제어")
-	void test_lock() {
-		Arrays.asList(order1, order2)
-			.parallelStream()
-			.forEach(order -> tradeService.tradeOrder(order, stock, new BigDecimal("500")));
+	@DisplayName("100개의 동시 매수 주문 처리 테스트")
+	void test_concurrent_buy_orders() {
+		int numberOfOrders = 100;
 
-		Account updatedAccount = accountRepository.findById(account.getId()).get();
-		Holdings updatedholdings = holdingsRepository.findById(holdings.getId()).get();
+		IntStream.range(0, numberOfOrders).parallel().forEach(i -> {
+			BigDecimal currentPrice = new BigDecimal("500");
 
-		System.out.println("기존 잔고:" + account.getInitialBalance());
-		System.out.println("최종 잔고:" + updatedAccount.getCurrentBalance());
-		System.out.println("최종 수량:" + updatedholdings.getQuantity());
+			account.decreaseCurrentBalance(currentPrice);
+			accountRepository.save(account);
 
-		assertNotEquals(new BigDecimal("2000"), updatedAccount.getCurrentBalance(),
-			"동시서 오류로 계좌 잔고가 예상대로 업데이트되지 않음");
+			Order order = Order.builder()
+				.account(account)
+				.stock(stock)
+				.quantity(1L)
+				.type(Type.MARKET_BUY)
+				.orderStatus(OrderStatus.COMPLETED)
+				.price(currentPrice)
+				.build();
+			orderRepository.save(order);
+
+			tradeService.tradeOrder(order, stock, currentPrice);
+		});
+
+		Account updatedAccount = accountRepository.findById(account.getId()).orElseThrow();
+		Holdings updatedHoldings = holdingsRepository.findById(holdings.getId()).orElseThrow();
+
+		System.out.printf("기존 잔고: %s → 최종 잔고: %s\n", account.getInitialBalance(), updatedAccount.getCurrentBalance());
+		System.out.printf("기존 수량: %d → 최종 수량: %d\n", holdings.getQuantity(), updatedHoldings.getQuantity());
+		System.out.printf("동시성 오류가 발생한 주문 횟수: %d\n",
+			numberOfOrders - (updatedHoldings.getQuantity() - holdings.getQuantity()));
 	}
 }

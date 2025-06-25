@@ -29,8 +29,12 @@ public class InterestStockService {
 	public void addInterest(User user, InterestRequestDto dto) {
 
 		Stock stock = stockRepository.findByStockNameAndStockCode(dto.getStockName(), dto.getStockCode())
-			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
+				.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
 
+		boolean alreadyExists = interestStockRepository.existsByUserAndStock(user, stock);
+		if(alreadyExists){
+			throw new CustomRuntimeException(ExceptionCode.INTEREST_ALREADY_EXISTS);
+		}
 		InterestStock interest = new InterestStock(user, stock);
 		interestStockRepository.save(interest);
 
@@ -43,8 +47,8 @@ public class InterestStockService {
 
 		for (InterestStock i : list) {
 			InterestResponseDto dto = new InterestResponseDto(
-				i.getStock().getStockName(),
-				i.getStock().getStockCode()
+					i.getStock().getStockName(),
+					i.getStock().getStockCode()
 			);
 			responseList.add(dto);
 		}
@@ -53,9 +57,10 @@ public class InterestStockService {
 
 	}
 
+	@Transactional
 	public void deleteInterest(CustomUserDetails userDetails, Long interestId) {
 		InterestStock interest = interestStockRepository.findById(interestId)
-			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
+				.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
 		// 현재 유저의 관심 종목인지 확인
 		if (!interest.getUser().getId().equals(userDetails.getUser().getId())) {
 			throw new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION);

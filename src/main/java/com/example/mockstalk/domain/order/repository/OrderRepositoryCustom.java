@@ -16,5 +16,7 @@ public interface OrderRepositoryCustom {
 	Slice<OrderListResponseDto> findCursorOrderByAccount(Long accountId, Type orderType, OrderStatus orderStatus,
 		LocalDateTime startDate, LocalDateTime endDate, Long lastId, Pageable pageable);
 
-	List<Order> findByOrderStatus(OrderStatus orderStatus);
+	List<Order> findAllReadyOrdersWithFetchJoin(OrderStatus status);
+
+	List<Order> findAllReadyOrdersByStock(Long stockId);
 }
