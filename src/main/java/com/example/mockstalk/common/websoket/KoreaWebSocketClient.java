@@ -24,6 +24,7 @@ import jakarta.websocket.WebSocketContainer;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import com.example.mockstalk.common.error.CustomRuntimeException;
@@ -38,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class KoreaWebSocketClient {
 	private Session session;
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private final RedisTemplate<String, String> redisTemplate;
+	private final RedisTemplate redisTemplate;
 	private final StockRepository stockRepository;
 	private boolean reconnecting = false;
     private final BlockingQueue<RetryMessage> messageQueue = new LinkedBlockingQueue<>();
@@ -48,7 +49,7 @@ public class KoreaWebSocketClient {
 	private static final int WS_CONNECT_DELAY_MS = 200;
 
 	public String getApprovalKey() {
-		String approvalKey = redisTemplate.opsForValue().get("approvalKey::koreainvestment");
+		String approvalKey = (String)redisTemplate.opsForValue().get("approvalKey::koreainvestment");
 		if (approvalKey == null || approvalKey.isBlank()) {
 			throw new CustomRuntimeException(ExceptionCode.NOT_FOUND_APPROVALKEY);
 		}
