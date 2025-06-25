@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.websocket.ClientEndpoint;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.ContainerProvider;
@@ -23,6 +24,7 @@ import jakarta.websocket.WebSocketContainer;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
@@ -32,21 +34,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ClientEndpoint
 @RequiredArgsConstructor
+@Slf4j
 public class KoreaWebSocketClient {
 	private Session session;
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private final RedisTemplate redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 	private final StockRepository stockRepository;
 	private boolean reconnecting = false;
-	private final String hantuUri = "ws://ops.koreainvestment.com:21000/tryitout/H0STCNT0";
-	private final BlockingQueue<RetryMessage> messageQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<RetryMessage> messageQueue = new LinkedBlockingQueue<>();
 
 	private static final int THREAD_COUNT = 10;
 	private static final int MAX_RETRY = 5;
 	private static final int WS_CONNECT_DELAY_MS = 200;
 
 	public String getApprovalKey() {
-		String approvalKey = (String)redisTemplate.opsForValue().get("approvalKey::koreainvestment");
+		String approvalKey = redisTemplate.opsForValue().get("approvalKey::koreainvestment");
 		if (approvalKey == null || approvalKey.isBlank()) {
 			throw new CustomRuntimeException(ExceptionCode.NOT_FOUND_APPROVALKEY);
 		}
@@ -55,7 +57,8 @@ public class KoreaWebSocketClient {
 
 	private void connectWebSocket() throws Exception {
 		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-		URI uri = new URI(hantuUri);
+        String hantuUri = "ws://ops.koreainvestment.com:21000/tryitout/H0STCNT0";
+        URI uri = new URI(hantuUri);
 		container.connectToServer(this, uri);
 		Thread.sleep(WS_CONNECT_DELAY_MS);
 	}
@@ -95,7 +98,7 @@ public class KoreaWebSocketClient {
 					session.getAsyncRemote().sendText(retryMessage.message, result -> {
 						if (!result.isOK()) {
 							if (retryMessage.attempt < MAX_RETRY) {
-								System.err.printf("전송 실패 (%d회차), 재시도 중...\n", retryMessage.attempt + 1);
+								System.err.printf("전송 실패 (%d회차), 재시도 \n", retryMessage.attempt + 1);
 								messageQueue.offer(new RetryMessage(retryMessage.message, retryMessage.attempt + 1));
 							} else {
 								System.err.println("최대 재시도 초과, 전송 포기");
@@ -170,8 +173,11 @@ public class KoreaWebSocketClient {
 				System.out.printf("[%s] 현재가 %s 저장됨%n", code, price);
 			}
 
+		}catch (JsonProcessingException e) {
+			log.warn("JSON 파싱 오류 발생: {}", message, e);
+			redisTemplate.opsForSet().add("errorMessages", message); // 사후 분석용 저장
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("예상치 못한 오류 발생: {}", message, e);
 		}
 	}
 

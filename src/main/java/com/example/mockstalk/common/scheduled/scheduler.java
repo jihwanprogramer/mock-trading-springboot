@@ -29,12 +29,13 @@ public class scheduler {
 
 	@PostConstruct
 	public void init() throws Exception {
+		System.out.println("프로젝트 시작 시 실행");
 		tokenService.getAccessToken(); // 시작 시 1회 실행
 		tokenService.getApprovalKey(); // 시작 시 1회 실행
 		livePriceService.cacheAllStockPrices();
 		KoreaWebSocketClient client = new KoreaWebSocketClient(redisTemplate, stockRepository);
 		client.connect();
-		System.out.println("처음 실행");
+		System.out.println("실행 완료");
 	}
 
 	// 실시간 통신으로 체결가 불러옴 프로젝트 시작시 현재가 한번 불러오는거로 변경
@@ -44,14 +45,6 @@ public class scheduler {
 	// 		livePriceService.cacheAllStockPrices();
 	// 	}
 	// }
-
-	private List<List<String>> partitionList(List<String> list, int size) {
-		List<List<String>> result = new ArrayList<>();
-		for (int i = 0; i < list.size(); i += size) {
-			result.add(list.subList(i, Math.min(i + size, list.size())));
-		}
-		return result;
-	}
 
 	@Scheduled(fixedRate = 1000 * 60 * 60 * 24) // 24시간마다 강제로 발급
 	public void refreshToken() {
