@@ -1,5 +1,5 @@
 package com.example.mockstalk.domain.price.intraday_candles.entity;
 
 public enum CandleType {
-    MIN, DAY, WEEK, MONTH, YEAR
+	MIN, MIN3, MIN5, DAY, WEEK, MONTH, YEAR
 }

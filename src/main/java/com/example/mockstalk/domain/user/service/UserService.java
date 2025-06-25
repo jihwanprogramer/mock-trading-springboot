@@ -1,5 +1,6 @@
 package com.example.mockstalk.domain.user.service;
 
+import com.example.mockstalk.common.jwttoken.JwtTokenService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,7 +29,8 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final JwtUtil jwtUtil;
+	private final JwtTokenService tokenService;
+
 
 	public void signup(SignupRequestDto dto) {
 		if (userRepository.existsByEmail(dto.getEmail())) {
@@ -40,68 +42,44 @@ public class UserService {
 
 	}
 
-	public LoginResponseDto login(LoginRequestDto dto) {
-		User user = userRepository.findByEmail(dto.getEmail())
-			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_EMAIL));
-		String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
-		String refreshToken = jwtUtil.createRefreshToken(user.getId());
-
-		return new LoginResponseDto(user.getId(), accessToken, refreshToken);
-
-	}
-
-	public FindResponseDto findMe(String email) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null || authentication.getPrincipal() == null) {
-			throw new CustomRuntimeException(ExceptionCode.USER_MISMATCH_EXCEPTION);
-		}
-
-		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_EMAIL));
-
+	public FindResponseDto findMe(Long userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_USER));
 		return new FindResponseDto(user);
-
 	}
 
 	@Transactional
 	public void deleteMe(String email, DeleteRequestDto dto) {
 
-		if (email == null) {
-			throw new IllegalArgumentException("인증된 사용자가 없습니다");
-		}
 		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new IllegalArgumentException("이메일을 찾을 수 없습니다."));
-		if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-		}
+				.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_USER));
 
-		userRepository.deleteUserByEmail(email);
+		if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+			throw new CustomRuntimeException(ExceptionCode.INVALID_PASSWORD);
+		}
+		tokenService.deleteRefreshToken(user.getId());
+		userRepository.delete(user);
 
 	}
 
 	public FindResponseDto findByWallet(String walletAddress) {
 		User user = userRepository.findByWalletAddress(walletAddress)
-			.orElseThrow(() -> new IllegalArgumentException("지갑주소를 찾을 수 없습니다."));
+				.orElseThrow(() -> new IllegalArgumentException("지갑주소를 찾을 수 없습니다."));
 
 		return new FindResponseDto(user);
 	}
 
 	@Transactional
-	public void updateMe(String email, UpdateRequestDto dto) {
-
-		if (email == null) {
-			throw new IllegalArgumentException("인증된 사용자가 없습니다");
-		}
-
-		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new IllegalArgumentException("이메일을 찾을 수 없습니다."));
+	public void updateMe(Long userId, UpdateRequestDto dto) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_USER));
 
 		if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
-			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+			throw new CustomRuntimeException(ExceptionCode.INVALID_PASSWORD);
 		}
-
 		String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
-
 		user.updateUser(dto.getNickname(), encodedNewPassword);
 	}
+
+
 }

@@ -1,15 +1,16 @@
-package com.example.mockstalk.domain.stock.contoroller;
+package com.example.mockstalk.domain.stock.controller;
 
 import java.io.InputStream;
-
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.example.mockstalk.common.response.ResponseMessage;
 import com.example.mockstalk.domain.stock.service.StockService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,29 +1,38 @@
 package com.example.mockstalk.domain.price.periodic_candles.service;
 
+import com.example.mockstalk.domain.price.periodic_candles.entity.PeriodicCandleType;
+import com.example.mockstalk.domain.price.periodic_candles.repository.PeriodicCandleRepository;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PeriodicCandleSchedule {
 
     private final PeriodicCandleApiService periodicCandleApiService;
+    private final PeriodicCandleRepository candleRepository;
     private final StockRepository stockRepository;
 
+    private final Map<String, List<String>> failedMap = new HashMap<>();
 
-    @Scheduled(cron = "0 0 * * * *") // 매 정시
+    @Scheduled(cron = "0 0 * * * *")
     public void scheduleCandleUpdate() {
         LocalTime now = LocalTime.now();
 
@@ -32,13 +41,39 @@ public class PeriodicCandleSchedule {
         }
     }
 
+    // 매일 새벽 3시에 보관 기간이 지난 정보 삭제
+    @Scheduled(cron = "0 0 3 * * *")
+    public void cleanupOldCandles() {
+        LocalDateTime now = LocalDateTime.now();
+
+        // 일봉: 30일 초과
+        LocalDateTime dailyCutoff = now.minusDays(30);
+        candleRepository.deleteOlderThan(PeriodicCandleType.D, dailyCutoff);
+
+        // 주봉: 3개월 초과
+        LocalDateTime weeklyCutoff = now.minusMonths(3);
+        candleRepository.deleteOlderThan(PeriodicCandleType.W, weeklyCutoff);
+
+        // 월봉: 1년 초과
+        LocalDateTime monthlyCutoff = now.minusYears(1);
+        candleRepository.deleteOlderThan(PeriodicCandleType.M, monthlyCutoff);
+
+        // 연봉: 보존 (삭제하지 않음)
+
+        log.info("유효기간 이후 봉 데이터 정리 완료");
+    }
+
     //필요한 시기에맨 정보 갱신
     public void updateCandlesBatch() {
         List<Stock> allStocks = stockRepository.findAll();
         List<List<Stock>> batches = splitIntoBatches(allStocks, 100);
 
+        int successCount = 0;
+        int failCount = 0;
+
         int batchIndex = getCurrentBatchIndex();
         if (batchIndex < 0 || batchIndex >= batches.size()) {
+            log.info("현재 시간에는 처리할 배치가 없습니다. (index: {})", batchIndex);
             return;
         }
 
@@ -59,77 +94,28 @@ public class PeriodicCandleSchedule {
         }
 
         for (Stock stock : currentBatch) {
-
-            if (candleTypes.contains("D")) {
-                periodicCandleApiService.fetchAndSaveCandles(stock, "D", getStart("D"), getEnd());
-            }
-            if (candleTypes.contains("W")) {
-                periodicCandleApiService.fetchAndSaveCandles(stock, "W", getStart("W"), getEnd());
-            }
-            if (candleTypes.contains("M")) {
-                periodicCandleApiService.fetchAndSaveCandles(stock, "M", getStart("M"), getEnd());
-            }
-            if (candleTypes.contains("Y")) {
-                periodicCandleApiService.fetchAndSaveCandles(stock, "Y", getStart("Y"), getEnd());
+            for (String type : candleTypes) {
+                try {
+                    periodicCandleApiService.fetchAndSaveCandles(stock, type, getStart(type),
+                        getEnd());
+                    successCount++;
+                    Thread.sleep(700);
+                } catch (Exception e) {
+                    failedMap.get(type).add(stock.getStockCode());
+                    failCount++;
+                    log.warn("저장 실패: {} ({}) 이유: {}", stock.getStockCode(), type, e.getMessage());
+                }
             }
         }
+
+        log.info("완료된 배치: {} / {} | 성공: {}건, 실패: {}건 | 완료 시간 : {}", batchIndex + 1, batches.size(),
+            successCount, failCount, LocalDateTime.now());
+        failedMap.forEach((type, list) -> {
+            if (!list.isEmpty()) {
+                log.warn("실패 종목: {} ({}) | 실패 시간 : {}", list, type, LocalDateTime.now());
+            }
+        });
     }
-
-    /*
-    //DB에서 정보를 가져오는 방식 + 매일 갱신
-    public void updateCandlesBatch() {
-        List<Stock> allStocks = stockRepository.findAll();
-        List<List<Stock>> batches = splitIntoBatches(allStocks, 100);
-
-        int batchIndex = getCurrentBatchIndex();
-        if (batchIndex < 0 || batchIndex >= batches.size()) {
-            return;
-        }
-
-        List<Stock> currentBatch = batches.get(batchIndex);
-        for (Stock stock : currentBatch) {
-
-            periodicCandleApiService.fetchAndSaveCandles(stock, "D", getStart("D"), getEnd());
-            periodicCandleApiService.fetchAndSaveCandles(stock, "W", getStart("W"), getEnd());
-            periodicCandleApiService.fetchAndSaveCandles(stock, "M", getStart("M"), getEnd());
-            periodicCandleApiService.fetchAndSaveCandles(stock, "Y", getStart("Y"), getEnd());
-        }
-    }
-
-     */
-
-    /*
-    // csv 에서 가져온 정보로 하는 방식
-    public void updateCandlesBatch() {
-        List<StockCsvDto> allStocks = loadKospiStockDtos();
-        List<List<StockCsvDto>> batches = splitIntoBatches(allStocks, 100);
-
-        int batchIndex = getCurrentBatchIndex(); // 시간에 따라 인덱스
-        if (batchIndex < 0 || batchIndex >= batches.size()) {
-            return;
-        }
-
-        List<StockCsvDto> currentBatch = batches.get(batchIndex);
-
-        for (StockCsvDto dto : currentBatch) {
-            Stock stock = stockRepository.findByStockCode(dto.getStockCode());
-			if (stock == null) {
-				continue;
-			}
-
-            periodicCandleApiService.fetchAndSaveCandles(dto.getStockCode(), "D", getStart("D"),
-                getEnd());
-            periodicCandleApiService.fetchAndSaveCandles(dto.getStockCode(), "W", getStart("W"),
-                getEnd());
-            periodicCandleApiService.fetchAndSaveCandles(dto.getStockCode(), "M", getStart("M"),
-                getEnd());
-            periodicCandleApiService.fetchAndSaveCandles(dto.getStockCode(), "Y", getStart("Y"),
-                getEnd());
-        }
-    }
-
-
-     */
 
     public List<List<Stock>> splitIntoBatches(List<Stock> list, int size) {
         List<List<Stock>> batches = new ArrayList<>();
@@ -153,49 +139,22 @@ public class PeriodicCandleSchedule {
         LocalDate today = LocalDate.now();
         switch (type) {
             case "D":
-                return today.minusDays(30).format(DateTimeFormatter.BASIC_ISO_DATE);
+                return today.minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE); // 어제
             case "W":
-                return today.minusMonths(3).format(DateTimeFormatter.BASIC_ISO_DATE);
+                return today.minusWeeks(1).format(DateTimeFormatter.BASIC_ISO_DATE); // 지난주
             case "M":
-                return today.minusYears(1).format(DateTimeFormatter.BASIC_ISO_DATE);
+                return today.minusMonths(1).format(DateTimeFormatter.BASIC_ISO_DATE); // 지난달
             case "Y":
-                return "20000101";
+                return today.minusYears(1).format(DateTimeFormatter.BASIC_ISO_DATE); // 작년
             default:
                 return today.format(DateTimeFormatter.BASIC_ISO_DATE);
         }
     }
 
+
     public String getEnd() {
         return LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
     }
 
-    /*
-    //csv 에서 정보 가져오는 방식
-    public List<StockCsvDto> loadKospiStockDtos() {
-        List<StockCsvDto> stockList = new ArrayList<>();
-        try (
-            InputStream inputStream = new ClassPathResource(
-                "kospi_stock_list.csv").getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))
-        ) {
-            String line;
-            boolean isFirstLine = true;
-            while ((line = reader.readLine()) != null) {
-                if (isFirstLine) {
-                    isFirstLine = false;
-                    continue;
-                }
-                String[] cols = line.split(",");
-                String code = String.format("%06d", Integer.parseInt(cols[0].trim())); // 주식 코드
-                String name = cols[2].trim(); // 주식 이름
-                stockList.add(new StockCsvDto(code, name));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return stockList;
-    }
-
-     */
 
 }

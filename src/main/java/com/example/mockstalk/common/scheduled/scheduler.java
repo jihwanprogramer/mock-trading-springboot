@@ -1,5 +1,6 @@
 package com.example.mockstalk.common.scheduled;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,10 +11,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
 import com.example.mockstalk.common.hantutoken.TokenService;
 import com.example.mockstalk.common.websoket.KoreaWebSocketClient;
 import com.example.mockstalk.domain.price.livePrice.service.LivePriceService;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
+
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
