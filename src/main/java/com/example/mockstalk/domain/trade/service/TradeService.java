@@ -28,7 +28,9 @@ import com.example.mockstalk.domain.trade.entity.Trade;
 import com.example.mockstalk.domain.trade.repository.TradeRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TradeService {
@@ -98,6 +100,7 @@ public class TradeService {
 
 	// @Scheduled(fixedRate = 10000) // 1초마다 실행
 	// public void settleOrders() {
+	// 	long start = System.currentTimeMillis();
 	// 	List<Order> completeOrders = orderRepository.findAllReadyOrdersWithFetchJoin(OrderStatus.COMPLETED);
 	//
 	// 	for (Order order : completeOrders) {
@@ -114,6 +117,8 @@ public class TradeService {
 	//
 	// 		tradeOrder(order, stock, currentPrice);
 	// 	}
+	// 	long end = System.currentTimeMillis();
+	// 	log.info("체결 처리 시간: {} ms", (end - start));
 	// }
 
 	public Slice<TradeResponseDto> findTradeByUserId(UserDetails userDetails, Long accountId, Type orderType,
@@ -134,13 +139,11 @@ public class TradeService {
 		List<Order> orders = orderRepository.findAllReadyOrdersByStock(stockId);
 
 		for (Order order : orders) {
-			// 지정가 조건 안 맞으면 skip
 			if (order.getType() == Type.LIMIT_BUY && currentPrice.compareTo(order.getPrice()) > 0)
 				continue;
 			if (order.getType() == Type.LIMIT_SELL && currentPrice.compareTo(order.getPrice()) < 0)
 				continue;
 
-			// 체결 수행
 			tradeOrder(order, order.getStock(), currentPrice);
 		}
 	}

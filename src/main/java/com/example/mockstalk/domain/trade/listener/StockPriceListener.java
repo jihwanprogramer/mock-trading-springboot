@@ -8,7 +8,9 @@ import com.example.mockstalk.domain.trade.dto.StockPriceEventDto;
 import com.example.mockstalk.domain.trade.service.TradeService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class StockPriceListener {
@@ -17,6 +19,9 @@ public class StockPriceListener {
 
 	@RabbitListener(queues = RabbitConfig.QUEUE_NAME)
 	public void onPriceUpdated(StockPriceEventDto event) {
+		long start = System.currentTimeMillis();
 		tradeService.onPriceUpdated(event.getStockId(), event.getCurrentPrice());
+		long end = System.currentTimeMillis();
+		log.info("체결 처리 시간: {} ms", (end - start));
 	}
 }
