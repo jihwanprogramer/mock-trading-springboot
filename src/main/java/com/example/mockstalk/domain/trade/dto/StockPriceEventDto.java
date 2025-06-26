@@ -1,4 +1,4 @@
-package com.example.mockstalk.domain.order.dto;
+package com.example.mockstalk.domain.trade.dto;
 
 import java.math.BigDecimal;
 
@@ -7,8 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class LimitOrderRequestDto {
+public class StockPriceEventDto {
 	private Long stockId;
-	private Long quantity;
-	private BigDecimal limitPrice;
+	private BigDecimal currentPrice;
 }

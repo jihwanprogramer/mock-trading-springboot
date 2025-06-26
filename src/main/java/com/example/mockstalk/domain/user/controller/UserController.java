@@ -34,27 +34,22 @@ public class UserController {
 	@PostMapping("/signup")
 	public ResponseEntity<ResponseMessage<?>> signup(@Valid @RequestBody SignupRequestDto dto) {
 		userService.signup(dto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(ResponseMessage.success("유저 등록이 완료되었습니다."));
+		return ResponseEntity.status(HttpStatus.CREATED).body(ResponseMessage.success("회원가입 완료."));
 	}
 
-	// 로그인
-	@PostMapping("/login")
-	public ResponseEntity<ResponseMessage<?>> login(@RequestBody LoginRequestDto dto) {
-		return ResponseEntity.ok(ResponseMessage.success(userService.login(dto)));
-	}
 
 	// 프로필 조회
 	@GetMapping("/me")
 	public ResponseEntity<ResponseMessage<?>> findMe(@AuthenticationPrincipal CustomUserDetails userDetails) {
-		String email = userDetails.getUsername();
-		return ResponseEntity.ok(ResponseMessage.success(userService.findMe(email)));
+		Long userId = userDetails.getUser().getId();
+		return ResponseEntity.ok(ResponseMessage.success("정보 조회",userService.findMe(userId)));
 	}
 
 	// 회원탈퇴
 	@DeleteMapping("/me")
 	public ResponseEntity<ResponseMessage<?>> deleteMe(@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestBody DeleteRequestDto dto) {
-		String email = userDetails.getUsername();
+													   @RequestBody DeleteRequestDto dto) {
+		String email = userDetails.getUser().getEmail();
 		userService.deleteMe(email, dto);
 		return ResponseEntity.ok(ResponseMessage.success("탈퇴가 완료 되었습니다."));
 	}
@@ -62,15 +57,17 @@ public class UserController {
 	// 타 유저조회 지갑주소로
 	@GetMapping("/wallet/{walletAddress}")
 	public ResponseEntity<ResponseMessage<?>> findByWallet(@PathVariable String walletAddress) {
-		return ResponseEntity.ok(ResponseMessage.success(userService.findByWallet(walletAddress)));
+		return ResponseEntity.ok(ResponseMessage.success("타 유저 조회",userService.findByWallet(walletAddress)));
 	}
 
 	// 유저 정보 수정
 	@PatchMapping("/me")
 	public ResponseEntity<ResponseMessage<?>> updateMe(@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestBody UpdateRequestDto dto) {
-		String email = userDetails.getUsername();
-		userService.updateMe(email, dto);
-		return ResponseEntity.ok(ResponseMessage.success("유저 정보 수정이 완료되었습니다."));
+													   @RequestBody UpdateRequestDto dto) {
+		Long userId = userDetails.getUser().getId();
+		userService.updateMe(userId, dto);
+		return ResponseEntity.ok(ResponseMessage.success("유저 정보 수정 완료"));
 	}
+
+
 }
