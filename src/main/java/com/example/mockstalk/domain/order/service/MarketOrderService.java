@@ -40,15 +40,14 @@ public class MarketOrderService {
 		MarketOrderRequestDto marketOrderRequestDto) {
 
 		Account account = accountRepository.findById(accountId).orElseThrow(() -> new CustomRuntimeException(
-			ExceptionCode.ACCOUNT_NOT_FOUND //임시 예외처리코드
-		));
+			ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		if (!account.getUser().getEmail().equals(userDetails.getUsername())) {
 			throw new CustomRuntimeException(ExceptionCode.UNAUTHORIZED_ACCOUNT_ACCESS);
 		}
 
 		Stock stock = stockRepository.findById(marketOrderRequestDto.getStockId())
-			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND)); //임시 예외처리코드
+			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
 		Object priceObject = redisTemplate.opsForValue().get("stockPrice::" + stock.getStockCode());
 		BigDecimal currentPrice = new BigDecimal(priceObject.toString());
 
@@ -75,8 +74,7 @@ public class MarketOrderService {
 		MarketOrderRequestDto marketOrderRequestDto) {
 
 		Account account = accountRepository.findById(accountId).orElseThrow(() -> new CustomRuntimeException(
-			ExceptionCode.ACCOUNT_NOT_FOUND //임시 예외처리코드
-		));
+			ExceptionCode.ACCOUNT_NOT_FOUND));
 
 		if (!account.getUser().getEmail().equals(userDetails.getUsername())) {
 			throw new CustomRuntimeException(ExceptionCode.UNAUTHORIZED_ACCOUNT_ACCESS);

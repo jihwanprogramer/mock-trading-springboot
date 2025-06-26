@@ -20,6 +20,7 @@ public enum ExceptionCode implements ErrorCode {
 	ORDER_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 주문입니다."),
 	ORDER_ALREADY_SETTLED(HttpStatus.BAD_REQUEST, "이미 체결된 주문입니다."),
 	HANTU_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, "한국투자증권 접근 토큰생성 실패"),
+	INVALID_STOCK_ID_TYPE(HttpStatus.INTERNAL_SERVER_ERROR, "Redis에 저장된 stockId가 올바르지 않습니다."),
 
 	// 401 Unauthorized = 인증이 안될 때
 	INVALID_JWT_SIGNATURE(HttpStatus.UNAUTHORIZED, "유효하지 않는 JWT 서명입니다."),

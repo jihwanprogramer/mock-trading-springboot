@@ -1,5 +1,6 @@
 package com.example.mockstalk.common.websoket;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
@@ -11,11 +12,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import com.example.mockstalk.common.config.RabbitConfig;
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
+import com.example.mockstalk.domain.trade.dto.StockPriceEventDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,6 +46,7 @@ public class KoreaWebSocketClient {
 	private final StockRepository stockRepository;
 	private boolean reconnecting = false;
 	private final BlockingQueue<RetryMessage> messageQueue = new LinkedBlockingQueue<>();
+	private final RabbitTemplate rabbitTemplate;
 
 	private static final int THREAD_COUNT = 10;
 	private static final int MAX_RETRY = 5;
@@ -136,7 +141,7 @@ public class KoreaWebSocketClient {
 
 	@OnMessage
 	public void onMessage(String message) {
-		System.out.println("수신 메시지: " + message);
+		// System.out.println("수신 메시지: " + message);
 		try {
 			// JSON 메시지와 파이프 구분 메시지 구분
 			if (message.startsWith("{")) {
@@ -168,8 +173,17 @@ public class KoreaWebSocketClient {
 
 				String code = fields[0];        // 종목코드
 				String price = fields[2];       // 현재가
+				Object value = redisTemplate.opsForValue().get("stockCode:" + code);
+				if (!(value instanceof Number)) {
+					throw new CustomRuntimeException(ExceptionCode.INVALID_STOCK_ID_TYPE);
+				}
+				Long stockId = ((Number)value).longValue();
 
 				redisTemplate.opsForValue().set("stockPrice:" + code, price, Duration.ofMinutes(5));
+
+				StockPriceEventDto event = new StockPriceEventDto(stockId, new BigDecimal(price));
+				rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, RabbitConfig.ROUTING_KEY, event);
+
 				System.out.printf("[%s] 현재가 %s 저장됨%n", code, price);
 			}
 
