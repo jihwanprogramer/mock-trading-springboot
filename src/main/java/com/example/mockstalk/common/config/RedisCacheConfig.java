@@ -16,6 +16,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisCacheConfig {
+	
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 		RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
@@ -25,6 +26,7 @@ public class RedisCacheConfig {
 
 		Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
 		cacheConfigs.put("accessToken", defaultConfig.entryTtl(Duration.ofHours(24)));
+		cacheConfigs.put("approvalKey", defaultConfig.entryTtl(Duration.ofHours(24)));
 
 		return RedisCacheManager.builder(connectionFactory)
 			.cacheDefaults(defaultConfig)

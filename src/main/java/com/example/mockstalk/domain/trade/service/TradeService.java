@@ -4,13 +4,17 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.example.mockstalk.common.customAnotation.DistributedLock;
 
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
@@ -27,8 +31,6 @@ import com.example.mockstalk.domain.trade.dto.TradeResponseDto;
 import com.example.mockstalk.domain.trade.entity.Trade;
 import com.example.mockstalk.domain.trade.repository.TradeRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
 @RequiredArgsConstructor
 public class TradeService {
@@ -39,6 +41,7 @@ public class TradeService {
 	private final TradeRepository tradeRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 
+	@DistributedLock(key = "'trade:' + #tradeId")
 	public void tradeOrder(Order order, Stock stock, BigDecimal currentPrice) {
 		if (order.getOrderStatus() == OrderStatus.CANCELED) {
 			throw new CustomRuntimeException(ExceptionCode.ORDER_ALREADY_CANCELED);
@@ -95,25 +98,27 @@ public class TradeService {
 		tradeRepository.save(trade);
 	}
 
-	@Scheduled(fixedRate = 10000) // 1초마다 실행
-	public void settleOrders() {
-		List<Order> completeOrders = orderRepository.findAllReadyOrdersWithFetchJoin(OrderStatus.COMPLETED);
 
-		for (Order order : completeOrders) {
-			Stock stock = order.getStock();
-			Object priceObject = redisTemplate.opsForValue().get("stockPrice::" + stock.getStockCode());
-			BigDecimal currentPrice = new BigDecimal(priceObject.toString());
+	// @Scheduled(fixedRate = 10000) // 1초마다 실행
+	// public void settleOrders() {
+	// 	List<Order> completeOrders = orderRepository.findAllReadyOrdersWithFetchJoin(OrderStatus.COMPLETED);
+	//
+	// 	for (Order order : completeOrders) {
+	// 		Stock stock = order.getStock();
+	// 		Object priceObject = redisTemplate.opsForValue().get("stockPrice::" + stock.getStockCode());
+	// 		BigDecimal currentPrice = new BigDecimal(priceObject.toString());
+	//
+	// 		if (order.getType() == Type.LIMIT_BUY && currentPrice.compareTo(order.getPrice()) > 0) {
+	// 			continue;
+	// 		}
+	// 		if (order.getType() == Type.LIMIT_SELL && currentPrice.compareTo(order.getPrice()) < 0) {
+	// 			continue;
+	// 		}
+	//
+	// 		tradeOrder(order, stock, currentPrice);
+	// 	}
+	// }
 
-			if (order.getType() == Type.LIMIT_BUY && currentPrice.compareTo(order.getPrice()) > 0) {
-				continue;
-			}
-			if (order.getType() == Type.LIMIT_SELL && currentPrice.compareTo(order.getPrice()) < 0) {
-				continue;
-			}
-
-			tradeOrder(order, stock, currentPrice);
-		}
-	}
 
 	public Slice<TradeResponseDto> findTradeByUserId(UserDetails userDetails, Long accountId, Type orderType,
 		LocalDateTime startDate, LocalDateTime endDate, Long lastId, int size) {
@@ -127,6 +132,21 @@ public class TradeService {
 		Pageable pageable = PageRequest.of(0, size);
 
 		return tradeRepository.findCursorTradeByAccount(accountId, orderType, startDate, endDate, lastId, pageable);
+	}
+
+	public void onPriceUpdated(Long stockId, BigDecimal currentPrice) {
+		List<Order> orders = orderRepository.findAllReadyOrdersByStock(stockId);
+
+		for (Order order : orders) {
+			// 지정가 조건 안 맞으면 skip
+			if (order.getType() == Type.LIMIT_BUY && currentPrice.compareTo(order.getPrice()) > 0)
+				continue;
+			if (order.getType() == Type.LIMIT_SELL && currentPrice.compareTo(order.getPrice()) < 0)
+				continue;
+
+			// 체결 수행
+			tradeOrder(order, order.getStock(), currentPrice);
+		}
 	}
 }
 

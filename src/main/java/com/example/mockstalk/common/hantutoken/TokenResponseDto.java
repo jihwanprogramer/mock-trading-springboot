@@ -12,4 +12,8 @@ public class TokenResponseDto {
 	private String token_type;
 	private long expires_in;
 	private String access_token_token_expired;
+
+	public TokenResponseDto(String access_token) {
+		this.access_token = access_token;
+	}
 }
