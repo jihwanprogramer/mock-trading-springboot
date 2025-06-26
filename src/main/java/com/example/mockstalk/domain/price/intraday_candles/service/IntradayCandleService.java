@@ -196,35 +196,23 @@ public class IntradayCandleService {
 
 	// 조회용
 	public List<IntradayCandle> getCandles(String stockCode, String date, int interval) {
-		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-			LocalDateTime start = LocalDateTime.parse(date + "0000", formatter);
-			LocalDateTime end = LocalDateTime.parse(date + "2359", formatter);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+		LocalDateTime start = LocalDateTime.parse(date + "0000", formatter);
+		LocalDateTime end = LocalDateTime.parse(date + "2359", formatter);
 
-			CandleType type = getCandleTypeByInterval(interval);
+		CandleType type = getCandleTypeByInterval(interval);
 
-			// DB 조회
-			return intradayCandleRepository.findByStock_StockCodeAndCandleTypeAndTimeStampBetween(
-				stockCode, type, start, end
-			);
-
-		} catch (Exception e) {
-			log.error("조회 실패: {}-{}", stockCode, e.getMessage());
-			return List.of();
-		}
+		return intradayCandleRepository.findByStock_StockCodeAndCandleTypeAndTimeStampBetween(
+			stockCode, type, start, end
+		);
 	}
 
 	private CandleType getCandleTypeByInterval(int interval) {
-		switch (interval) {
-			case 1:
-				return CandleType.MIN;
-			case 3:
-				return CandleType.MIN3;
-			case 5:
-				return CandleType.MIN5;
-			default:
-				throw new IllegalArgumentException("지원하지 않는 interval: " + interval);
-		}
+		return switch (interval) {
+			case 1 -> CandleType.MIN;
+			case 3 -> CandleType.MIN3;
+			case 5 -> CandleType.MIN5;
+			default -> throw new IllegalArgumentException("지원하지 않는 interval: " + interval);
+		};
 	}
-
 }
