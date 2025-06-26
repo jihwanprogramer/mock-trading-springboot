@@ -19,9 +19,7 @@ public class StockPriceListener {
 
 	@RabbitListener(queues = RabbitConfig.QUEUE_NAME)
 	public void onPriceUpdated(StockPriceEventDto event) {
-		long start = System.currentTimeMillis();
 		tradeService.onPriceUpdated(event.getStockId(), event.getCurrentPrice());
-		long end = System.currentTimeMillis();
-		log.info("체결 처리 시간: {} ms", (end - start));
 	}
+
 }

@@ -5,17 +5,19 @@ import java.time.LocalDateTime;
 
 import com.example.mockstalk.domain.order.entity.Type;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class TradeResponseDto {
 
-	private String stockId;
+	private Long orderId;
 	private Type orderType;
 	private Long quantity;
 	private BigDecimal price;
 	private LocalDateTime traderDate;
-	private BigDecimal charge; //수수료
+	private Double charge;
 	private boolean trade;
 
 }
