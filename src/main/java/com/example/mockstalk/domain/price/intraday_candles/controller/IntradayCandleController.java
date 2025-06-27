@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,13 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/intra")
 @Slf4j
 public class IntradayCandleController {
 
 	private final IntradayCandleService intradayCandleService;
 	private final StockRepository stockRepository;
 
-	@PostMapping("/api/candles/fetch/all")
+	@PostMapping("/candles/fetch/al넵l")
 	public ResponseEntity<String> fetchCandlesForAllStocks() {
 		List<String> stockCodes = stockRepository.findAllStockCodes();
 
@@ -39,7 +41,7 @@ public class IntradayCandleController {
 		return ResponseEntity.ok("모든 종목 캔들 수집 완료");
 	}
 
-	@GetMapping("/api/stocks/{stockCode}/candles")
+	@GetMapping("/stocks/{stockCode}/candles")
 	public ResponseEntity<List<IntradayCandleDto>> getCandles(
 		@PathVariable String stockCode,
 		@RequestParam String date,
