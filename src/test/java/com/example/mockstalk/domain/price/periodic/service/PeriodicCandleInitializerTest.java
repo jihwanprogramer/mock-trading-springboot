@@ -47,7 +47,7 @@ class PeriodicCandleInitializerTest {
     }
 
     @Test
-    @DisplayName("init()이 종목을 배치로 잘 나누고 맵 초기화도 잘 하는지 테스트")
+    @DisplayName("init()의 종목 배치화 및 맵 초기화 테스트")
     void init_success() {
         // given
         when(stockRepository.findAll()).thenReturn(List.of(stock1, stock2));
@@ -68,7 +68,7 @@ class PeriodicCandleInitializerTest {
     }
 
     @Test
-    @DisplayName("prefetchCandlesBatch()가 정상적으로 fetchAndSaveCandles를 호출하는지 테스트")
+    @DisplayName("etchAndSaveCandles 호출 테스트")
     void prefetchCandlesBatch_success() {
         // given
         when(stockRepository.findAll()).thenReturn(List.of(stock1, stock2));
@@ -89,7 +89,7 @@ class PeriodicCandleInitializerTest {
     }
 
     @Test
-    @DisplayName("getStart, getEnd가 타입별로 올바른 날짜를 반환하는지 테스트")
+    @DisplayName("getStart, getEnd 테스트")
     void getStartAndEnd_success() {
         // when
         String startD = periodicCandleInitializer.getStart("D");
@@ -110,7 +110,7 @@ class PeriodicCandleInitializerTest {
     }
 
     @Test
-    @DisplayName("prefetchCandlesBatch에서 예외 발생 시 실패 맵에 잘 추가되는지 테스트")
+    @DisplayName("prefetchCandlesBatch에서 예외 발생 시 실패 시 테스트")
     void prefetchCandlesBatch_fail() {
         // given
         when(stockRepository.findAll()).thenReturn(List.of(stock1));
