@@ -91,7 +91,7 @@ public class TradeServiceTest {
 				.build();
 			orderRepository.save(order);
 
-			tradeService.tradeOrder(order, stock, currentPrice); // holdings 조작도 포함
+			tradeService.tradeOrder(order, stock, currentPrice);
 		});
 
 		Account updatedAccount = accountRepository.findById(account.getId()).orElseThrow();

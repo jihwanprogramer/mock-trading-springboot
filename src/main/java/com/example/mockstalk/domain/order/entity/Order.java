@@ -1,5 +1,6 @@
 package com.example.mockstalk.domain.order.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import com.example.mockstalk.common.baseEntity.BaseEntity;
@@ -28,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order extends BaseEntity {
+public class Order extends BaseEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -40,6 +41,8 @@ public class Order extends BaseEntity {
 	private Long quantity;
 
 	private BigDecimal price;
+
+	private BigDecimal totalPrice;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)

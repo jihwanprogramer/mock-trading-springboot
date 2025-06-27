@@ -12,6 +12,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.example.mockstalk.common.custom_annotation.DistributedLock;
+
 import lombok.RequiredArgsConstructor;
 
 @Aspect
