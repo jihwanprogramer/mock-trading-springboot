@@ -1,13 +1,6 @@
 package com.example.mockstalk.common.scheduled;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.annotation.PostConstruct;
-
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,21 +17,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class scheduler {
 	private final LivePriceService livePriceService;
+	private final RabbitTemplate rabbitTemplate;
 
 	private final StockRepository stockRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final TokenService tokenService;
 	private final Object tokenLock = new Object();
 
-	private final RedisTemplate<String, String> redisTemplates;
-
 	@PostConstruct
 	public void init() throws Exception {
 		System.out.println("프로젝트 시작 시 실행");
 		tokenService.getAccessToken(); // 시작 시 1회 실행
 		tokenService.getApprovalKey(); // 시작 시 1회 실행
-		livePriceService.cacheAllStockPrices();
-		KoreaWebSocketClient client = new KoreaWebSocketClient(redisTemplate, stockRepository);
+		// livePriceService.cacheAllStockPrices();
+		KoreaWebSocketClient client = new KoreaWebSocketClient(redisTemplate, stockRepository, rabbitTemplate);
 		client.connect();
 		System.out.println("실행 완료");
 	}

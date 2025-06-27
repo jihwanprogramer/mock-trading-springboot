@@ -8,7 +8,9 @@ import com.example.mockstalk.domain.trade.dto.StockPriceEventDto;
 import com.example.mockstalk.domain.trade.service.TradeService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class StockPriceListener {
@@ -19,4 +21,5 @@ public class StockPriceListener {
 	public void onPriceUpdated(StockPriceEventDto event) {
 		tradeService.onPriceUpdated(event.getStockId(), event.getCurrentPrice());
 	}
+
 }
