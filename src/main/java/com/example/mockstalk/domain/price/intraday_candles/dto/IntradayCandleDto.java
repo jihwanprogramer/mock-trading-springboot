@@ -12,6 +12,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class IntradayCandleDto {
 	private String stockCode;
+	private String stockName;
 	private Long openingPrice;
 	private Long closingPrice;
 	private Long highPrice;
@@ -24,6 +25,7 @@ public class IntradayCandleDto {
 	public static IntradayCandleDto fromEntity(IntradayCandle candle) {
 		return new IntradayCandleDto(
 			candle.getStock().getStockCode(),
+			candle.getStock().getStockName(),
 			candle.getOpeningPrice(),
 			candle.getClosingPrice(),
 			candle.getHighPrice(),

@@ -15,9 +15,11 @@ import com.example.mockstalk.domain.price.intraday_candles.service.IntradayCandl
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class IntradayCandleController {
 
 	private final IntradayCandleService intradayCandleService;
@@ -31,23 +33,26 @@ public class IntradayCandleController {
 			try {
 				intradayCandleService.fetchAndSaveIntradayCandles(stockCode);
 			} catch (Exception e) {
-				System.err.println("실패: " + stockCode + " → " + e.getMessage());
+				log.error("수동 수집 실패: {} -> {}", stockCode, e.getMessage());
 			}
 		}
 		return ResponseEntity.ok("모든 종목 캔들 수집 완료");
 	}
 
 	@GetMapping("/api/stocks/{stockCode}/candles")
-	public List<IntradayCandleDto> getCandles(
+	public ResponseEntity<List<IntradayCandleDto>> getCandles(
 		@PathVariable String stockCode,
 		@RequestParam String date,
 		@RequestParam(defaultValue = "1") int interval) {
 
 		List<IntradayCandle> candles = intradayCandleService.getCandles(stockCode, date, interval);
-
-		return candles.stream()
+		List<IntradayCandleDto> dtoList = candles.stream()
 			.map(IntradayCandleDto::fromEntity)
 			.toList();
+
+		log.info("조회완료: {}-{}건 (interval: {})", stockCode, dtoList.size(), interval);
+
+		return ResponseEntity.ok(dtoList);
 	}
 
 }
