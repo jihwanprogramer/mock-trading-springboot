@@ -186,9 +186,9 @@ public class IntradayCandleService {
 			case "1":
 				return List.of("0900", "1000", "1100", "1200", "1300");
 			case "3":
-				return List.of("0900", "1200");
+				return List.of("0900", "0930", "1000", "1030", "1100", "1130", "1200", "1230", "1300");
 			case "5":
-				return List.of("0900");
+				return List.of("0900", "0930", "1000", "1030", "1100", "1130", "1200", "1230", "1300");
 			default:
 				return List.of();
 		}
