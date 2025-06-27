@@ -16,7 +16,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisCacheConfig {
-	
+
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 		RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
@@ -41,4 +41,5 @@ public class RedisCacheConfig {
 		template.setValueSerializer(new GenericJackson2JsonRedisSerializer()); // JSON 값
 		return template;
 	}
+
 }

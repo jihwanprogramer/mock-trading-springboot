@@ -49,7 +49,9 @@ public class AccountJwtFilter extends OncePerRequestFilter {
 					String token = accountJwtUtil.substringToken(tokenValue);
 					Claims claims = accountJwtUtil.extractClaims(token);
 
+					Object type = claims.get("tokenType");
 					// 이 필터가 처리할 토큰인지 판단하는 장치
+
 					if (!"account".equals(claims.get("tokenType"))) {
 						filterChain.doFilter(request, response);
 						return;
