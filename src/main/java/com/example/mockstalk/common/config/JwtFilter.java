@@ -1,9 +1,16 @@
 package com.example.mockstalk.common.config;
 
+import java.io.IOException;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import com.example.mockstalk.common.jwttoken.JwtTokenService;
 import com.example.mockstalk.domain.user.entity.User;
 import com.example.mockstalk.domain.user.entity.UserRole;
 import com.example.mockstalk.domain.user.service.CustomUserDetails;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -12,20 +19,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 
 @Slf4j
 
@@ -34,22 +28,22 @@ public class JwtFilter extends OncePerRequestFilter {
 	private final JwtUtil jwtUtil;
 	private final JwtTokenService tokenService;
 
-
 	public JwtFilter(JwtUtil jwtUtil, JwtTokenService tokenService) {
 		this.jwtUtil = jwtUtil;
 		this.tokenService = tokenService;
 
-
 	}
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
-									HttpServletResponse response,
-									FilterChain filterChain) throws ServletException, IOException {
+		HttpServletResponse response,
+		FilterChain filterChain) throws ServletException, IOException {
 
 		String url = request.getRequestURI();
 
 		// 로그인/회원가입/토큰 재발급 필터 통과
-		if (url.equals("/auth/login") || url.equals("/users/signup")|| url.equals("/auth/reissue")) {
+		if (url.equals("/auth/login") || url.equals("/users/signup") || url.equals("/auth/reissue") || url.startsWith(
+			"/api/stocks/${stockCode}/candles")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -77,7 +71,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 			//Access 토큰 타입 검사
 			String tokenType = claims.get("tokenType", String.class);
-			if(!"access".equals(tokenType)){
+			if (!"access".equals(tokenType)) {
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Token이 필요합니다.");
 				return;
 			}
@@ -90,22 +84,21 @@ public class JwtFilter extends OncePerRequestFilter {
 
 			// User 엔티티 객체를 직접 생성 (DB 조회 없이)
 			User user = User.builder()
-					.id(userId)
-					.email(email)
-					.password("")
-					.nickname(nickname)
-					.userRole(UserRole.valueOf(role.replace("ROLE_", "")))
-					.build();
+				.id(userId)
+				.email(email)
+				.password("")
+				.nickname(nickname)
+				.userRole(UserRole.valueOf(role.replace("ROLE_", "")))
+				.build();
 
 			// CustomUserDetails 생성
 			CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
 			// 인증 객체 생성 및 등록
 			UsernamePasswordAuthenticationToken authentication =
-					new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+				new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
 
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-
 
 			//관리자 접근 체크
 			if (url.startsWith("/admin")) {

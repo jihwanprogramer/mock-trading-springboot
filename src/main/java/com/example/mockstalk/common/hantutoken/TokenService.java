@@ -44,7 +44,7 @@ public class TokenService {
 		TokenResponseDto cached = (TokenResponseDto)redisTemplate.opsForValue().get("accessToken::koreainvestment");
 		if (cached != null) {
 			System.out.println("캐싱 데이터 가져옴");
-			System.out.println("🧊 캐시된 토큰: " + cached.getAccess_token());
+			System.out.println("캐시된 토큰: " + cached.getAccess_token());
 			return cached;
 		}
 

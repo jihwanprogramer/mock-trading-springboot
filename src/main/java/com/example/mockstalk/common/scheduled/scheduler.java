@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.example.mockstalk.common.hantutoken.TokenService;
-import com.example.mockstalk.common.websoket.KoreaWebSocketClient;
+import com.example.mockstalk.common.websocket.WebSocketClientManager;
 import com.example.mockstalk.domain.price.livePrice.service.LivePriceService;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 
@@ -23,6 +23,7 @@ public class scheduler {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final TokenService tokenService;
 	private final Object tokenLock = new Object();
+	private final WebSocketClientManager webSocketClientManager;
 
 	@PostConstruct
 	public void init() throws Exception {
@@ -30,8 +31,9 @@ public class scheduler {
 		tokenService.getAccessToken(); // 시작 시 1회 실행
 		tokenService.getApprovalKey(); // 시작 시 1회 실행
 		// livePriceService.cacheAllStockPrices();
-		KoreaWebSocketClient client = new KoreaWebSocketClient(redisTemplate, stockRepository, rabbitTemplate);
-		client.connect();
+
+		webSocketClientManager.connect();
+
 		System.out.println("실행 완료");
 	}
 

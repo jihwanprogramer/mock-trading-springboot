@@ -66,4 +66,13 @@ public class IntradayCandle extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CandleType candleType;
+
+	public void updateFrom(IntradayCandle other) {
+		this.openingPrice = other.getOpeningPrice();
+		this.closingPrice = other.getClosingPrice();
+		this.highPrice = other.getHighPrice();
+		this.lowPrice = other.getLowPrice();
+		this.tradingVolume = other.getTradingVolume();
+		this.tradingValue = other.getTradingValue();
+	}
 }
