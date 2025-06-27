@@ -1,19 +1,11 @@
 package com.example.mockstalk.common.scheduled;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.annotation.PostConstruct;
-
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.example.mockstalk.common.hantutoken.TokenService;
-import com.example.mockstalk.common.websoket.KoreaWebSocketClient;
+import com.example.mockstalk.common.websocket.WebSocketClientManager;
 import com.example.mockstalk.domain.price.livePrice.service.LivePriceService;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 
@@ -29,6 +21,7 @@ public class scheduler {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final TokenService tokenService;
 	private final Object tokenLock = new Object();
+	private final WebSocketClientManager webSocketClientManager;
 
 	private final RedisTemplate<String, String> redisTemplates;
 
@@ -37,9 +30,8 @@ public class scheduler {
 		System.out.println("프로젝트 시작 시 실행");
 		tokenService.getAccessToken(); // 시작 시 1회 실행
 		tokenService.getApprovalKey(); // 시작 시 1회 실행
-		livePriceService.cacheAllStockPrices();
-		KoreaWebSocketClient client = new KoreaWebSocketClient(redisTemplate, stockRepository);
-		client.connect();
+		// livePriceService.cacheAllStockPrices();
+		webSocketClientManager.connect();
 		System.out.println("실행 완료");
 	}
 
