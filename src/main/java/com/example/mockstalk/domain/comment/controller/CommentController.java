@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.mockstalk.common.response.ResponseMessage;
 import com.example.mockstalk.domain.comment.dto.CommentRequestDto;
 import com.example.mockstalk.domain.comment.service.CommentService;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 

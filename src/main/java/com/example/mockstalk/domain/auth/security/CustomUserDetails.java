@@ -1,4 +1,4 @@
-package com.example.mockstalk.domain.user.service;
+package com.example.mockstalk.domain.auth.security;
 
 import com.example.mockstalk.domain.user.entity.User;
 import lombok.Getter;

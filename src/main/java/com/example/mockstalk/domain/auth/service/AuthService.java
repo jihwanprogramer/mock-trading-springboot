@@ -1,11 +1,10 @@
 package com.example.mockstalk.domain.auth.service;
 
-import com.example.mockstalk.common.config.JwtUtil;
+import com.example.mockstalk.domain.auth.jwt.JwtUtil;
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
-import com.example.mockstalk.common.jwttoken.JwtTokenService;
-import com.example.mockstalk.domain.user.dto.request.LoginRequestDto;
-import com.example.mockstalk.domain.user.dto.response.LoginResponseDto;
+import com.example.mockstalk.domain.auth.dto.request.LoginRequestDto;
+import com.example.mockstalk.domain.auth.dto.response.LoginResponseDto;
 import com.example.mockstalk.domain.user.entity.User;
 import com.example.mockstalk.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +43,9 @@ public class AuthService {
     public void logout(String accessToken,Long userId) {
 
         long expiration = jwtUtil.getRemainTime(accessToken);
+        // 1. AccessToken 븡랙리스트 등록
         tokenService.blacklistAccessToken(accessToken,expiration);
+        // 2. RefreshToken 명시적 삭제
         tokenService.deleteRefreshToken(userId);
     }
 
@@ -54,20 +55,16 @@ public class AuthService {
         if (!isValid) {
             throw new CustomRuntimeException(ExceptionCode.INVALID_REFRESH_TOKEN);
         }
-
         // 2. 토큰에서 userId 추출
         Long userId = jwtUtil.extractUserId(refreshToken);
 
         // 3. Redis에 저장된 리프레시 토큰 조회
         String storedToken = tokenService.getStoredRefreshToken(userId);
 
-        System.out.println("Redis에서 조회한 토큰: " + storedToken);
-
         // 4. 저장된 토큰과 요청 토큰이 일치하지 않으면 예외
         if (storedToken == null || !storedToken.equals(refreshToken)) {
             throw new CustomRuntimeException(ExceptionCode.INVALID_REFRESH_TOKEN);
         }
-
         // 5. 유저 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_USER));

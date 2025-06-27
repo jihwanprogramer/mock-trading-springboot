@@ -1,4 +1,4 @@
-package com.example.mockstalk.domain.user.dto.response;
+package com.example.mockstalk.domain.auth.dto.response;
 
 
 import lombok.Getter;

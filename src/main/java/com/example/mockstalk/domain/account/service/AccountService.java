@@ -26,7 +26,7 @@ import com.example.mockstalk.domain.account.repository.AccountRepository;
 import com.example.mockstalk.domain.holdings.entity.Holdings;
 import com.example.mockstalk.domain.holdings.repository.HoldingsRepository;
 import com.example.mockstalk.domain.user.entity.User;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 

@@ -47,4 +47,10 @@ public class Stock extends BaseEntity {
 	@Builder.Default
 	private StockStatus stockStatus = StockStatus.ACTIVE;
 
+	public Stock(String stockName, String stockCode) {
+		this.stockName = stockName;
+		this.stockCode = stockCode;
+		this.stockStatus = StockStatus.ACTIVE; // 테스트코드용
+	}
+
 }

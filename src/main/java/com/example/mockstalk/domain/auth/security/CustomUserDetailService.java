@@ -1,4 +1,4 @@
-package com.example.mockstalk.domain.user.service;
+package com.example.mockstalk.domain.auth.security;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

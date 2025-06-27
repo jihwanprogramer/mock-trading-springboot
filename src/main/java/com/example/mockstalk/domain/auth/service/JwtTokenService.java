@@ -1,6 +1,6 @@
-package com.example.mockstalk.common.jwttoken;
+package com.example.mockstalk.domain.auth.service;
 
-import com.example.mockstalk.common.config.JwtUtil;
+import com.example.mockstalk.domain.auth.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,7 @@ public class JwtTokenService {
     public void deleteRefreshToken(Long userId) {
         redisTemplate.delete("RT:" + userId);
     }
+
     // AccessToken 블랙리스트에 등록
     public void blacklistAccessToken(String accessToken, long expirationMillis) {
         String cleanToken = jwtUtil.substringToken(accessToken);

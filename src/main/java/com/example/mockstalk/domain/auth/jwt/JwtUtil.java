@@ -1,4 +1,4 @@
-package com.example.mockstalk.common.config;
+package com.example.mockstalk.domain.auth.jwt;
 
 import com.example.mockstalk.domain.user.entity.UserRole;
 import io.jsonwebtoken.Claims;
@@ -10,7 +10,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -127,14 +127,8 @@ public class JwtUtil {
 	}
 	// 토큰 만료시간 계산
 	public long getRemainTime(String token) {
-		try {
-			token = substringToken(token);
-			Claims claims = extractClaims(token);
-			return claims.getExpiration().getTime() - System.currentTimeMillis();
-		} catch (Exception e) {
-			log.error("토큰 만료 시간 계산 실패: {}", e.getMessage());
-			return 0;
-		}
+		Date expiration = extractClaims(token).getExpiration();
+		return expiration.getTime() - System.currentTimeMillis();
 	}
 
 
