@@ -56,9 +56,15 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api:3.1.0"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api:2.1.1"
-
+    
+    //websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.glassfish.tyrus.bundles:tyrus-standalone-client:1.17'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    
     //RabbitMQ
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
 }
 
 tasks.named('test') {

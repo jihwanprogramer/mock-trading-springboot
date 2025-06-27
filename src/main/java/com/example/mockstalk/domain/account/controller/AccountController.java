@@ -1,5 +1,7 @@
 package com.example.mockstalk.domain.account.controller;
 
+import java.math.BigDecimal;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.mockstalk.common.response.ResponseMessage;
@@ -17,6 +20,7 @@ import com.example.mockstalk.domain.account.dto.AccountRequestDto;
 import com.example.mockstalk.domain.account.dto.AccountSignInRequestDto;
 import com.example.mockstalk.domain.account.dto.UpdateAccountRequestDto;
 import com.example.mockstalk.domain.account.service.AccountService;
+import com.example.mockstalk.domain.account.service.RankService;
 import com.example.mockstalk.domain.user.service.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class AccountController {
 
 	private final AccountService accountService;
+	private final RankService rankService;
 
 	/**
 	 계좌 생성
@@ -131,4 +136,36 @@ public class AccountController {
 			.body(ResponseMessage.success("해당 계좌의 비밀번호가 정상적으로 변경되었습니다."));
 	}
 
+	/**
+	 * 수익률 전체 랭킹 조회
+	 * @param topN
+	 * @return
+	 */
+	@GetMapping("/ranking")
+	public ResponseEntity<ResponseMessage<?>> getTopUserProfitRankings(@RequestParam int topN) {
+		rankService.getTopUserProfitRankings(topN);
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success("정상적으로 수익률 전체 랭킹을 조회했습니다.", rankService.getTopUserProfitRankings(topN)));
+	}
+
+	/**
+	 * 초기 자산 기준 수익률 랭킹 조회
+	 * @param topN
+	 * @param targetInitialBalance
+	 * @return
+	 */
+	@GetMapping("/ranking/initial")
+	public ResponseEntity<ResponseMessage<?>> get(
+		@RequestParam int topN,
+		@RequestParam("initialBalance") BigDecimal targetInitialBalance) {
+
+		rankService.getTopUserProfitRankingsByInitialBalance(topN, targetInitialBalance);
+
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(ResponseMessage.success("정상적으로 초기 자산 기준 수익률 랭킹을 조회했습니다.",
+				rankService.getTopUserProfitRankingsByInitialBalance(topN, targetInitialBalance)));
+	}
 }

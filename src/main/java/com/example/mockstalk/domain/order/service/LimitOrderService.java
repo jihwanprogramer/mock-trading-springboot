@@ -11,6 +11,7 @@ import com.example.mockstalk.domain.account.entity.Account;
 import com.example.mockstalk.domain.account.repository.AccountRepository;
 import com.example.mockstalk.domain.holdings.entity.Holdings;
 import com.example.mockstalk.domain.holdings.repository.HoldingsRepository;
+import com.example.mockstalk.domain.order.cache.CompleteOrderRedisCache;
 import com.example.mockstalk.domain.order.dto.LimitOrderRequestDto;
 import com.example.mockstalk.domain.order.dto.LimitOrderResponseDto;
 import com.example.mockstalk.domain.order.entity.Order;
@@ -30,14 +31,8 @@ public class LimitOrderService {
 	private final AccountRepository accountRepository;
 	private final StockRepository stockRepository;
 	private final HoldingsRepository holdingsRepository;
+	private final CompleteOrderRedisCache completeOrderRedisCache;
 
-	//로직 논리 정리(2차 통합 때 삭제 예정)
-	//1.pathVariable 로 가져온 계정 id 로 조회
-	//2.조회한 계좌가 로그인한 사용자의 계좌가 맞는지 확인
-	//3.매수하기로한 stock 종목 조회
-	//4.입력한 지정가와 수량을 계산하고
-	//5.만족한다면 계좌 잔액을 확인하고 차감(주문완료 동시에 차감 -> 만약 주문취소하면 다시 잔액반환)
-	//6.주문 생성하고 저장
 	public LimitOrderResponseDto saveLimitBuy(UserDetails userDetails, Long accountId,
 		LimitOrderRequestDto limitOrderRequestDto) {
 		Account account = accountRepository.findById(accountId)
@@ -61,23 +56,19 @@ public class LimitOrderService {
 		Order order = Order.builder()
 			.account(account)
 			.stock(stock)
-			.type(Type.LIMIT_BUY) // 기존 MARKET_SELL -> LIMIT_BUY로 수정
+			.type(Type.LIMIT_BUY)
 			.quantity(limitOrderRequestDto.getQuantity())
-			.price(totalPrice)
+			.price(limitOrderRequestDto.getLimitPrice())
+			.totalPrice(totalPrice)
 			.orderStatus(OrderStatus.COMPLETED)
 			.build();
 
 		orderRepository.save(order);
+		completeOrderRedisCache.add(order);
+
 		return LimitOrderResponseDto.from(order);
 	}
 
-	//로직 논리 정리(2차 통합 때 삭제 예정)
-	//1. pathVariable로 가져온 계정 id로 계좌 조회
-	//2. 조회한 계좌가 로그인한 사용자의 계좌가 맞는지 확인
-	//3. 매도하려는 stock 종목 조회
-	//4. 해당 종목의 보유 수량 확인
-	//5. 입력한 수량만큼 보유 주식에서 차감(주문완료 동시에 차감 -> 주문취소시 수량 복구 예정)
-	//6. 주문 생성하고 저장
 	public LimitOrderResponseDto saveLimitSell(UserDetails userDetails, Long accountId,
 		LimitOrderRequestDto limitOrderRequestDto) {
 		Account account = accountRepository.findById(accountId)
@@ -105,11 +96,14 @@ public class LimitOrderService {
 			.stock(stock)
 			.type(Type.LIMIT_SELL)
 			.quantity(limitOrderRequestDto.getQuantity())
-			.price(totalPrice)
+			.price(limitOrderRequestDto.getLimitPrice())
+			.totalPrice(totalPrice)
 			.orderStatus(OrderStatus.COMPLETED)
 			.build();
 
 		orderRepository.save(order);
+		completeOrderRedisCache.add(order);
+
 		return LimitOrderResponseDto.from(order);
 	}
 }
