@@ -49,12 +49,14 @@ public class AuthService {
         tokenService.deleteRefreshToken(userId);
     }
 
-    public String reissueAccessToken(String refreshToken) {
+    public String reissueAccessToken(String refreshToken, String oldAccessToken) {
+
         // 1. 토큰 유효성 검사
         boolean isValid = jwtUtil.validateToken(refreshToken);
         if (!isValid) {
             throw new CustomRuntimeException(ExceptionCode.INVALID_REFRESH_TOKEN);
         }
+
         // 2. 토큰에서 userId 추출
         Long userId = jwtUtil.extractUserId(refreshToken);
 
@@ -68,8 +70,10 @@ public class AuthService {
         // 5. 유저 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomRuntimeException(ExceptionCode.NOT_FOUND_USER));
-
-        // 6. 새로운 Access Token 생성
+        // 6. 기존 Access Token 블랙리스트 등록
+        long expiration = jwtUtil.getRemainTime(oldAccessToken);
+        tokenService.blacklistAccessToken(oldAccessToken, expiration);
+        // 7. 새로운 Access Token 생성
         String newAccessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getUserRole());
         return newAccessToken;
     }
