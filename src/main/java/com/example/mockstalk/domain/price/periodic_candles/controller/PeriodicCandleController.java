@@ -29,6 +29,7 @@ public class PeriodicCandleController {
             ResponseMessage.success(periodicCandleService.findPeriodicCandle(stockCode, candle)));
     }
 
+
     @PostMapping
     public ResponseEntity<ResponseMessage<?>> test(
     ) {
