@@ -100,6 +100,7 @@ public class AccountService {
 	}
 
 	// 로그인한 계좌 정보 조회
+	@Transactional(readOnly = true)
 	public AccountResponseDto findAccountByToken() {
 		Long accountId = AccountContextHolder.getAccountId();
 
@@ -259,6 +260,8 @@ public class AccountService {
 
 		// 캐시에 없으면 계산하고 저장
 		BigDecimal calculated = calculateTotalAsset(accountId);
+
+		// 1분 정도 TTL 설정 (원하는 주기로 조정 가능)
 		redisTemplate.opsForValue().set(key, calculated.toPlainString(), Duration.ofMinutes(1));
 
 		return calculated;

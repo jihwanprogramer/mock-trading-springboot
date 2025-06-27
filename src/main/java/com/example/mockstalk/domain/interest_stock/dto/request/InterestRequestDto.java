@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class InterestRequestDto {
 
-	private String stockName;
+	private String StockName;
 
-	private String stockCode;
+	private String StockCode;
 }
