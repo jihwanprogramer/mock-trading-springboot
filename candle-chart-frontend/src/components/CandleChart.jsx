@@ -82,7 +82,7 @@ const CandleChart = ({stockCode = "000150", interval = 1}) => {
     };
 
     useEffect(() => {
-        axios.get(`/api/stocks/${stockCode}/candles`, {
+        axios.get(`/intra/stocks/${stockCode}/candles`, {
             params: {date: "20250609", interval}
         })
             .then(res => {
