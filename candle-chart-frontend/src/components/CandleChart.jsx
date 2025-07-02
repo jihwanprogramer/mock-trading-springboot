@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import {Chart as ChartJS, LinearScale, TimeScale, Title, Tooltip} from "chart.js";
 import {Chart} from "react-chartjs-2";
@@ -7,9 +7,12 @@ import 'chartjs-adapter-date-fns';
 
 ChartJS.register(TimeScale, LinearScale, Tooltip, Title, CandlestickController, CandlestickElement);
 
-const CandleChart = ({stockCode = "000150", interval = 1}) => {
+const CandleChart = () => {
+    const [stockCode, setStockCode] = useState("000150");
+    const [interval, setInterval] = useState(1);
     const [chartData, setChartData] = useState(null);
     const [stockName, setStockName] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const options = {
         responsive: true,
@@ -81,49 +84,96 @@ const CandleChart = ({stockCode = "000150", interval = 1}) => {
         },
     };
 
-    useEffect(() => {
-        axios.get(`/intra/stocks/${stockCode}/candles`, {
-            params: {date: "20250609", interval}
-        })
-            .then(res => {
-                if (!res.data || res.data.length === 0) {
-                    setChartData(null);
-                    setStockName("");
-                    return;
-                }
-
-                setStockName(res.data[0].stockName || "");
-
-                const data = res.data.map(candle => ({
-                    x: new Date(candle.timeStamp),
-                    o: candle.openingPrice,
-                    h: candle.highPrice,
-                    l: candle.lowPrice,
-                    c: candle.closingPrice,
-                }));
-
-                setChartData({
-                    datasets: [{
-                        label: `${stockCode} ${interval}분봉`,
-                        data,
-                        borderColor: "rgba(75, 192, 192, 1)"
-                    }]
-                });
-            })
-            .catch(err => {
-                console.error("차트 데이터 요청 실패:", err);
-                setStockName("");
+    const fetchChartData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get(`/intra/stocks/${stockCode}/candles`, {
+                params: {date: "20250609", interval}
             });
+
+            if (!res.data || res.data.length === 0) {
+                setChartData(null);
+                setStockName("");
+                setLoading(false);
+                return;
+            }
+
+            setStockName(res.data[0].stockName || "");
+
+            const data = res.data.map(candle => ({
+                x: new Date(candle.timeStamp),
+                o: candle.openingPrice,
+                h: candle.highPrice,
+                l: candle.lowPrice,
+                c: candle.closingPrice,
+            }));
+
+            setChartData({
+                datasets: [{
+                    label: `${stockCode} ${interval}분봉`,
+                    data,
+                    borderColor: "rgba(75, 192, 192, 1)"
+                }]
+            });
+        } catch (err) {
+            console.error("차트 데이터 요청 실패:", err);
+            setChartData(null);
+            setStockName("");
+        }
+        setLoading(false);
     }, [stockCode, interval]);
 
-    if (!chartData) return <div>Loading chart...</div>;
+    useEffect(() => {
+        fetchChartData();
+    }, [fetchChartData]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        fetchChartData();
+    };
 
     return (
-        <Chart
-            type="candlestick"
-            data={chartData}
-            options={options}
-        />
+        <div style={{maxWidth: 700, margin: "20px auto", fontFamily: "sans-serif"}}>
+            <form onSubmit={handleSubmit} style={{display: "flex", gap: 10, marginBottom: 20}}>
+                <input
+                    type="text"
+                    value={stockCode}
+                    onChange={e => setStockCode(e.target.value)}
+                    placeholder="종목코드 입력"
+                    style={{flex: 1, padding: 8, fontSize: 16, borderRadius: 5, border: "1px solid #ccc"}}
+                />
+                <select
+                    value={interval}
+                    onChange={e => setInterval(Number(e.target.value))}
+                    style={{padding: 8, fontSize: 16, borderRadius: 5, border: "1px solid #ccc"}}
+                >
+                    <option value={1}>1분</option>
+                    <option value={3}>3분</option>
+                    <option value={5}>5분</option>
+                </select>
+                <button
+                    type="submit"
+                    style={{
+                        padding: "8px 16px",
+                        backgroundColor: "#4461F2",
+                        color: "#fff",
+                        borderRadius: 5,
+                        border: "none",
+                        cursor: "pointer"
+                    }}
+                >
+                    조회
+                </button>
+            </form>
+
+            {loading && <p>로딩 중...</p>}
+
+            {!loading && !chartData && <p>데이터가 없습니다.</p>}
+
+            {!loading && chartData && (
+                <Chart type="candlestick" data={chartData} options={options}/>
+            )}
+        </div>
     );
 };
 

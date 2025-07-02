@@ -18,32 +18,114 @@ const NewsList = () => {
     };
 
     return (
-        <div className="p-4">
-            <h2 className="text-xl font-bold mb-2">뉴스 검색</h2>
-            <input
-                type="text"
-                placeholder="검색어 입력"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                className="border p-2 mr-2"
-            />
-            <button onClick={handleSearch} className="bg-blue-500 text-white px-4 py-2 rounded">
-                검색
-            </button>
+        <div style={styles.container}>
+            <img src="/logo.png" alt="logo" style={styles.logo}/>
+            <h2 style={styles.title}> 뉴스 검색</h2>
+            <p style={styles.subtitle}>원하는 키워드로 뉴스를 검색해보세요.</p>
 
-            <ul className="mt-4 space-y-2">
+            <div style={styles.form}>
+                <input
+                    type="text"
+                    placeholder="검색어 입력"
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    style={styles.input}
+                />
+                <button onClick={handleSearch} style={styles.button}>검색</button>
+            </div>
+
+            <ul style={styles.articleList}>
                 {articles.map((news, idx) => (
-                    <li key={idx} className="border p-3 rounded">
-                        <a href={news.link} target="_blank" rel="noopener noreferrer"
-                           className="text-blue-700 font-semibold">
+                    <li key={idx} style={styles.articleItem}>
+                        <a href={news.link} target="_blank" rel="noopener noreferrer" style={styles.articleTitle}>
                             {news.title.replace(/<[^>]*>?/g, "")}
                         </a>
-                        <p className="text-sm text-gray-600">{news.description.replace(/<[^>]*>?/g, "")}</p>
+                        <p style={styles.articleDesc}>
+                            {news.description.replace(/<[^>]*>?/g, "")}
+                        </p>
                     </li>
                 ))}
             </ul>
         </div>
     );
+};
+
+const styles = {
+    container: {
+        maxWidth: 500,
+        margin: '0 auto',
+        padding: '50px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        fontFamily: 'sans-serif',
+    },
+    logo: {
+        width: 60,
+        height: 60,
+        marginBottom: 20,
+    },
+    title: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    subtitle: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 30,
+    },
+    form: {
+        width: '100%',
+        display: 'flex',
+        gap: '10px',
+        marginBottom: 30,
+    },
+    input: {
+        flex: 1,
+        padding: '12px 15px',
+        fontSize: 14,
+        border: '1px solid #ddd',
+        borderRadius: 10,
+        outline: 'none',
+    },
+    button: {
+        padding: '12px 20px',
+        fontSize: 14,
+        backgroundColor: '#4461F2',
+        color: '#fff',
+        border: 'none',
+        borderRadius: 10,
+        cursor: 'pointer',
+        fontWeight: 'bold',
+    },
+    articleList: {
+        width: '100%',
+        listStyleType: 'none',
+        padding: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '15px',
+    },
+    articleItem: {
+        border: '1px solid #ddd',
+        borderRadius: 10,
+        padding: '15px',
+        backgroundColor: '#f9f9f9',
+    },
+    articleTitle: {
+        color: '#4461F2',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textDecoration: 'none',
+        marginBottom: '5px',
+        display: 'block',
+    },
+    articleDesc: {
+        fontSize: 14,
+        color: '#555',
+        marginTop: '5px',
+    },
 };
 
 export default NewsList;
