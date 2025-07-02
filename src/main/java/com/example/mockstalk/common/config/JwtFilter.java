@@ -46,7 +46,9 @@ public class JwtFilter extends OncePerRequestFilter {
 			|| url.equals("/users/signup")
 			|| url.equals("/auth/reissue")
 			|| url.startsWith("/intra/stocks/")
-			|| url.equals("/api/v1/news/search")) {
+			|| url.equals("/api/v1/news/search")
+			|| url.equals("/period/*/candle/*")
+		) {
 			filterChain.doFilter(request, response);
 			return;
 		}
