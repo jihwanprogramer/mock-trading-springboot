@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, Navigate, Route, Routes, useLocation, useParams} from 'react-router-dom';
+import {Link, Route, Routes, useLocation, useNavigate, useParams} from 'react-router-dom';
 
 import CandleChart from './components/CandleChart';
 import NewsList from './components/NewsList';
@@ -12,28 +12,41 @@ import EditStep1 from './components/EditStep1';
 import EditStep2 from './components/EditStep2';
 import ProfilePage from './components/ProfilePage';
 
-function App() {
+
+function HomePage() {
+    const navigate = useNavigate();
+
     return (
-        <div style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
-            <div style={{flex: 1, overflowY: 'auto'}}>
-                <Routes>
-                    <Route path="/" element={<Navigate to="/chart" replace/>}/>
-                    <Route path="/chart" element={<ChartPage/>}/>
-                    <Route path="/periodic/:type" element={<PeriodicCandleChartWrapper stockCode="000150"/>}/>
-                    <Route path="/news" element={<NewsList/>}/>
-                    <Route path="/realtime" element={<RealtimePrice stockCode="000150"/>}/>
-
-                    {/* 회원 관련 라우트 */}
-                    <Route path="/login" element={<LoginPage/>}/>
-                    <Route path="/register" element={<RegisterPage/>}/>
-                    <Route path="/edit/step1" element={<EditStep1/>}/>
-                    <Route path="/edit/step2" element={<EditStep2/>}/>
-                    <Route path="/profile" element={<ProfilePage/>}/>
-
-                    <Route path="*" element={<div style={{padding: 20}}>페이지를 찾을 수 없습니다.</div>}/>
-                </Routes>
-            </div>
-            <BottomTabNav/>
+        <div style={{
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            fontFamily: 'sans-serif',
+            backgroundColor: '#fafafa',
+        }}>
+            <img
+                src="/logo.png"
+                alt="앱 로고"
+                style={{width: 150, marginBottom: 30}}
+            />
+            <h1 style={{marginBottom: 40}}>MockStock</h1>
+            <button
+                onClick={() => navigate('/login')}
+                style={{
+                    padding: '15px 40px',
+                    fontSize: 18,
+                    cursor: 'pointer',
+                    borderRadius: 8,
+                    border: 'none',
+                    backgroundColor: '#4461F2',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                }}
+            >
+                시작하기
+            </button>
         </div>
     );
 }
@@ -57,19 +70,27 @@ function PeriodicCandleChartWrapper({stockCode}) {
     );
 }
 
+
+function ConditionalBottomTabNav() {
+    const location = useLocation();
+    if (location.pathname === '/') {
+        return null;
+    }
+    return <BottomTabNav/>;
+}
+
 function BottomTabNav() {
     const location = useLocation();
 
     // 로그인 여부 체크
     const isLoggedIn = !!localStorage.getItem('token');
 
-    // 로그인 상태에 따라 탭 목록 변경
+
     const tabs = [
         {to: '/chart', label: '분봉'},
         {to: '/periodic/d', label: '기간별차트'},
         {to: '/news', label: '뉴스'},
         {to: '/realtime', label: '실시간'},
-        // 로그인 상태에 따라 마이페이지 또는 로그인 탭 출력
         isLoggedIn
             ? {to: '/profile', label: '마이페이지'}
             : {to: '/login', label: '로그인'},
@@ -103,5 +124,30 @@ function BottomTabNav() {
     );
 }
 
+function App() {
+    return (
+        <div style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
+            <div style={{flex: 1, overflowY: 'auto'}}>
+                <Routes>
+                    <Route path="/" element={<HomePage/>}/>
+                    <Route path="/chart" element={<ChartPage/>}/>
+                    <Route path="/periodic/:type" element={<PeriodicCandleChartWrapper stockCode="000150"/>}/>
+                    <Route path="/news" element={<NewsList/>}/>
+                    <Route path="/realtime" element={<RealtimePrice stockCode="000150"/>}/>
+
+                    {}
+                    <Route path="/login" element={<LoginPage/>}/>
+                    <Route path="/register" element={<RegisterPage/>}/>
+                    <Route path="/edit/step1" element={<EditStep1/>}/>
+                    <Route path="/edit/step2" element={<EditStep2/>}/>
+                    <Route path="/profile" element={<ProfilePage/>}/>
+
+                    <Route path="*" element={<div style={{padding: 20}}>페이지를 찾을 수 없습니다.</div>}/>
+                </Routes>
+            </div>
+            <ConditionalBottomTabNav/>
+        </div>
+    );
+}
 
 export default App;

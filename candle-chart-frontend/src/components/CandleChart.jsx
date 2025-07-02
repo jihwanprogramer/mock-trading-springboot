@@ -134,6 +134,13 @@ const CandleChart = () => {
 
     return (
         <div style={{maxWidth: 700, margin: "20px auto", fontFamily: "sans-serif"}}>
+            <div style={{textAlign: 'center', marginBottom: 20}}>
+                <img
+                    src="/logo.png"
+                    alt="앱 로고"
+                    style={{width: 120, height: 'auto'}}
+                />
+            </div>
             <form onSubmit={handleSubmit} style={{display: "flex", gap: 10, marginBottom: 20}}>
                 <input
                     type="text"

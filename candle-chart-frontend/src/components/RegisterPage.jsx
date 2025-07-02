@@ -31,6 +31,7 @@ function RegisterPage() {
 
     return (
         <div style={styles.container}>
+            <img src="/logo.png" alt="logo" style={styles.logo}/>
             <h2>회원가입</h2>
             <form style={styles.form} onSubmit={handleRegister}>
                 <input
@@ -88,11 +89,24 @@ function RegisterPage() {
                     회원가입
                 </button>
             </form>
+
+            {/* 아래 부분 추가 */}
+            <p style={styles.linkText}>
+                이미 계정이 있으신가요?{' '}
+                <span style={styles.link} onClick={() => navigate('/login')}>
+                    로그인
+                </span>
+            </p>
         </div>
     );
 }
 
 const styles = {
+    logo: {
+        width: 60,
+        height: 60,
+        marginBottom: 20,
+    },
     container: {maxWidth: 400, margin: '0 auto', padding: 20, fontFamily: 'sans-serif'},
     form: {display: 'flex', flexDirection: 'column', gap: 10},
     input: {padding: 10, fontSize: 14, borderRadius: 5, border: '1px solid #ccc'},
@@ -105,6 +119,18 @@ const styles = {
         cursor: 'pointer',
         fontWeight: 'bold',
         marginTop: 10,
+    },
+    linkText: {
+        marginTop: 20,
+        fontSize: 14,
+        color: '#555',
+        textAlign: 'center',
+    },
+    link: {
+        color: '#4461F2',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        textDecoration: 'underline',
     },
 };
 
