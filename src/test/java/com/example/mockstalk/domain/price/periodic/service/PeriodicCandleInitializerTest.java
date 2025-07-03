@@ -74,7 +74,7 @@ class PeriodicCandleInitializerTest {
         when(stockRepository.findAll()).thenReturn(List.of(stock1, stock2));
         periodicCandleInitializer.init();
 
-        // 배치 사이즈를 1로 강제 세팅 (테스트 편의상)
+        // 배치 사이즈를 1로 세팅
         ReflectionTestUtils.setField(periodicCandleInitializer, "stockBatches",
             List.of(List.of(stock1), List.of(stock2)));
         ReflectionTestUtils.setField(periodicCandleInitializer, "currentBatchIndex", 0);
