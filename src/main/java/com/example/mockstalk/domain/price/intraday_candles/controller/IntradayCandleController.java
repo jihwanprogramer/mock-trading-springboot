@@ -27,7 +27,7 @@ public class IntradayCandleController {
 	private final IntradayCandleService intradayCandleService;
 	private final StockRepository stockRepository;
 
-	@PostMapping("/candles/fetch/al넵l")
+	@PostMapping("/candles/fetch/all")
 	public ResponseEntity<String> fetchCandlesForAllStocks() {
 		List<String> stockCodes = stockRepository.findAllStockCodes();
 
