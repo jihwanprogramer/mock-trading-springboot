@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.mockstalk.common.response.ResponseMessage;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class InterestStockController {
 
 	private final InterestStockService interestStockService;
@@ -26,7 +28,7 @@ public class InterestStockController {
 	// 관심 종목 등록
 	@PostMapping("/interests")
 	public ResponseEntity<ResponseMessage<?>> addInterest(@AuthenticationPrincipal CustomUserDetails userDetails,
-														  @RequestBody InterestRequestDto dto) {
+		@RequestBody InterestRequestDto dto) {
 		interestStockService.addInterest(userDetails.getUser(), dto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ResponseMessage.success("관심종목 등록이 되었습니다."));
 	}
@@ -34,7 +36,7 @@ public class InterestStockController {
 	// 관심 종목 찾기
 	@GetMapping("/interests")
 	public ResponseEntity<ResponseMessage<?>> findInterest(
-			@AuthenticationPrincipal CustomUserDetails userDetails) {
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		return ResponseEntity.ok(ResponseMessage.success(interestStockService.findInterest(userDetails.getUser())));
 	}
@@ -42,7 +44,7 @@ public class InterestStockController {
 	// 관심 종목 삭제
 	@DeleteMapping("/interests/{interestId}")
 	public ResponseEntity<ResponseMessage<?>> deleteInterest(@AuthenticationPrincipal CustomUserDetails userDetails,
-															 @PathVariable Long interestId) {
+		@PathVariable Long interestId) {
 		interestStockService.deleteInterest(userDetails, interestId);
 		return ResponseEntity.ok(ResponseMessage.success("관심 종목이 삭제 되었습니다."));
 	}

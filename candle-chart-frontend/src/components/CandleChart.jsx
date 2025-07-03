@@ -87,7 +87,7 @@ const CandleChart = () => {
     const fetchChartData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`/intra/stocks/${stockCode}/candles`, {
+            const res = await axios.get(`/api/intra/stocks/${stockCode}/candles`, {
                 params: {date: "20250609", interval}
             });
 

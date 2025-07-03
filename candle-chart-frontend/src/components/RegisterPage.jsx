@@ -20,7 +20,7 @@ function RegisterPage() {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            await apiClient.post('/users/signup', form);
+            await apiClient.post('/api/users/signup', form);
             alert('회원가입 성공');
             navigate('/login');
         } catch (error) {

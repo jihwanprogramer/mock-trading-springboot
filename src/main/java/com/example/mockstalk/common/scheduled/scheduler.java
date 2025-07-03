@@ -1,7 +1,5 @@
 package com.example.mockstalk.common.scheduled;
 
-import java.io.InputStream;
-
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,8 +32,6 @@ public class scheduler {
 		tokenService.getAccessToken(); // 시작 시 1회 실행
 		tokenService.getApprovalKey(); // 시작 시 1회 실행
 		// livePriceService.cacheAllStockPrices();
-		InputStream is = getClass().getClassLoader().getResourceAsStream("kospi_code.csv");
-		stockService.saveStockCsv(is);
 
 		webSocketClientManager.connect();
 
