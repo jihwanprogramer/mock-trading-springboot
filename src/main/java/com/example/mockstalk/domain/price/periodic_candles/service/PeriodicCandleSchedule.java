@@ -93,6 +93,10 @@ public class PeriodicCandleSchedule {
             candleTypes.add("Y");
         }
 
+        for (String type : candleTypes) {
+            failedMap.putIfAbsent(type, new ArrayList<>());
+        }
+
         for (Stock stock : currentBatch) {
             for (String type : candleTypes) {
                 try {

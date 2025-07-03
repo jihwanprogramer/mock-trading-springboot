@@ -40,8 +40,8 @@ services:
     image: mockstalk-app:latest
     container_name: mockstalk-app
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: docker/Dockerfile
     ports:
       - "8081:8081"
     environment:
