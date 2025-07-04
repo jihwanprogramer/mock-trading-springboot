@@ -1,0 +1,99 @@
+name: Deploy Frontend & Backend to AWS ECS
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-northeast-2
+
+  # ECR
+  FRONTEND_ECR: 720063431739.dkr.ecr.ap-northeast-2.amazonaws.com/mock-frontend
+  BACKEND_ECR: 720063431739.dkr.ecr.ap-northeast-2.amazonaws.com/mock-backend
+
+  # ECS
+  FRONTEND_CLUSTER: mock-frontend-cluster
+  FRONTEND_SERVICE: mock-frontend-service
+  FRONTEND_TASK_DEF: mock-frontend-task-revision3.json
+
+  BACKEND_CLUSTER: mock-trading-cluster
+  BACKEND_SERVICE: mock-trading-service
+  BACKEND_TASK_DEF: mock-trading-task-revision11.json
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17 (for backend)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build backend JAR
+        run: ./gradlew build -x test
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # --- Backend Build & Push ---
+      - name: Build and push backend Docker image
+        run: |
+          docker buildx build --platform linux/amd64 \
+            -f Dockerfile \
+            -t $BACKEND_ECR:latest .
+          docker push $BACKEND_ECR:latest
+
+      # --- Frontend Build & Push ---
+      - name: Build and push frontend Docker image
+        run: |
+          docker buildx build --platform linux/amd64 \
+            -f candle-chart-frontend/Dockerfile \
+            -t $FRONTEND_ECR:latest ./candle-chart-frontend
+          docker push $FRONTEND_ECR:latest
+
+      # --- Update backend task definition ---
+      - name: Render backend ECS task definition
+        id: render-backend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.BACKEND_TASK_DEF }}
+          container-name: mock-app
+          image: ${{ env.BACKEND_ECR }}:latest
+
+      # --- Update frontend task definition ---
+      - name: Render frontend ECS task definition
+        id: render-frontend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.FRONTEND_TASK_DEF }}
+          container-name: mock-frontend
+          image: ${{ env.FRONTEND_ECR }}:latest
+
+      # --- Deploy backend to ECS ---
+      - name: Deploy backend
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          service: ${{ env.BACKEND_SERVICE }}
+          cluster: ${{ env.BACKEND_CLUSTER }}
+          task-definition: ${{ steps.render-backend.outputs.task-definition }}
+
+      # --- Deploy frontend to ECS ---
+      - name: Deploy frontend
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          service: ${{ env.FRONTEND_SERVICE }}
+          cluster: ${{ env.FRONTEND_CLUSTER }}
+          task-definition: ${{ steps.render-frontend.outputs.task-definition }}
