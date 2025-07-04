@@ -92,7 +92,7 @@ public class AuthControllerTest {
     @Test
     void logout_success() throws Exception {
         // 1. "Bearer " 포함된 토큰 생성
-        String bearerToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getUserRole());
+        String bearerToken = jwtUtil.createToken(user.getId());
 
         // 2. "Bearer " 제거해서 실제 토큰만 추출 (→ 서비스 로직에서 이 값으로 사용)
         String pureToken = jwtUtil.substringToken(bearerToken);
@@ -116,7 +116,7 @@ public class AuthControllerTest {
     @Test
     void reissue_success() throws Exception {
         String refreshToken = jwtUtil.createRefreshToken(user.getId());
-        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getUserRole());
+        String accessToken = jwtUtil.createToken(user.getId());
 
         String newAccessToken = "new.access.token.jwt";
         when(authService.reissueAccessToken(refreshToken, accessToken)).thenReturn(newAccessToken);

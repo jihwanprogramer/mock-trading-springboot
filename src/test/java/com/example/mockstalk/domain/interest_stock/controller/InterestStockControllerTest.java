@@ -55,7 +55,7 @@ public class InterestStockControllerTest {
         stock = new Stock("삼성전자", "005930");
         stockRepository.saveAndFlush(stock);
 
-        accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getUserRole());
+        accessToken = jwtUtil.createToken(user.getId());
     }
 
     @Test

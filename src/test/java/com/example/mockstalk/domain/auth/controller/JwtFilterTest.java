@@ -45,7 +45,7 @@ class JwtFilterTest {
                 .build();
 
         // access token 생성
-        String token = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getUserRole());
+        String token = jwtUtil.createToken(user.getId());
 
         // 블랙리스트 아님
         given(jwtTokenService.isBlacklisted(anyString())).willReturn(false);

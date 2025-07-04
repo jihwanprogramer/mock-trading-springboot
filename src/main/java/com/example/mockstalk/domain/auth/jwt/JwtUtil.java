@@ -41,14 +41,11 @@ public class JwtUtil {
 	}
 
 	// Access Token 생성
-	public String createToken(Long userId, String email, String nickname, UserRole userRole) {
+	public String createToken(Long userId) {
 		Date date = new Date();
 		return BEARER_PREFIX +
 				Jwts.builder()
 						.setSubject(String.valueOf(userId))
-						.claim("email", email)
-						.claim("nickname", nickname)
-						.claim("user", userRole.name())
 						.claim("tokenType","access")
 						.setExpiration(new Date(date.getTime() + TOKEN_TIME))
 						.setIssuedAt(date) // 발급일

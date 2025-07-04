@@ -28,7 +28,7 @@ public class AuthService {
             throw new CustomRuntimeException(ExceptionCode.INVALID_PASSWORD);
         }
 
-        String accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getUserRole());
+        String accessToken = jwtUtil.createToken(user.getId());
         String refreshTokenWithBearer = jwtUtil.createRefreshToken(user.getId());
 
         // Bearer 제거
@@ -42,10 +42,12 @@ public class AuthService {
 
     public void logout(String accessToken,Long userId) {
 
+        // 1. AccessToken의 남은 유효시간 계산
+        // 이시간 동안 블랙리스트 유지
         long expiration = jwtUtil.getRemainTime(accessToken);
-        // 1. AccessToken 븡랙리스트 등록
+        // 2. AccessToken 븡랙리스트 등록
         tokenService.blacklistAccessToken(accessToken,expiration);
-        // 2. RefreshToken 명시적 삭제
+        // 3. RefreshToken 명시적 삭제
         tokenService.deleteRefreshToken(userId);
     }
 
@@ -56,7 +58,6 @@ public class AuthService {
         if (!isValid) {
             throw new CustomRuntimeException(ExceptionCode.INVALID_REFRESH_TOKEN);
         }
-
         // 2. 토큰에서 userId 추출
         Long userId = jwtUtil.extractUserId(refreshToken);
 
@@ -74,7 +75,7 @@ public class AuthService {
         long expiration = jwtUtil.getRemainTime(oldAccessToken);
         tokenService.blacklistAccessToken(oldAccessToken, expiration);
         // 7. 새로운 Access Token 생성
-        String newAccessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getUserRole());
+        String newAccessToken = jwtUtil.createToken(user.getId());
         return newAccessToken;
     }
 

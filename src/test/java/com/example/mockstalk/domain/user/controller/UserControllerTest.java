@@ -44,7 +44,7 @@ public class UserControllerTest {
                 .userRole(USER)
                 .build();
         userRepository.saveAndFlush(user); // flush 중요!
-        accessToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getNickname(), user.getUserRole());
+        accessToken = jwtUtil.createToken(user.getId());
     }
 
     @Test

@@ -32,9 +32,9 @@ public class JwtTokenService {
     }
 
     // AccessToken 블랙리스트에 등록
-    public void blacklistAccessToken(String accessToken, long expirationMillis) {
+    public void blacklistAccessToken(String accessToken, long expiration) {
         String cleanToken = jwtUtil.substringToken(accessToken);
-        redisTemplate.opsForValue().set("BL:" + cleanToken, "true", Duration.ofMillis(expirationMillis));
+        redisTemplate.opsForValue().set("BL:" + cleanToken, "true", Duration.ofMillis(expiration));
     }
     // 블랙리스트 여부 확인
     public boolean isBlacklisted(String accessToken) {

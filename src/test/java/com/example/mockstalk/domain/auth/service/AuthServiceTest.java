@@ -49,7 +49,7 @@ class AuthServiceTest {
 
         given(userRepository.findByEmail("tester@example.com")).willReturn(Optional.of(user));
         given(passwordEncoder.matches("test1234!", "encoded")).willReturn(true);
-        given(jwtUtil.createToken(1L, "tester@example.com", "nick", UserRole.USER)).willReturn("access");
+        given(jwtUtil.createToken(1L)).willReturn("access");
         given(jwtUtil.createRefreshToken(1L)).willReturn("refresh");
         given(jwtUtil.substringToken("refresh")).willReturn("refresh");
 
