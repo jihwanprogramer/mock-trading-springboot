@@ -1,8 +1,12 @@
 package com.example.mockstalk.domain.price.periodic_candles.service;
 
+import com.example.mockstalk.common.error.CustomRuntimeException;
+import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
+import com.example.mockstalk.domain.stock.service.StockService;
 import jakarta.annotation.PostConstruct;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,6 +26,7 @@ public class PeriodicCandleInitializer {
 
     private final PeriodicCandleApiService periodicCandleApiService;
     private final StockRepository stockRepository;
+    private final StockService stockService;
 
     private final int BATCH_SIZE = 100;
     private final List<String> candleTypes = List.of("D", "W", "M", "Y");
@@ -35,7 +40,9 @@ public class PeriodicCandleInitializer {
 
     @PostConstruct
     public void init() {
-        List<Stock> allStocks = stockRepository.findAll();
+        InputStream is = getClass().getClassLoader().getResourceAsStream("kospi_code.csv");
+        stockService.saveStockCsv(is);
+        List<Stock> allStocks = waitUntilStocksPersisted();
         stockBatches = splitIntoBatches(allStocks, BATCH_SIZE);
         candleTypes.forEach(type -> {
             failedStocksMap.put(type, new ArrayList<>());
@@ -44,8 +51,9 @@ public class PeriodicCandleInitializer {
         log.info("주식 총 종목 수: {}", allStocks.size());
     }
 
-    @Scheduled(fixedDelay = 2 * 1000) // 10분마다 실행
+    @Scheduled(fixedDelay = 2 * 1000) // 2초 마다 실행
     public void prefetchCandlesBatch() {
+
         if (currentCandleTypeIndex >= candleTypes.size()) {
             log.info("작업 완료");
             return;
@@ -142,5 +150,23 @@ public class PeriodicCandleInitializer {
 
     public String getEnd() {
         return LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+    }
+
+    private List<Stock> waitUntilStocksPersisted() {
+        List<Stock> stocks;
+        int retry = 10;
+        while (retry-- > 0) {
+            stocks = stockRepository.findAll();
+            if (!stocks.isEmpty()) {
+                return stocks;
+            }
+            try {
+                Thread.sleep(500); // 0.5초 대기
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        throw new CustomRuntimeException(ExceptionCode.NOT_READY_STOCK);
     }
 }
