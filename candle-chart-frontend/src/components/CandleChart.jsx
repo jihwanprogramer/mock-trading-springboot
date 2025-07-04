@@ -93,10 +93,9 @@ const CandleChart = () => {
 
         setLoading(true);
         try {
-            // date는 "YYYY-MM-DD" 형식이므로 API 호출에 맞게 "YYYYMMDD"로 변환
             const dateStr = date.replace(/-/g, "");
 
-            const res = await apiClient.get(`/intra/stocks/${stockCode}/candles`, {
+            const res = await apiClient.get(`/api/intra/stocks/${stockCode}/candles`, {
                 params: {date: dateStr, interval}
             });
 
@@ -163,8 +162,7 @@ const CandleChart = () => {
                     style={{width: 120, height: 'auto'}}
                 />
             </div>
-
-            <form onSubmit={handleSubmit} style={{display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap"}}>
+            <form onSubmit={handleSubmit} style={{display: "flex", gap: 10, marginBottom: 20}}>
                 <input
                     type="text"
                     value={stockCode}

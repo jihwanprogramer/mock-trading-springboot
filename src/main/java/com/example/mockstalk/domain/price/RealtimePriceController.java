@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/realtime-price")
+@RequestMapping("/api/realtime-price")
 @RequiredArgsConstructor
 public class RealtimePriceController {
 

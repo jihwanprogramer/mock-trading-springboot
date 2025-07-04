@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8081',
+    baseURL: process.env.REACT_APP_API_BASE_URL,
     withCredentials: false,  // 쿠키 기반 인증이 필요할 때 사용
 });
 

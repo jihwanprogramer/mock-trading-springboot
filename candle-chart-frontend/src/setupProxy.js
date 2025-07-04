@@ -9,6 +9,13 @@ module.exports = function (app) {
         })
     );
     app.use(
+        '/api',
+        createProxyMiddleware({
+            target: 'http://localhost:8081/api', // ← 백엔드 포트
+            changeOrigin: true,
+        })
+    );
+    app.use(
         '/api/v1/news',
         createProxyMiddleware({
             target: 'http://localhost:8081',

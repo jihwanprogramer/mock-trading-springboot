@@ -29,8 +29,8 @@ const PeriodicCandleChart = () => {
             setLoading(true);
             setErrorMsg("");
             try {
-                const res = await apiClient.get(`/period/${stockCode}/candle/${candleType}`);
-                const data = res.data?.data || [];
+                const res = await apiClient.get(`/api/period/${stockCode}/candle/${candleType}`);
+                setCandles(res.data.data || []);
 
                 if (data.length === 0) {
                     setErrorMsg("데이터가 없습니다. (DB에 해당 종목의 " + candleType + "봉 데이터가 존재하지 않음)");

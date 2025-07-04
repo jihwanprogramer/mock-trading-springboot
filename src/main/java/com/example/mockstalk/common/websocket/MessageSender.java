@@ -1,7 +1,9 @@
 package com.example.mockstalk.common.websocket;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import com.example.mockstalk.domain.stock.repository.StockRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,6 +36,9 @@ import lombok.extern.slf4j.Slf4j;
 @ClientEndpoint
 public class MessageSender {
 	private Session session;
+	private final StockRepository stockRepository;
+	private final SubscribeMessageGenerator buildSubscribeMessage;
+	private final ApprovalKeyService approvalKeyService;
 	private BlockingQueue<RetryMessage> messageQueue;
 	private final BlockingQueue<String> receivedMessageQueue = new LinkedBlockingQueue<>();
 	private final ExecutorService consumerPool = Executors.newFixedThreadPool(5);
@@ -130,17 +136,48 @@ public class MessageSender {
 		reconnecting = true;
 
 		new Thread(() -> {
+			int retryDelay = 3000;
 			while (true) {
 				try {
-					Thread.sleep(3000);
+					Thread.sleep(retryDelay);
 					WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 					container.connectToServer(this, new URI("ws://ops.koreainvestment.com:21000/tryitout/H0STCNT0"));
 					reconnecting = false;
+
+					log.info("WebSocket 재연결 성공");
+					subscribeAll();  // 구독 재요청
+
 					break;
-				} catch (Exception ignored) {
+				} catch (Exception e) {
+					log.warn("WebSocket 재연결 실패, 재시도 대기중...", e);
+					retryDelay = Math.min(retryDelay * 2, 30000);  // 최대 30초
 				}
 			}
 		}).start();
+	}
+
+	private void subscribeAll() throws Exception {
+		List<String> stockCodes = stockRepository.findAllStockCodes(); // 구독 대상 종목 코드 목록
+		String approvalKey = approvalKeyService.get();
+
+		for (String code : stockCodes) {
+			String subscribeMessage = buildSubscribeMessage.build(code, approvalKey);
+			sendMessage(subscribeMessage);
+		}
+
+		log.info("총 {}건의 종목에 재구독 요청을 보냈습니다.", stockCodes.size());
+	}
+
+	private void sendMessage(String message) {
+		try {
+			if (session != null && session.isOpen()) {
+				session.getBasicRemote().sendText(message);
+			} else {
+				log.warn("WebSocket 세션이 닫혀있어 메시지를 보낼 수 없습니다.");
+			}
+		} catch (IOException e) {
+			log.error("WebSocket 메시지 전송 실패", e);
+		}
 	}
 
 	private void handlePriceMessage(String message) {

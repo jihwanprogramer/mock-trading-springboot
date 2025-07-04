@@ -45,6 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		if (url.equals("/auth/login")
 			|| url.equals("/users/signup")
 			|| url.equals("/auth/reissue")
+			|| url.equals("/health")
 		) {
 			filterChain.doFilter(request, response);
 			return;
