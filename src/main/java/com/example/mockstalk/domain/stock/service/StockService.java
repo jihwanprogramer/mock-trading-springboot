@@ -9,26 +9,23 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
+
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.entity.StockStatus;
-import com.example.mockstalk.domain.stock.repository.StockRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class StockService {
 	@PersistenceContext
 	private EntityManager em;
-
-	private final StockRepository stockRepository;
 
 	private static final int BATCH_SIZE = 1000;
 

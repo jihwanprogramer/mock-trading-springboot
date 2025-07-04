@@ -24,7 +24,7 @@ import com.example.mockstalk.domain.user.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/boards")
+@RequestMapping("/api/boards")
 @RequiredArgsConstructor
 public class CommentController {
 

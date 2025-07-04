@@ -12,7 +12,7 @@ import com.example.mockstalk.common.response.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/realtime-price")
+@RequestMapping("/api/realtime-price")
 @RequiredArgsConstructor
 public class RealtimePriceController {
 

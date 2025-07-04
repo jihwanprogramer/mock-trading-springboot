@@ -9,7 +9,7 @@ function ProfilePage() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await apiClient.get('/users/me');
+                const res = await apiClient.get('/api/users/me');
                 setUser(res.data.data);
             } catch (error) {
                 console.error('프로필 조회 실패', error);

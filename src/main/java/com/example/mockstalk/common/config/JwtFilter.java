@@ -42,12 +42,13 @@ public class JwtFilter extends OncePerRequestFilter {
 		String url = request.getRequestURI();
 
 		// 로그인/회원가입/토큰 재발급 필터 통과
-		if (url.equals("/auth/login")
-			|| url.equals("/users/signup")
-			|| url.equals("/auth/reissue")
-			|| url.startsWith("/intra/stocks/")
+		if (url.equals("/api/auth/login")
+			|| url.equals("/api/users/signup")
+			|| url.equals("/health")
+			|| url.equals("/api/auth/reissue")
+			|| url.startsWith("/api/intra/stocks/")
 			|| url.equals("/api/v1/news/search")
-			|| url.equals("/period/")
+			|| url.equals("/api/period/")
 		) {
 			filterChain.doFilter(request, response);
 			return;

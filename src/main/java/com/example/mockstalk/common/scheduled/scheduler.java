@@ -9,6 +9,7 @@ import com.example.mockstalk.common.hantutoken.TokenService;
 import com.example.mockstalk.common.websocket.WebSocketClientManager;
 import com.example.mockstalk.domain.price.livePrice.service.LivePriceService;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
+import com.example.mockstalk.domain.stock.service.StockService;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class scheduler {
 	private final LivePriceService livePriceService;
 	private final RabbitTemplate rabbitTemplate;
-
+	private final StockService stockService;
 	private final StockRepository stockRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final TokenService tokenService;

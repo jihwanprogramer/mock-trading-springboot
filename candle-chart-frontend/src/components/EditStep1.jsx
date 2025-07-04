@@ -9,7 +9,7 @@ function EditStep1() {
     const handleSubmit = (e) => {
         e.preventDefault();
         // 실제 서버 검증 로직 필요
-        navigate('/edit/step2');
+        navigate('/api/edit/step2');
     };
 
     return (
