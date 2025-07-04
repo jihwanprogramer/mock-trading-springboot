@@ -36,4 +36,25 @@ module.exports = function (app) {
             changeOrigin: true,
         })
     );
+    app.use(
+        '/realtime-price',
+        createProxyMiddleware({
+            target: 'http://localhost:8081',
+            changeOrigin: true,
+        })
+    );
+    app.use(
+        '/board',
+        createProxyMiddleware({
+            target: 'http://localhost:8081',
+            changeOrigin: true,
+        })
+    );
+    app.use(
+        '/boards',
+        createProxyMiddleware({
+            target: 'http://localhost:8081',
+            changeOrigin: true,
+        })
+    );
 };

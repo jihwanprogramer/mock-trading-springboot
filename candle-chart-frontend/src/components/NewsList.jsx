@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import axios from "axios";
+import apiClient from "./api";
 
 const NewsList = () => {
     const [keyword, setKeyword] = useState("");
@@ -7,7 +7,7 @@ const NewsList = () => {
 
     const handleSearch = async () => {
         try {
-            const res = await axios.get("/api/v1/news/search", {
+            const res = await apiClient.get("/api/v1/news/search", {
                 params: {keyword}
             });
             setArticles(res.data.articles);
@@ -53,13 +53,17 @@ const NewsList = () => {
 const styles = {
     container: {
         maxWidth: 500,
-        margin: '0 auto',
-        padding: '50px 20px',
+        margin: '30px auto',
+        padding: '40px 20px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         fontFamily: 'sans-serif',
+        border: '1px solid #ddd',
+        borderRadius: 10,
+        backgroundColor: '#fafafa',
     },
+
     logo: {
         width: 60,
         height: 60,

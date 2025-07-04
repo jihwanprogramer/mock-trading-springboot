@@ -57,8 +57,8 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.disable())
 			// 요청별 인증/인가 설정
 			.authorizeHttpRequests(user -> user
-				.requestMatchers("/auth/login", "/users/signup", "/auth/reissue", "/intra/stocks/*/candles",
-					"/api/v1/news/search", "/period/**")
+				.requestMatchers("/auth/login", "/users/signup", "/auth/reissue"
+				)
 				.permitAll()
 				.requestMatchers("/admin/**")
 				.hasRole("ADMIN")
