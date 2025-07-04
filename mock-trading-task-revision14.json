@@ -1,5 +1,5 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:720063431739:task-definition/mock-trading-task:11",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:720063431739:task-definition/mock-trading-task:14",
   "containerDefinitions": [
     {
       "name": "mock-app",
@@ -89,10 +89,8 @@
           "value": "rlatjrwls123"
         }
       ],
-      "environmentFiles": [],
       "mountPoints": [],
       "volumesFrom": [],
-      "ulimits": [],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -100,8 +98,7 @@
           "awslogs-create-group": "true",
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs"
-        },
-        "secretOptions": []
+        }
       },
       "systemControls": []
     }
@@ -109,7 +106,7 @@
   "family": "mock-trading-task",
   "executionRoleArn": "arn:aws:iam::720063431739:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
-  "revision": 11,
+  "revision": 14,
   "volumes": [],
   "status": "ACTIVE",
   "requiresAttributes": [
@@ -152,7 +149,7 @@
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-  "registeredAt": "2025-07-04T06:43:16.340Z",
-  "registeredBy": "arn:aws:iam::720063431739:root",
+  "registeredAt": "2025-07-04T11:19:26.277Z",
+  "registeredBy": "arn:aws:iam::720063431739:user/seokjin",
   "tags": []
 }
