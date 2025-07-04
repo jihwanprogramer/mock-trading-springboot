@@ -2,7 +2,7 @@ name: Deploy Frontend & Backend to AWS ECS
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dev ]
   workflow_dispatch:
 
 env:
@@ -13,9 +13,9 @@ env:
   BACKEND_ECR: 720063431739.dkr.ecr.ap-northeast-2.amazonaws.com/mock-backend
 
   # ECS
-  FRONTEND_CLUSTER: mock-frontend-cluster
+  FRONTEND_CLUSTER: mock-trading-cluster
   FRONTEND_SERVICE: mock-frontend-service
-  FRONTEND_TASK_DEF: mock-frontend-task-revision3.json
+  FRONTEND_TASK_DEF: mock-frontend-task-revision4.json
 
   BACKEND_CLUSTER: mock-trading-cluster
   BACKEND_SERVICE: mock-trading-service

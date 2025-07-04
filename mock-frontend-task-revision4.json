@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:720063431739:task-definition/mock-frontend-task:3",
+    "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:720063431739:task-definition/mock-frontend-task:4",
     "containerDefinitions": [
         {
             "name": "mock-frontend",
@@ -18,7 +18,7 @@
             "environment": [
                 {
                     "name": "REACT_APP_API_BASE_URL",
-                    "value": "http://mock-alb-201063038.ap-northeast-2.elb.amazonaws.com/api"
+                    "value": "http://mock-alb-201063038.ap-northeast-2.elb.amazonaws.com"
                 }
             ],
             "environmentFiles": [],
@@ -41,7 +41,7 @@
     "family": "mock-frontend-task",
     "executionRoleArn": "arn:aws:iam::720063431739:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 3,
+    "revision": 4,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -84,7 +84,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2025-07-03T11:51:12.346Z",
+    "registeredAt": "2025-07-04T08:26:19.907Z",
     "registeredBy": "arn:aws:iam::720063431739:root",
     "enableFaultInjection": false,
     "tags": []
