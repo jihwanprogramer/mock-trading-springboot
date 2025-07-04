@@ -27,7 +27,7 @@ const PeriodicCandleChart = () => {
         const fetchCandles = async () => {
             setLoading(true);
             try {
-                const res = await axios.get(`/period/${stockCode}/candle/${candleType}`);
+                const res = await axios.get(`/api/period/${stockCode}/candle/${candleType}`);
                 setCandles(res.data.data || []);
             } catch (err) {
                 console.error("차트 데이터 요청 실패:", err);

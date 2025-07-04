@@ -65,7 +65,7 @@ function RealtimePrice() {
 
         const fetchPrice = async () => {
             try {
-                const response = await axios.get(`/realtime-price/${stockCode}`);
+                const response = await axios.get(`/api/realtime-price/${stockCode}`);
                 setPrice(response.data.data);
                 setError(null);
             } catch (err) {
