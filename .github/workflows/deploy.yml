@@ -15,11 +15,11 @@ env:
   # ECS
   FRONTEND_CLUSTER: mock-trading-cluster
   FRONTEND_SERVICE: mock-frontend-service
-  FRONTEND_TASK_DEF: mock-frontend-task-revision4.json
+  FRONTEND_TASK_DEF: mock-frontend-task-revision7.json
 
   BACKEND_CLUSTER: mock-trading-cluster
   BACKEND_SERVICE: mock-trading-service
-  BACKEND_TASK_DEF: mock-trading-task-revision11.json
+  BACKEND_TASK_DEF: mock-trading-task-revision14.json
 
 jobs:
   build-and-deploy:
