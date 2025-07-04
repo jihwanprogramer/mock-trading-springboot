@@ -24,7 +24,7 @@ function ProfilePage() {
 
     const handleLogout = async () => {
         try {
-            await apiClient.post('/auth/logout');
+            await apiClient.post('/api/auth/logout');
             alert('로그아웃 되었습니다.');
             // 로컬 스토리지 등에서 토큰 제거
             localStorage.removeItem('token');

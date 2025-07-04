@@ -159,11 +159,13 @@ public class MessageSender {
 	private void subscribeAll() throws Exception {
 		List<String> stockCodes = stockRepository.findAllStockCodes(); // 구독 대상 종목 코드 목록
 		String approvalKey = approvalKeyService.get();
+
 		for (String code : stockCodes) {
 			String subscribeMessage = buildSubscribeMessage.build(code, approvalKey);
 			sendMessage(subscribeMessage);
-			log.info("재구독 요청: {}", code);
 		}
+
+		log.info("총 {}건의 종목에 재구독 요청을 보냈습니다.", stockCodes.size());
 	}
 
 	private void sendMessage(String message) {

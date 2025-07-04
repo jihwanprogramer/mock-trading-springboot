@@ -1,32 +1,33 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import apiClient from './api'; // 실제 경로에 맞게 조정
 
 function LoginPage() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [userRole, setUserRole] = useState('USER'); // 기본값을 USER로 설정 (필요에 따라 수정)
+    const [userRole, setUserRole] = useState('USER');
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email, password, userRole}),
+            const res = await apiClient.post('/api/auth/login', {
+                email,
+                password,
+                userRole,
             });
 
-            const data = await res.json();
-
-            if (res.ok) {
-                localStorage.setItem('token', data.data.trim());
-                navigate('/profile'); // 로그인 성공 시 프로필로 이동
+            const token = res.data.data?.trim();
+            if (token) {
+                localStorage.setItem('token', token);
+                navigate('/profile');
             } else {
-                alert(data.message || '이메일 또는 비밀번호가 잘못되었습니다.');
+                alert('토큰이 없습니다. 로그인 실패.');
             }
         } catch (err) {
             console.error(err);
-            alert('서버 오류');
+            const message = err.response?.data?.message || '이메일 또는 비밀번호가 잘못되었습니다.';
+            alert(message);
         }
     };
 
@@ -52,7 +53,6 @@ function LoginPage() {
                     style={styles.input}
                     required
                 />
-                {/* userRole 입력 UI가 필요하면 아래처럼 select 추가 가능 */}
                 <select
                     value={userRole}
                     onChange={(e) => setUserRole(e.target.value)}
@@ -60,7 +60,6 @@ function LoginPage() {
                 >
                     <option value="USER">USER</option>
                     <option value="ADMIN">ADMIN</option>
-                    {/* 필요한 권한 추가 */}
                 </select>
                 <button type="submit" style={styles.button}>로그인</button>
             </form>
