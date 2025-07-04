@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import axios from "axios";
+import apiClient from "./api"; // axios 인스턴스 (토큰 자동 추가되는)
 
 const NewsList = () => {
     const [keyword, setKeyword] = useState("");
@@ -7,7 +7,7 @@ const NewsList = () => {
 
     const handleSearch = async () => {
         try {
-            const res = await axios.get("/api/v1/news/search", {
+            const res = await apiClient.get("/api/v1/news/search", {
                 params: {keyword}
             });
             setArticles(res.data.articles);
