@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
 	public FilterRegistrationBean<AccountJwtFilter> accountJwtFilter(AccountJwtUtil accountJwtUtil) {
 		FilterRegistrationBean<AccountJwtFilter> registration = new FilterRegistrationBean<>();
 		registration.setFilter(new AccountJwtFilter(accountJwtUtil));
-		registration.addUrlPatterns("/accounts/info"); // 원하는 URL에만 적용
+		registration.addUrlPatterns("/api/accounts/info"); // 원하는 URL에만 적용
 		registration.setOrder(1); // 다른 필터와 충돌 나지 않게 순서 조정 가능
 		return registration;
 	}

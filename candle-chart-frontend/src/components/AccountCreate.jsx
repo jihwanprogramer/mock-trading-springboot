@@ -10,7 +10,7 @@ export default function AccountCreate() {
 
     const handleSubmit = async () => {
         try {
-            await apiClient.post("/accounts", {
+            await apiClient.post("/api/accounts", {
                 accountName,
                 password,
                 initialBalance: parseFloat(initialBalance),

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Chart as ChartJS, LinearScale, TimeScale, Title, Tooltip} from "chart.js";
 import {Chart} from "react-chartjs-2";
 import {CandlestickController, CandlestickElement} from "chartjs-chart-financial";
@@ -12,66 +12,71 @@ ChartJS.register(
 
 const candleOptions = [
     {label: "일봉", value: "D"},
-    {label: "주봉", value: "w"},
+    {label: "주봉", value: "W"},
     {label: "월봉", value: "M"},
     {label: "년봉", value: "Y"},
 ];
 
 const PeriodicCandleChart = () => {
-    const [stockCode, setStockCode] = useState("000150");
+    const [stockCode, setStockCode] = useState("");
     const [candleType, setCandleType] = useState("D");
     const [candles, setCandles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
-    useEffect(() => {
-        const fetchCandles = async () => {
-            setLoading(true);
-            setErrorMsg("");
-            try {
-                const res = await apiClient.get(`/api/period/${stockCode}/candle/${candleType}`);
-                setCandles(res.data.data || []);
 
-                if (data.length === 0) {
-                    setErrorMsg("데이터가 없습니다. (DB에 해당 종목의 " + candleType + "봉 데이터가 존재하지 않음)");
-                    setCandles([]);
-                } else {
-                    setCandles(data);
-                }
-            } catch (err) {
-                console.error("차트 데이터 요청 실패:", err);
-                if (err.response) {
-                    setErrorMsg(`요청 실패: ${err.response.status} - ${err.response.data.message || "서버 오류"}`);
-                } else {
-                    setErrorMsg("서버와의 연결에 실패했습니다");
-                }
+    const fetchCandles = async () => {
+        setLoading(true);
+        setErrorMsg("");
+        try {
+            const res = await apiClient.get(`/api/period/${stockCode}/candle/${candleType}`);
+            const data = res.data.data || [];
+
+            if (data.length === 0) {
+                setErrorMsg(`데이터가 없습니다. (DB에 해당 종목의 ${candleType}봉 데이터가 존재하지 않음)`);
                 setCandles([]);
+            } else {
+                setCandles(data);
             }
-            setLoading(false);
-        };
-
-        fetchCandles();
-    }, [stockCode, candleType]);
+        } catch (err) {
+            console.error("차트 데이터 요청 실패:", err);
+            if (err.response) {
+                setErrorMsg(`요청 실패: ${err.response.status} - ${err.response.data.message || "서버 오류"}`);
+            } else {
+                setErrorMsg("서버와의 연결에 실패했습니다");
+            }
+            setCandles([]);
+        }
+        setLoading(false);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        fetchCandles();
+    };
+
+    const timeUnitMap = {
+        D: "day",
+        w: "week",
+        M: "month",
+        Y: "year"
     };
 
     const data = {
         datasets: [{
             label: `${candleType}봉`,
             data: candles.map(c => ({
-                x: c.date,
+                x: new Date(c.date),
                 o: c.openingPrice,
                 h: c.highPrice,
                 l: c.lowPrice,
                 c: c.closingPrice,
             })),
-            color: {
-                up: "#00B15D",
-                down: "#E44343",
-                unchanged: "#999999",
-            },
+            borderColor: '#000000',
+            borderWidth: 1,
+            upColor: "#00B15D",
+            downColor: "#E44343",
+            unchangedColor: "#999999",
         }]
     };
 
@@ -89,7 +94,7 @@ const PeriodicCandleChart = () => {
             x: {
                 type: "time",
                 time: {
-                    unit: candleType,
+                    unit: timeUnitMap[candleType] || "day",
                     tooltipFormat: "yyyy-MM-dd"
                 },
                 grid: {display: false},
@@ -110,6 +115,7 @@ const PeriodicCandleChart = () => {
             }
         }
     };
+
 
     return (
         <div style={styles.container}>
@@ -145,7 +151,10 @@ const PeriodicCandleChart = () => {
             {loading && <p>로딩 중...</p>}
             {!loading && errorMsg && <p style={{color: 'red'}}>{errorMsg}</p>}
             {!loading && candles.length > 0 && (
-                <Chart type="candlestick" data={data} options={options}/>
+                <>
+                    {console.log("candles", candles)}
+                    <Chart type="candlestick" data={data} options={options}/>
+                </>
             )}
         </div>
     );

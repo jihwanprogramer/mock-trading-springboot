@@ -42,9 +42,9 @@ public class JwtFilter extends OncePerRequestFilter {
 		String url = request.getRequestURI();
 
 		// 로그인/회원가입/토큰 재발급 필터 통과
-		if (url.equals("/auth/login")
-			|| url.equals("/users/signup")
-			|| url.equals("/auth/reissue")
+		if (url.equals("/api/auth/login")
+			|| url.equals("/api/users/signup")
+			|| url.equals("/api/auth/reissue")
 			|| url.equals("/health")
 		) {
 			filterChain.doFilter(request, response);

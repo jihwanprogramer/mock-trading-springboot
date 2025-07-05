@@ -40,7 +40,7 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowedOrigins(List.of("http://localhost:3000", "https://mockstalk.co.kr")); // 허용할 Origin
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		config.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setAllowCredentials(true);
 
@@ -57,8 +57,8 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.disable())
 			// 요청별 인증/인가 설정
 			.authorizeHttpRequests(user -> user
-				.requestMatchers("/auth/login", "/users/signup", "/auth/reissue"
-				,"/health")
+				.requestMatchers("/api/auth/login", "/api/users/signup", "/api/auth/reissue"
+					, "/health")
 				.permitAll()
 				.requestMatchers("/admin/**")
 				.hasRole("ADMIN")

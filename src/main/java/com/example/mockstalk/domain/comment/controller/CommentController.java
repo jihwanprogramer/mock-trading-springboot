@@ -45,7 +45,7 @@ public class CommentController {
 	@GetMapping("/{boardId}/comments")
 	public ResponseEntity<ResponseMessage<?>> findBoardByBoardId(
 		@PathVariable Long boardId,
-		@PageableDefault(size = 10, sort = "created_at", direction = DESC) Pageable pageable) {
+		@PageableDefault(size = 10, sort = "createdAt", direction = DESC) Pageable pageable) {
 		return ResponseEntity.ok(
 			ResponseMessage.success(commentService.findCommentByBoardId(boardId, pageable)));
 	}

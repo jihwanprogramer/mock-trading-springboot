@@ -1,10 +1,10 @@
 import React from 'react';
-import {Link, Route, Routes, useLocation, useNavigate, useParams} from 'react-router-dom';
+import {Link, Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 
 import CandleChart from './components/CandleChart';
 import NewsList from './components/NewsList';
-import PeriodicCandleChart from './components/PeriodicCandleChart';
 import RealtimePrice from './components/RealtimePrice';
+import PeriodicCandleChart from './components/PeriodicCandleChart';
 
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
@@ -23,6 +23,9 @@ import BuyConfirm from './components/BuyConfirm';
 import SellConfirm from './components/SellConfirm';
 import TradeHistory from './components/TradeHistory';
 import OrderHistory from './components/OrderHistory';
+import InterestStockPage from './components/InterestStockPage';
+import EditStep1 from "./components/EditStep1";
+import EditStep2 from "./components/EditStep2";
 
 function HomePage() {
     const navigate = useNavigate();
@@ -67,15 +70,6 @@ function ChartPage() {
     );
 }
 
-function PeriodicCandleChartWrapper({stockCode}) {
-    const {type} = useParams();
-    return (
-        <div style={{padding: 20}}>
-            <PeriodicCandleChart stockCode={stockCode} candleType={type.toUpperCase()}/>
-        </div>
-    );
-}
-
 function ConditionalBottomTabNav() {
     const location = useLocation();
     if (location.pathname === '/') return null;
@@ -88,20 +82,18 @@ function BottomTabNav() {
 
     const tabs = [
         {to: '/chart', label: '분봉'},
-        {to: '/periodic/d', label: '기간별차트'},
+        {to: '/periodic', label: '기간별차트'},
         {to: '/news', label: '뉴스'},
         {to: '/realtime', label: '실시간'},
         {to: '/board', label: '게시판'},
-
-
         {to: '/account/create', label: '계좌'},
         {to: '/mockstalk/home', label: '종목'},
         {to: '/trade/history', label: '체결'},
-
         isLoggedIn
             ? {to: '/profile', label: '마이페이지'}
             : {to: '/login', label: '로그인'},
     ];
+
 
     return (
         <nav style={{
@@ -138,7 +130,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<HomePage/>}/>
                     <Route path="/chart" element={<ChartPage/>}/>
-                    <Route path="/periodic/:type" element={<PeriodicCandleChartWrapper stockCode="000150"/>}/>
+                    <Route path="/periodic" element={<PeriodicCandleChart stockCode="000150" candleType="D"/>}/>
                     <Route path="/realtime" element={<RealtimePrice stockCode="000150"/>}/>
                     <Route path="/news" element={<NewsList/>}/>
 
@@ -162,6 +154,9 @@ function App() {
                     <Route path="/stock/sell" element={<SellConfirm/>}/>
                     <Route path="/trade/history" element={<TradeHistory/>}/>
                     <Route path="/order/history" element={<OrderHistory/>}/>
+                    <Route path="/interest" element={<InterestStockPage/>}/>
+                    <Route path="/user/edit" element={<EditStep1/>}/>
+                    <Route path="/user/edit2" element={<EditStep2/>}/>
 
                     <Route path="*" element={<div style={{padding: 20}}>페이지를 찾을 수 없습니다.</div>}/>
                 </Routes>

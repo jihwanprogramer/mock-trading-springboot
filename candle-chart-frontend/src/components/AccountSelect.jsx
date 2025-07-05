@@ -1,14 +1,16 @@
 import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
 import apiClient from "./api";
 
 export default function AccountSelect() {
     const [accounts, setAccounts] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const fetchAccounts = async () => {
         try {
-            const res = await apiClient.get("/accounts");
+            const res = await apiClient.get("/api/accounts");
             setAccounts(res.data.data);
         } catch (err) {
             console.error("계좌 목록 조회 실패:", err);
@@ -32,32 +34,67 @@ export default function AccountSelect() {
         }
 
         try {
-            const res = await apiClient.post("/accounts/sign", {
-                id: selectedAccount.id,
-                accountName: selectedAccount.accountName,
-                password,
-            });
+            const res = await apiClient.post(
+                "/api/accounts/sign",
+                {
+                    accountId: selectedAccount.id,
+                    password,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                    },
+                }
+            );
 
+            const token = res.data.message;
+            if (token?.startsWith("Bearer ")) {
+                localStorage.setItem("accountToken", token.split(" ")[1]);
+                alert("계좌 로그인 완료");
+                navigate("/account/info");
 
-            const token = res.data.data;
-            localStorage.setItem("accountToken", token);
-            alert("계좌 로그인 완료");
+            } else {
+                alert("유효하지 않은 토큰입니다.");
+            }
         } catch (err) {
             console.error("계좌 로그인 실패:", err);
             alert("계좌 로그인에 실패했습니다.");
         }
     };
 
-    const handleDelete = (indexToDelete) => {
+
+    const handleDelete = async (indexToDelete) => {
         if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-        setAccounts((prev) => prev.filter((_, idx) => idx !== indexToDelete));
-        if (selectedIndex === indexToDelete) {
-            setSelectedIndex(null); // 선택 초기화
-        } else if (selectedIndex > indexToDelete) {
-            setSelectedIndex((prev) => prev - 1); // 인덱스 보정
+        const accountToDelete = accounts[indexToDelete];
+        console.log("삭제 대상 account:", accountToDelete);
+        const accountId = accountToDelete.id || accountToDelete.accountId; // id 없으면 accountId 사용
+        if (!accountId) {
+            alert("계좌 ID를 찾을 수 없습니다.");
+            return;
+        }
+
+        try {
+            await apiClient.delete(`/api/accounts/${accountToDelete.id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            });
+
+            setAccounts((prev) => prev.filter((_, idx) => idx !== indexToDelete));
+            if (selectedIndex === indexToDelete) {
+                setSelectedIndex(null);
+            } else if (selectedIndex > indexToDelete) {
+                setSelectedIndex((prev) => prev - 1);
+            }
+
+            alert("계좌가 삭제되었습니다.");
+        } catch (err) {
+            console.error("계좌 삭제 실패:", err);
+            alert("계좌 삭제에 실패했습니다.");
         }
     };
+
 
     useEffect(() => {
         fetchAccounts();

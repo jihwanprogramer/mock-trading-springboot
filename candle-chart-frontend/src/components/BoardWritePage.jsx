@@ -14,15 +14,15 @@ const BoardWritePage = ({stockId}) => {
             return;
         }
         try {
-            await apiClient.post(`/stocks/${stockId}/board`, {title, content});
-            navigate("/board"); // 글 등록 후 게시글 목록으로 이동
+            await apiClient.post(`/api/stocks/${stockId}/board`, {title, content});
+            navigate("/board");
         } catch (err) {
             alert("글 작성 실패");
         }
     };
 
     const handleCancel = () => {
-        navigate("/board"); // 취소 시에도 목록으로 이동
+        navigate("/board");
     };
 
     return (

@@ -3,20 +3,46 @@ import apiClient from "./api";
 
 export default function AccountInfo() {
     const [account, setAccount] = useState(null);
+    const [error, setError] = useState(null);
 
     const fetchAccount = async () => {
         try {
-            const res = await apiClient.get("/accounts/info");
+            let token = localStorage.getItem("accountToken");
+
+            if (!token) {
+                setError("로그인 토큰이 없습니다.");
+                return;
+            }
+
+            // token이 'Bearer ' 포함되어 있으면 그대로 쓰고, 아니면 붙이기
+            if (!token.startsWith("Bearer ")) {
+                token = `Bearer ${token}`;
+            }
+
+            const res = await apiClient.get(`/api/accounts/info`, {
+                headers: {
+                    "X-ACCOUNT-Authorization": token,
+                },
+            });
+
             setAccount(res.data.data);
+            setError(null);
         } catch (err) {
             console.error("계좌 정보 조회 실패:", err);
-            alert("계좌 정보를 불러오지 못했습니다.");
+            setError("계좌 정보를 불러오지 못했습니다.");
         }
     };
 
     useEffect(() => {
         fetchAccount();
     }, []);
+
+    if (error)
+        return (
+            <div style={styles.loading}>
+                <p style={{color: "red"}}>{error}</p>
+            </div>
+        );
 
     if (!account)
         return <div style={styles.loading}>로딩 중...</div>;
@@ -28,17 +54,36 @@ export default function AccountInfo() {
                 <strong>계좌 이름: </strong> {account.accountName}
             </div>
             <div style={styles.infoItem}>
-                <strong>현재 잔액: </strong> ₩{account.currentBalance.toLocaleString()}
+                <strong>현재 잔액: </strong>{" "}
+                {account.currentBalance != null
+                    ? `₩${account.currentBalance.toLocaleString()}`
+                    : "정보 없음"}
             </div>
             <div style={styles.infoItem}>
-                <strong>초기 자산: </strong> ₩{account.initialBalance.toLocaleString()}
+                <strong>초기 자산: </strong>{" "}
+                {account.initialBalance != null
+                    ? `₩${account.initialBalance.toLocaleString()}`
+                    : "정보 없음"}
             </div>
-            <div style={styles.infoItem}>
-                <strong>총 자산: </strong> ₩{account.totalAsset.toLocaleString()}
-            </div>
-            <div style={{...styles.infoItem, marginBottom: 0}}>
-                <strong>수익률: </strong> {account.profitRate.toFixed(2)}%
-            </div>
+
+            {account.totalAsset != null && (
+                <div style={styles.infoItem}>
+                    <strong>총 자산: </strong> ₩{account.totalAsset.toLocaleString()}
+                </div>
+            )}
+            {account.profitRate != null && (
+                <div style={{...styles.infoItem, marginBottom: 0}}>
+                    <strong>수익률: </strong> {account.profitRate.toFixed(2)}%
+                </div>
+            )}
+
+            {account.createdAt && (
+                <div
+                    style={{...styles.infoItem, fontSize: 14, marginTop: 20, color: "#888"}}
+                >
+                    생성일: {new Date(account.createdAt).toLocaleString()}
+                </div>
+            )}
         </div>
     );
 }

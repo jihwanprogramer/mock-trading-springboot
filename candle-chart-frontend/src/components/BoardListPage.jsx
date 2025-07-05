@@ -1,4 +1,3 @@
-// src/components/BoardPage.jsx
 import React, {useCallback, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import apiClient from "./api";
@@ -17,17 +16,18 @@ const BoardPage = ({stockId}) => {
 
     const fetchComments = useCallback(async (postId) => {
         try {
-            const res = await apiClient.get(`/boards/${postId}/comments`);
-            setCommentsMap((prev) => ({...prev, [postId]: res.data.data || []}));
+            const res = await apiClient.get(`/api/boards/${postId}/comments`);
+            setCommentsMap((prev) => ({...prev, [postId]: res.data.data.content || []}));
         } catch (err) {
             console.error(`댓글 조회 실패(postId=${postId}):`, err);
         }
     }, []);
 
+
     const fetchPosts = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await apiClient.get(`/stocks/${stockId}/board`);
+            const res = await apiClient.get(`/api/stocks/${stockId}/board`);
             setPosts(res.data);
             res.data.forEach((post) => fetchComments(post.id));
         } catch (err) {
@@ -53,23 +53,25 @@ const BoardPage = ({stockId}) => {
             return;
         }
         try {
-            await apiClient.patch(`/stocks/${stockId}/board/${postId}`, {
+            console.log("PATCH 요청 보냄:", {postId, title: editTitle, content: editContent});
+            await apiClient.patch(`/api/stocks/${stockId}/board/${postId}`, {
                 title: editTitle,
                 content: editContent,
             });
             setEditingPostId(null);
-            fetchPosts();
+            await fetchPosts();
         } catch (err) {
             console.error("게시글 수정 실패:", err);
             alert("게시글 수정 실패");
         }
     };
 
+
     const handleDelete = async (postId) => {
         if (!window.confirm("정말 삭제하시겠습니까?")) return;
         try {
-            await apiClient.delete(`/stocks/${stockId}/board/${postId}`);
-            fetchPosts();
+            await apiClient.delete(`/api/stocks/${stockId}/board/${postId}`);
+            fetchPosts(postId);
         } catch (err) {
             console.error("게시글 삭제 실패:", err);
             alert("게시글 삭제 실패");
@@ -87,7 +89,7 @@ const BoardPage = ({stockId}) => {
             return;
         }
         try {
-            await apiClient.post(`/boards/${postId}/comments`, {content});
+            await apiClient.post(`/api/boards/${postId}/comments`, {content});
             setCommentInputs((prev) => ({...prev, [postId]: ""}));
             fetchComments(postId);
         } catch (err) {
@@ -99,7 +101,7 @@ const BoardPage = ({stockId}) => {
     const handleCommentDelete = async (postId, commentId) => {
         if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
         try {
-            await apiClient.delete(`/boards/${postId}/comments/${commentId}`);
+            await apiClient.delete(`/api/boards/${postId}/comments/${commentId}`);
             fetchComments(postId);
         } catch (err) {
             console.error("댓글 삭제 실패:", err);
@@ -159,13 +161,13 @@ const BoardPage = ({stockId}) => {
                                 <div style={{marginTop: 10}}>
                                     <button
                                         onClick={() => handleEdit(post)}
-                                        style={{...styles.button, marginRight: 10}}
+                                        style={styles.editButton}
                                     >
                                         수정
                                     </button>
                                     <button
                                         onClick={() => handleDelete(post.id)}
-                                        style={{...styles.button, backgroundColor: "#E44343"}}
+                                        style={styles.deleteButton}
                                     >
                                         삭제
                                     </button>
@@ -236,6 +238,30 @@ const styles = {
         fontWeight: "bold",
         fontSize: 14,
     },
+    editButton: {
+        backgroundColor: "#4461F2",
+        color: "#fff",
+        border: "none",
+        marginRight: 8,
+        padding: "4px 10px",
+        fontSize: 12,
+        borderRadius: 6,
+        cursor: "pointer",
+        fontWeight: "bold",
+        height: 28,
+        lineHeight: "20px",
+    },
+    deleteButton: {
+        backgroundColor: "#E44343",
+        color: "#fff",
+        border: "none",
+        padding: "4px 10px",
+        fontSize: 12,
+        borderRadius: 6,
+        cursor: "pointer",
+        height: 28,
+        lineHeight: "20px",
+    },
     input: {
         width: "100%",
         padding: 12,
@@ -266,6 +292,8 @@ const styles = {
         cursor: "pointer",
         padding: "2px 8px",
         fontSize: 12,
+        height: 24,
+        lineHeight: "18px",
     },
     commentInput: {
         width: "100%",
