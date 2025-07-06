@@ -8,13 +8,15 @@ module.exports = function (app) {
             changeOrigin: true,
         })
     );
+
     app.use(
         '/api',
         createProxyMiddleware({
-            target: 'http://localhost:8081/api', // ← 백엔드 포트
+            target: 'http://localhost:8081',
             changeOrigin: true,
         })
     );
+
     app.use(
         '/api/v1/news',
         createProxyMiddleware({
@@ -22,25 +24,60 @@ module.exports = function (app) {
             changeOrigin: true,
         })
     );
+
     app.use(
-        '/auth',
+        '/api/auth',
         createProxyMiddleware({
             target: 'http://localhost:8081',
             changeOrigin: true,
         })
     );
+
     app.use(
-        '/me',
+        '/api/me',
         createProxyMiddleware({
             target: 'http://localhost:8081',
             changeOrigin: true,
         })
     );
+
     app.use(
-        '/period',
+        '/api/period',
         createProxyMiddleware({
             target: 'http://localhost:8081',
             changeOrigin: true,
         })
     );
+
+    app.use(
+        '/realtime-price',
+        createProxyMiddleware({
+            target: 'http://localhost:8081',
+            changeOrigin: true,
+        })
+    );
+
+    app.use(
+        '/board',
+        createProxyMiddleware({
+            target: 'http://localhost:8081',
+            changeOrigin: true,
+        })
+    );
+
+    app.use(
+        '/boards',
+        createProxyMiddleware({
+            target: 'http://localhost:8081',
+            changeOrigin: true,
+        })
+    );
+
+    // app.use(
+    //     '/api',
+    //     createProxyMiddleware({
+    //         target: 'http://localhost:8081/api', // ← 백엔드 포트
+    //         changeOrigin: true,
+    //     })
+    // );
 };

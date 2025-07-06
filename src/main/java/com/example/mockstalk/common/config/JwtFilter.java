@@ -44,10 +44,8 @@ public class JwtFilter extends OncePerRequestFilter {
 		// 로그인/회원가입/토큰 재발급 필터 통과
 		if (url.equals("/api/auth/login")
 			|| url.equals("/api/users/signup")
-			|| url.equals("/health")
 			|| url.equals("/api/auth/reissue")
-			|| url.startsWith("/api/intra/stocks/")
-			|| url.equals("/api/period/")
+			|| url.equals("/health")
 		) {
 			filterChain.doFilter(request, response);
 			return;

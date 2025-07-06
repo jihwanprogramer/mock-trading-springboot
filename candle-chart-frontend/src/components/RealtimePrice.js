@@ -1,124 +1,132 @@
-import React, {useEffect, useState} from "react";
-import axios from "axios";
+import React, {useCallback, useEffect, useState} from "react";
+import apiClient from "./api"; // axios 인스턴스
 
-const styles = {
-    container: {
-        maxWidth: 400,
-        margin: "30px auto",
-        padding: "40px 20px",
-        fontFamily: "sans-serif",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        border: "1px solid #ddd",
-        borderRadius: 10,
-        backgroundColor: "#fafafa",
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 20,
-    },
-    form: {
-        width: "100%",
-        display: "flex",
-        gap: 10,
-        marginBottom: 30,
-    },
-    input: {
-        flex: 1,
-        padding: 12,
-        fontSize: 16,
-        borderRadius: 10,
-        border: "1px solid #ddd",
-        outline: "none",
-    },
-    button: {
-        padding: "12px 25px",
-        backgroundColor: "#4461F2",
-        color: "#fff",
-        border: "none",
-        borderRadius: 10,
-        cursor: "pointer",
-        fontWeight: "bold",
-        fontSize: 16,
-    },
-    price: {
-        fontSize: 28,
-        fontWeight: "bold",
-        color: "#4461F2",
-    },
-    error: {
-        color: "red",
-        marginBottom: 10,
-    },
-};
-
-function RealtimePrice() {
-    const [inputCode, setInputCode] = useState("");
-    const [stockCode, setStockCode] = useState(null);
+const RealtimePrice = () => {
+    const [stockCode, setStockCode] = useState("");
     const [price, setPrice] = useState(null);
-    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const fetchPrice = useCallback(async () => {
+        if (!stockCode) return;
+        setLoading(true);
+        setError("");
+        try {
+            const res = await apiClient.get(`/realtime-price/${stockCode}`);
+            if (res.status === 204 || !res.data) {
+                setPrice(null);
+                setError("가격 정보 없음");
+            } else {
+                setPrice(res.data);
+            }
+        } catch (err) {
+            console.error("실시간 가격 조회 실패:", err);
+            setError("가격 조회 실패");
+            setPrice(null);
+        }
+        setLoading(false);
+    }, [stockCode]);
 
     useEffect(() => {
-        if (!stockCode) return;
-
-        const fetchPrice = async () => {
-            try {
-                const response = await axios.get(`/api/realtime-price/${stockCode}`);
-                setPrice(response.data.data);
-                setError(null);
-            } catch (err) {
-                setError("가격 정보를 불러오는 데 실패했습니다.");
-                setPrice(null);
-            }
-        };
-
         fetchPrice();
-
-        const intervalId = setInterval(fetchPrice, 5000);
-
-        return () => clearInterval(intervalId);
-    }, [stockCode]);
+        const interval = setInterval(fetchPrice, 3000);
+        return () => clearInterval(interval);
+    }, [fetchPrice]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (inputCode.trim() === "") {
-            alert("종목코드를 입력해주세요.");
-            return;
-        }
-        setStockCode(inputCode.trim());
+        fetchPrice();
     };
 
     return (
         <div style={styles.container}>
-            <h2 style={styles.title}>실시간 현재가 조회</h2>
+            <img src="/logo.png" alt="로고" style={styles.logo}/>
+            <h2 style={styles.title}>실시간 주가 조회</h2>
+
             <form onSubmit={handleSubmit} style={styles.form}>
                 <input
                     type="text"
+                    value={stockCode}
+                    onChange={(e) => setStockCode(e.target.value)}
                     placeholder="종목코드 입력"
-                    value={inputCode}
-                    onChange={(e) => setInputCode(e.target.value)}
                     style={styles.input}
                 />
-                <button type="submit" style={styles.button}>
-                    조회
-                </button>
+                <button type="submit" style={styles.button}>조회</button>
             </form>
 
-            {stockCode && <h3>{stockCode} 현재가</h3>}
+            {stockCode && <h3 style={styles.subtitle}>{stockCode} 현재가</h3>}
 
             {error && <p style={styles.error}>{error}</p>}
 
-            {price !== null ? (
-                <p style={styles.price}>{price.toLocaleString()} 원</p>
-            ) : stockCode ? (
-                <p>가격 정보를 불러오는 중...</p>
-            ) : (
-                <p>종목코드를 입력하고 조회 버튼을 눌러주세요.</p>
+            {!error && loading && <p>불러오는 중...</p>}
+
+            {!error && !loading && !isNaN(Number(price)) && (
+                <p style={styles.price}>{Number(price).toLocaleString()} 원</p>
             )}
         </div>
     );
-}
+};
+
+const styles = {
+    container: {
+        maxWidth: 500,
+        margin: "30px auto",
+        padding: "40px 20px",
+        fontFamily: "sans-serif",
+        textAlign: "center",
+        backgroundColor: "#f9f9f9",
+        borderRadius: 10,
+        border: "1px solid #ddd",
+    },
+    logo: {
+        width: 80,
+        height: "auto",
+        marginBottom: 20,
+    },
+    title: {
+        fontSize: 22,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    subtitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginTop: 30,
+    },
+    form: {
+        display: "flex",
+        gap: 10,
+        marginTop: 20,
+        justifyContent: "center",
+    },
+    input: {
+        padding: "10px",
+        fontSize: 14,
+        borderRadius: 8,
+        border: "1px solid #ccc",
+        flex: 1,
+    },
+    button: {
+        padding: "10px 20px",
+        fontSize: 14,
+        backgroundColor: "#4461F2",
+        color: "#fff",
+        border: "none",
+        borderRadius: 8,
+        cursor: "pointer",
+        fontWeight: "bold",
+    },
+    price: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginTop: 10,
+        color: "#333",
+    },
+    error: {
+        color: "red",
+        fontSize: 14,
+        marginTop: 10,
+    },
+};
 
 export default RealtimePrice;

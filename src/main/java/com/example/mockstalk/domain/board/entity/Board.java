@@ -1,9 +1,15 @@
 package com.example.mockstalk.domain.board.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.example.mockstalk.common.baseEntity.BaseEntity;
 import com.example.mockstalk.domain.board.dto.BoardUpdateRequestDto;
+import com.example.mockstalk.domain.comment.entity.Comment;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.user.entity.User;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,36 +34,39 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Board extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column
-    private String title;
+	@Column
+	private String title;
 
-    @Lob
-    private String content;
+	@Lob
+	private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stock_id")
-    private Stock stock;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "stock_id")
+	private Stock stock;
 
-    public Board(String title, String content, Stock stock) {
-        this.title = title;
-        this.content = content;
-        this.stock = stock;
-    }
+	@OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	private List<Comment> comments = new ArrayList<>();
 
-    public void updatedAt(BoardUpdateRequestDto boardUpdateRequestDto) {
-        if (boardUpdateRequestDto.getTitle() != null) {
-            this.title = boardUpdateRequestDto.getTitle();
-        }
-        if (boardUpdateRequestDto.getContent() != null) {
-            this.content = boardUpdateRequestDto.getContent();
-        }
-    }
+	public Board(String title, String content, Stock stock) {
+		this.title = title;
+		this.content = content;
+		this.stock = stock;
+	}
+
+	public void updatedAt(BoardUpdateRequestDto boardUpdateRequestDto) {
+		if (boardUpdateRequestDto.getTitle() != null) {
+			this.title = boardUpdateRequestDto.getTitle();
+		}
+		if (boardUpdateRequestDto.getContent() != null) {
+			this.content = boardUpdateRequestDto.getContent();
+		}
+	}
 }

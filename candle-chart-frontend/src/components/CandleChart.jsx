@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
-import axios from "axios";
+import apiClient from "./api"; // axios -> apiClient
 import {Chart as ChartJS, LinearScale, TimeScale, Title, Tooltip} from "chart.js";
 import {Chart} from "react-chartjs-2";
 import {CandlestickController, CandlestickElement} from "chartjs-chart-financial";
@@ -8,8 +8,9 @@ import 'chartjs-adapter-date-fns';
 ChartJS.register(TimeScale, LinearScale, Tooltip, Title, CandlestickController, CandlestickElement);
 
 const CandleChart = () => {
-    const [stockCode, setStockCode] = useState("000150");
+    const [stockCode, setStockCode] = useState("");
     const [interval, setInterval] = useState(1);
+    const [date, setDate] = useState("");
     const [chartData, setChartData] = useState(null);
     const [stockName, setStockName] = useState("");
     const [loading, setLoading] = useState(false);
@@ -85,10 +86,17 @@ const CandleChart = () => {
     };
 
     const fetchChartData = useCallback(async () => {
+        if (!date) {
+            alert("날짜를 입력해주세요 (YYYY-MM-DD)");
+            return;
+        }
+
         setLoading(true);
         try {
-            const res = await axios.get(`/api/intra/stocks/${stockCode}/candles`, {
-                params: {date: "20250609", interval}
+            const dateStr = date.replace(/-/g, "");
+
+            const res = await apiClient.get(`/api/intra/stocks/${stockCode}/candles`, {
+                params: {date: dateStr, interval}
             });
 
             if (!res.data || res.data.length === 0) {
@@ -121,11 +129,13 @@ const CandleChart = () => {
             setStockName("");
         }
         setLoading(false);
-    }, [stockCode, interval]);
+    }, [stockCode, interval, date]);
 
     useEffect(() => {
-        fetchChartData();
-    }, [fetchChartData]);
+        if (date) {
+            fetchChartData();
+        }
+    }, [fetchChartData, date]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -133,7 +143,18 @@ const CandleChart = () => {
     };
 
     return (
-        <div style={{maxWidth: 700, margin: "20px auto", fontFamily: "sans-serif"}}>
+        <div style={{
+            maxWidth: 700,
+            margin: "30px auto",
+            padding: "40px 20px",
+            fontFamily: "sans-serif",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            border: "1px solid #ddd",
+            borderRadius: 10,
+            backgroundColor: "#fafafa",
+        }}>
             <div style={{textAlign: 'center', marginBottom: 20}}>
                 <img
                     src="/logo.png"
@@ -158,6 +179,12 @@ const CandleChart = () => {
                     <option value={3}>3분</option>
                     <option value={5}>5분</option>
                 </select>
+                <input
+                    type="date"
+                    value={date}
+                    onChange={e => setDate(e.target.value)}
+                    style={{padding: 8, fontSize: 16, borderRadius: 5, border: "1px solid #ccc"}}
+                />
                 <button
                     type="submit"
                     style={{

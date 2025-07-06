@@ -1,17 +1,31 @@
 import React from 'react';
-import {Link, Route, Routes, useLocation, useNavigate, useParams} from 'react-router-dom';
+import {Link, Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 
 import CandleChart from './components/CandleChart';
 import NewsList from './components/NewsList';
-import PeriodicCandleChart from './components/PeriodicCandleChart';
 import RealtimePrice from './components/RealtimePrice';
+import PeriodicCandleChart from './components/PeriodicCandleChart';
 
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
-import EditStep1 from './components/EditStep1';
-import EditStep2 from './components/EditStep2';
 import ProfilePage from './components/ProfilePage';
 
+import BoardListPage from './components/BoardListPage';
+import BoardWritePage from './components/BoardWritePage';
+
+import AccountCreate from './components/AccountCreate';
+import AccountSelect from './components/AccountSelect';
+import PasswordInput from './components/PasswordInput';
+import Home from './components/Home';
+import AccountInfo from './components/AccountInfo';
+import StockDetail from './components/StockDetail';
+import BuyConfirm from './components/BuyConfirm';
+import SellConfirm from './components/SellConfirm';
+import TradeHistory from './components/TradeHistory';
+import OrderHistory from './components/OrderHistory';
+import InterestStockPage from './components/InterestStockPage';
+import EditStep1 from "./components/EditStep1";
+import EditStep2 from "./components/EditStep2";
 
 function HomePage() {
     const navigate = useNavigate();
@@ -26,11 +40,7 @@ function HomePage() {
             fontFamily: 'sans-serif',
             backgroundColor: '#fafafa',
         }}>
-            <img
-                src="/logo.png"
-                alt="앱 로고"
-                style={{width: 150, marginBottom: 30}}
-            />
+            <img src="/logo.png" alt="앱 로고" style={{width: 150, marginBottom: 30}}/>
             <h1 style={{marginBottom: 40}}>MockStock</h1>
             <button
                 onClick={() => navigate('/login')}
@@ -60,52 +70,39 @@ function ChartPage() {
     );
 }
 
-function PeriodicCandleChartWrapper({stockCode}) {
-    const {type} = useParams();
-    return (
-        <div style={{padding: 20}}>
-            <h2>[ 한국투자증권 {type.toUpperCase()}봉 차트 ]</h2>
-            <PeriodicCandleChart stockCode={stockCode} candleType={type.toUpperCase()}/>
-        </div>
-    );
-}
-
-
 function ConditionalBottomTabNav() {
     const location = useLocation();
-    if (location.pathname === '/') {
-        return null;
-    }
+    if (location.pathname === '/') return null;
     return <BottomTabNav/>;
 }
 
 function BottomTabNav() {
     const location = useLocation();
-
-    // 로그인 여부 체크
     const isLoggedIn = !!localStorage.getItem('token');
-
 
     const tabs = [
         {to: '/chart', label: '분봉'},
-        {to: '/periodic/d', label: '기간별차트'},
+        {to: '/periodic', label: '기간별차트'},
         {to: '/news', label: '뉴스'},
         {to: '/realtime', label: '실시간'},
+        {to: '/board', label: '게시판'},
+        {to: '/account/create', label: '계좌'},
+        {to: '/mockstalk/home', label: '종목'},
+        {to: '/trade/history', label: '체결'},
         isLoggedIn
             ? {to: '/profile', label: '마이페이지'}
             : {to: '/login', label: '로그인'},
     ];
 
+
     return (
-        <nav
-            style={{
-                display: 'flex',
-                justifyContent: 'space-around',
-                borderTop: '1px solid #ccc',
-                padding: '10px 0',
-                backgroundColor: '#fff',
-            }}
-        >
+        <nav style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            borderTop: '1px solid #ccc',
+            padding: '10px 0',
+            backgroundColor: '#fff',
+        }}>
             {tabs.map(tab => (
                 <Link
                     key={tab.to}
@@ -125,22 +122,41 @@ function BottomTabNav() {
 }
 
 function App() {
+    const stockId = 1;
+
     return (
         <div style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
             <div style={{flex: 1, overflowY: 'auto'}}>
                 <Routes>
                     <Route path="/" element={<HomePage/>}/>
                     <Route path="/chart" element={<ChartPage/>}/>
-                    <Route path="/periodic/:type" element={<PeriodicCandleChartWrapper stockCode="000150"/>}/>
-                    <Route path="/news" element={<NewsList/>}/>
+                    <Route path="/periodic" element={<PeriodicCandleChart stockCode="000150" candleType="D"/>}/>
                     <Route path="/realtime" element={<RealtimePrice stockCode="000150"/>}/>
+                    <Route path="/news" element={<NewsList/>}/>
 
-                    {}
+                    {/* 게시판 */}
+                    <Route path="/board" element={<BoardListPage stockId={stockId}/>}/>
+                    <Route path="/board/write" element={<BoardWritePage stockId={stockId}/>}/>
+
+                    {/* 로그인/회원가입/마이페이지 */}
                     <Route path="/login" element={<LoginPage/>}/>
                     <Route path="/register" element={<RegisterPage/>}/>
-                    <Route path="/edit/step1" element={<EditStep1/>}/>
-                    <Route path="/edit/step2" element={<EditStep2/>}/>
                     <Route path="/profile" element={<ProfilePage/>}/>
+
+                    {/* ✅ Mockstalk 페이지 */}
+                    <Route path="/account/create" element={<AccountCreate/>}/>
+                    <Route path="/account/select" element={<AccountSelect/>}/>
+                    <Route path="/account/password" element={<PasswordInput/>}/>
+                    <Route path="/mockstalk/home" element={<Home/>}/>
+                    <Route path="/account/info" element={<AccountInfo/>}/>
+                    <Route path="/stock/:stockCode" element={<StockDetail/>}/>
+                    <Route path="/stock/buy" element={<BuyConfirm/>}/>
+                    <Route path="/stock/sell" element={<SellConfirm/>}/>
+                    <Route path="/trade/history" element={<TradeHistory/>}/>
+                    <Route path="/order/history" element={<OrderHistory/>}/>
+                    <Route path="/interest" element={<InterestStockPage/>}/>
+                    <Route path="/user/edit" element={<EditStep1/>}/>
+                    <Route path="/user/edit2" element={<EditStep2/>}/>
 
                     <Route path="*" element={<div style={{padding: 20}}>페이지를 찾을 수 없습니다.</div>}/>
                 </Routes>

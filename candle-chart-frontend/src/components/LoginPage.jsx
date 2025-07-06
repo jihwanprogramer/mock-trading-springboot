@@ -19,6 +19,7 @@ function LoginPage() {
 
             const token = res.data.data?.trim();
             if (token) {
+                localStorage.setItem('email', email);
                 localStorage.setItem('token', token);
                 navigate('/profile');
             } else {

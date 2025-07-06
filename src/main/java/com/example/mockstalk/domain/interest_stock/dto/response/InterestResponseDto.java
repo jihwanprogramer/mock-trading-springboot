@@ -5,12 +5,14 @@ import lombok.Getter;
 @Getter
 public class InterestResponseDto {
 
-    private String stockName;
+	private Long id;
+	private String stockName;
 
-    private String stockCode;
+	private String stockCode;
 
-    public InterestResponseDto(String stockName, String stockCode) {
-        this.stockName = stockName;
-        this.stockCode = stockCode;
-    }
+	public InterestResponseDto(Long id, String stockName, String stockCode) {
+		this.id = id;
+		this.stockName = stockName;
+		this.stockCode = stockCode;
+	}
 }

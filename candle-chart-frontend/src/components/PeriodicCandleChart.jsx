@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from "react";
-import axios from "axios";
+import React, {useState} from "react";
 import {Chart as ChartJS, LinearScale, TimeScale, Title, Tooltip} from "chart.js";
 import {Chart} from "react-chartjs-2";
 import {CandlestickController, CandlestickElement} from "chartjs-chart-financial";
 import 'chartjs-adapter-date-fns';
+import apiClient from "./api";
 
 ChartJS.register(
     CandlestickController, CandlestickElement,
@@ -11,54 +11,72 @@ ChartJS.register(
 );
 
 const candleOptions = [
-    {label: "일봉", value: "day"},
-    {label: "주봉", value: "week"},
-    {label: "월봉", value: "month"},
-    {label: "년봉", value: "year"},
+    {label: "일봉", value: "D"},
+    {label: "주봉", value: "W"},
+    {label: "월봉", value: "M"},
+    {label: "년봉", value: "Y"},
 ];
 
 const PeriodicCandleChart = () => {
-    const [stockCode, setStockCode] = useState("000150");
-    const [candleType, setCandleType] = useState("day");
+    const [stockCode, setStockCode] = useState("");
+    const [candleType, setCandleType] = useState("D");
     const [candles, setCandles] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
 
-    useEffect(() => {
-        const fetchCandles = async () => {
-            setLoading(true);
-            try {
-                const res = await axios.get(`/api/period/${stockCode}/candle/${candleType}`);
-                setCandles(res.data.data || []);
-            } catch (err) {
-                console.error("차트 데이터 요청 실패:", err);
+
+    const fetchCandles = async () => {
+        setLoading(true);
+        setErrorMsg("");
+        try {
+            const res = await apiClient.get(`/api/period/${stockCode}/candle/${candleType}`);
+            const data = res.data.data || [];
+
+            if (data.length === 0) {
+                setErrorMsg(`데이터가 없습니다. (DB에 해당 종목의 ${candleType}봉 데이터가 존재하지 않음)`);
                 setCandles([]);
+            } else {
+                setCandles(data);
             }
-            setLoading(false);
-        };
-
-        fetchCandles();
-    }, [stockCode, candleType]);
+        } catch (err) {
+            console.error("차트 데이터 요청 실패:", err);
+            if (err.response) {
+                setErrorMsg(`요청 실패: ${err.response.status} - ${err.response.data.message || "서버 오류"}`);
+            } else {
+                setErrorMsg("서버와의 연결에 실패했습니다");
+            }
+            setCandles([]);
+        }
+        setLoading(false);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // stockCode, candleType 상태 변경 시 useEffect에서 자동 호출됨
+        fetchCandles();
+    };
+
+    const timeUnitMap = {
+        D: "day",
+        w: "week",
+        M: "month",
+        Y: "year"
     };
 
     const data = {
         datasets: [{
             label: `${candleType}봉`,
             data: candles.map(c => ({
-                x: c.date,
+                x: new Date(c.date),
                 o: c.openingPrice,
                 h: c.highPrice,
                 l: c.lowPrice,
                 c: c.closingPrice,
             })),
-            color: {
-                up: "#00B15D",
-                down: "#E44343",
-                unchanged: "#999999",
-            },
+            borderColor: '#000000',
+            borderWidth: 1,
+            upColor: "#00B15D",
+            downColor: "#E44343",
+            unchangedColor: "#999999",
         }]
     };
 
@@ -76,10 +94,7 @@ const PeriodicCandleChart = () => {
             x: {
                 type: "time",
                 time: {
-                    unit: candleType === "day" ? "day"
-                        : candleType === "week" ? "week"
-                            : candleType === "month" ? "month"
-                                : "year",
+                    unit: timeUnitMap[candleType] || "day",
                     tooltipFormat: "yyyy-MM-dd"
                 },
                 grid: {display: false},
@@ -101,8 +116,16 @@ const PeriodicCandleChart = () => {
         }
     };
 
+
     return (
         <div style={styles.container}>
+            <div style={{textAlign: 'center', marginBottom: 20}}>
+                <img
+                    src="/logo.png"
+                    alt="앱 로고"
+                    style={{width: 120, height: 'auto'}}
+                />
+            </div>
             <h2 style={styles.title}>기간별 봉 차트 조회</h2>
             <form onSubmit={handleSubmit} style={styles.form}>
                 <input
@@ -126,11 +149,12 @@ const PeriodicCandleChart = () => {
             </form>
 
             {loading && <p>로딩 중...</p>}
-
-            {!loading && candles.length === 0 && <p>데이터가 없습니다.</p>}
-
+            {!loading && errorMsg && <p style={{color: 'red'}}>{errorMsg}</p>}
             {!loading && candles.length > 0 && (
-                <Chart type="candlestick" data={data} options={options}/>
+                <>
+                    {console.log("candles", candles)}
+                    <Chart type="candlestick" data={data} options={options}/>
+                </>
             )}
         </div>
     );

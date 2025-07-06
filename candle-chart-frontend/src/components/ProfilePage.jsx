@@ -26,7 +26,6 @@ function ProfilePage() {
         try {
             await apiClient.post('/api/auth/logout');
             alert('로그아웃 되었습니다.');
-            // 로컬 스토리지 등에서 토큰 제거
             localStorage.removeItem('token');
             navigate('/login');
         } catch (error) {
@@ -35,19 +34,14 @@ function ProfilePage() {
         }
     };
 
+    const menu = [
+        {label: '계좌', path: '/account/select'},
+        {label: '회원정보 수정', path: '/user/edit'},
+    ];
+
     if (!user) {
         return <div style={{padding: 20, fontFamily: 'sans-serif'}}>로딩 중...</div>;
     }
-
-    const menu = [
-        {label: '계정'},
-        {label: '계좌'},
-        {label: '보안'},
-        {label: '청구/결제'},
-        {label: '언어', right: '한국어'},
-        {label: '설정'},
-        {label: 'FAQ'},
-    ];
 
     return (
         <div style={styles.container}>
@@ -62,8 +56,11 @@ function ProfilePage() {
             </div>
             <div style={styles.menuList}>
                 {menu.map((item, i) => (
-                    <div key={i} style={styles.menuItem}>
-                        <span style={{marginRight: 10}}></span>
+                    <div
+                        key={i}
+                        style={{...styles.menuItem, cursor: 'pointer'}}
+                        onClick={() => navigate(item.path)}
+                    >
                         <span>{item.label}</span>
                         {item.right && <span style={styles.rightText}>{item.right}</span>}
                     </div>

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import apiClient from "./api"; // axios 인스턴스 (토큰 자동 추가되는)
+import apiClient from "./api";
 
 const NewsList = () => {
     const [keyword, setKeyword] = useState("");
@@ -53,13 +53,17 @@ const NewsList = () => {
 const styles = {
     container: {
         maxWidth: 500,
-        margin: '0 auto',
-        padding: '50px 20px',
+        margin: '30px auto',
+        padding: '40px 20px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         fontFamily: 'sans-serif',
+        border: '1px solid #ddd',
+        borderRadius: 10,
+        backgroundColor: '#fafafa',
     },
+
     logo: {
         width: 60,
         height: 60,
