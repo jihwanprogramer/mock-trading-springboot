@@ -1,19 +1,25 @@
-import React, {useCallback, useEffect, useState} from "react";
-import apiClient from "./api"; // axios 인스턴스
+import React, {useState} from "react";
+import apiClient from "./api";
 
 const RealtimePrice = () => {
-    const [stockCode, setStockCode] = useState("");
+    const [stockName, setStockName] = useState("");
     const [price, setPrice] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const fetchPrice = useCallback(async () => {
-        if (!stockCode) return;
+    const fetchPrice = async () => {
+        if (!stockName.trim()) {
+            setError("종목명을 입력해주세요.");
+            setPrice(null);
+            return;
+        }
         setLoading(true);
         setError("");
         try {
-            const res = await apiClient.get(`/realtime-price/${stockCode}`);
-            if (res.status === 204 || !res.data) {
+            const res = await apiClient.get(`/api/price`, {
+                params: {stockName},
+            });
+            if (!res.data) {
                 setPrice(null);
                 setError("가격 정보 없음");
             } else {
@@ -21,17 +27,17 @@ const RealtimePrice = () => {
             }
         } catch (err) {
             console.error("실시간 가격 조회 실패:", err);
-            setError("가격 조회 실패");
+            if (err.response?.status === 403) {
+                setError("해당 종목의 가격 정보가 없습니다.");
+            } else if (err.response?.status === 404) {
+                setError("해당 종목을 찾을 수 없습니다.");
+            } else {
+                setError("가격 조회 실패");
+            }
             setPrice(null);
         }
         setLoading(false);
-    }, [stockCode]);
-
-    useEffect(() => {
-        fetchPrice();
-        const interval = setInterval(fetchPrice, 3000);
-        return () => clearInterval(interval);
-    }, [fetchPrice]);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -46,15 +52,17 @@ const RealtimePrice = () => {
             <form onSubmit={handleSubmit} style={styles.form}>
                 <input
                     type="text"
-                    value={stockCode}
-                    onChange={(e) => setStockCode(e.target.value)}
-                    placeholder="종목코드 입력"
+                    value={stockName}
+                    onChange={(e) => setStockName(e.target.value)}
+                    placeholder="종목명 입력"
                     style={styles.input}
                 />
-                <button type="submit" style={styles.button}>조회</button>
+                <button type="submit" style={styles.button}>
+                    조회
+                </button>
             </form>
 
-            {stockCode && <h3 style={styles.subtitle}>{stockCode} 현재가</h3>}
+            {stockName && <h3 style={styles.subtitle}>{stockName} 현재가</h3>}
 
             {error && <p style={styles.error}>{error}</p>}
 

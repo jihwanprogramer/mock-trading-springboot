@@ -117,9 +117,11 @@ public class LivePriceService {
 	}
 
 	public String getCurrentPriceByStockName(String stockName) {
+		System.out.println("메서드 진입");
 		Stock stock = stockRepository.findByStockName(stockName)
 			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
 
+		System.out.println("종목 찾음");
 		String redisKey = "stockPrice::" + stock.getStockCode();
 		String result = (String)redisTemplate.opsForValue().get(redisKey);
 

@@ -71,10 +71,7 @@ export default function InterestStockPage() {
                     <li key={item.id} style={styles.listItem}>
                         {item.stockName} ({item.stockCode})
                         <div>
-                            <button onClick={() => navigate(`/chart`)} style={styles.chartButton}>분봉
-                            </button>
-                            <button onClick={() => navigate(`/periodic`)}
-                                    style={styles.chartButton}>기간별봉
+                            <button onClick={() => navigate(`/chart`)} style={styles.chartButton}>차트
                             </button>
                             <button onClick={() => deleteInterest(item.id)} style={styles.deleteButton}>삭제</button>
                         </div>

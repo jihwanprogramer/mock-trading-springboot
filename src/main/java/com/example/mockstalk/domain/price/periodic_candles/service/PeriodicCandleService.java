@@ -27,12 +27,12 @@ public class PeriodicCandleService {
         }
     }
 
-    public List<PeriodicCandleResponseDto> findPeriodicCandle(String stockCode, String candleType) {
+    public List<PeriodicCandleResponseDto> findPeriodicCandle(String stockName, String candleType) {
 
         PeriodicCandleType periodicCandleType = PeriodicCandleType.valueOf(candleType);
 
-        List<PeriodicCandles> periodicCandlesList = candleRepository.findByCandleTypeAndStock_StockCode(
-            periodicCandleType, stockCode);
+        List<PeriodicCandles> periodicCandlesList = candleRepository.findByCandleTypeAndStock_StockName(
+            periodicCandleType, stockName);
 
         return periodicCandlesList.stream().map(PeriodicCandleResponseDto::from).toList();
 
