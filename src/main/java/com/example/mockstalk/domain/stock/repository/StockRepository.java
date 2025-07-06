@@ -16,6 +16,8 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
 	Stock findByStockCode(String stockCode);
 
+	Optional<Stock> findByStockName(String stockName);
+
 	@Query("SELECT s.stockCode FROM Stock s")
 		// code만 조회
 	List<String> findAllStockCodes();

@@ -31,7 +31,7 @@ public class scheduler {
 		System.out.println("프로젝트 시작 시 실행");
 		tokenService.getAccessToken(); // 시작 시 1회 실행
 		tokenService.getApprovalKey(); // 시작 시 1회 실행
-		// livePriceService.cacheAllStockPrices();
+		livePriceService.cacheAllStockPrices();
 
 		webSocketClientManager.connect();
 

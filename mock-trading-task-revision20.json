@@ -1,5 +1,5 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:720063431739:task-definition/mock-trading-task:14",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:720063431739:task-definition/mock-trading-task:20",
   "containerDefinitions": [
     {
       "name": "mock-app",
@@ -18,7 +18,7 @@
       "environment": [
         {
           "name": "REDIS_HOST",
-          "value": "mock-redis-fxfsfr.serverless.apn2.cache.amazonaws.com"
+          "value": "3.35.26.117"
         },
         {
           "name": "ACCOUNT_JWT_SECRET",
@@ -98,7 +98,8 @@
           "awslogs-create-group": "true",
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs"
-        }
+        },
+        "secretOptions": []
       },
       "systemControls": []
     }
@@ -106,7 +107,7 @@
   "family": "mock-trading-task",
   "executionRoleArn": "arn:aws:iam::720063431739:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
-  "revision": 14,
+  "revision": 20,
   "volumes": [],
   "status": "ACTIVE",
   "requiresAttributes": [
@@ -149,7 +150,7 @@
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-  "registeredAt": "2025-07-04T11:19:26.277Z",
-  "registeredBy": "arn:aws:iam::720063431739:user/seokjin",
+  "registeredAt": "2025-07-06T18:05:42.291Z",
+  "registeredBy": "arn:aws:iam::720063431739:root",
   "tags": []
 }
