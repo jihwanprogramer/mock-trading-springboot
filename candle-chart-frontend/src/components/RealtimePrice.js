@@ -1,18 +1,20 @@
 import React, {useCallback, useEffect, useState} from "react";
-import apiClient from "./api"; // axios 인스턴스
+import apiClient from "./api";
 
 const RealtimePrice = () => {
-    const [stockCode, setStockCode] = useState("");
+    const [stockName, setStockName] = useState("");
     const [price, setPrice] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     const fetchPrice = useCallback(async () => {
-        if (!stockCode) return;
+        if (!stockName) return;
         setLoading(true);
         setError("");
         try {
-            const res = await apiClient.get(`/realtime-price/${stockCode}`);
+            const res = await apiClient.get(`/api/price`, {
+                params: {stockName},
+            });
             if (res.status === 204 || !res.data) {
                 setPrice(null);
                 setError("가격 정보 없음");
@@ -25,7 +27,7 @@ const RealtimePrice = () => {
             setPrice(null);
         }
         setLoading(false);
-    }, [stockCode]);
+    }, [stockName]);
 
     useEffect(() => {
         fetchPrice();
@@ -46,15 +48,17 @@ const RealtimePrice = () => {
             <form onSubmit={handleSubmit} style={styles.form}>
                 <input
                     type="text"
-                    value={stockCode}
-                    onChange={(e) => setStockCode(e.target.value)}
-                    placeholder="종목코드 입력"
+                    value={stockName}
+                    onChange={(e) => setStockName(e.target.value)}
+                    placeholder="종목명 입력"
                     style={styles.input}
                 />
-                <button type="submit" style={styles.button}>조회</button>
+                <button type="submit" style={styles.button}>
+                    조회
+                </button>
             </form>
 
-            {stockCode && <h3 style={styles.subtitle}>{stockCode} 현재가</h3>}
+            {stockName && <h3 style={styles.subtitle}>{stockName} 현재가</h3>}
 
             {error && <p style={styles.error}>{error}</p>}
 
