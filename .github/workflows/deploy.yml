@@ -19,7 +19,7 @@ env:
 
   BACKEND_CLUSTER: mock-trading-cluster
   BACKEND_SERVICE: mock-trading-service
-  BACKEND_TASK_DEF: mock-trading-task-revision14.json
+  BACKEND_TASK_DEF: mock-trading-task-revision20.json
 
 jobs:
   build-and-deploy:
