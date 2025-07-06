@@ -19,6 +19,7 @@ public class LivePriceController {
 
 	@GetMapping("/price")
 	public ResponseEntity<String> getPriceByStockName(@RequestParam String stockName) {
+		System.out.println("컨트롤러 진입");
 		String price = livePriceService.getCurrentPriceByStockName(stockName);
 		return ResponseEntity.ok(price);
 	}

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useState} from "react";
 import apiClient from "./api";
 
 const RealtimePrice = () => {
@@ -7,15 +7,19 @@ const RealtimePrice = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const fetchPrice = useCallback(async () => {
-        if (!stockName) return;
+    const fetchPrice = async () => {
+        if (!stockName.trim()) {
+            setError("종목명을 입력해주세요.");
+            setPrice(null);
+            return;
+        }
         setLoading(true);
         setError("");
         try {
             const res = await apiClient.get(`/api/price`, {
                 params: {stockName},
             });
-            if (res.status === 204 || !res.data) {
+            if (!res.data) {
                 setPrice(null);
                 setError("가격 정보 없음");
             } else {
@@ -23,17 +27,17 @@ const RealtimePrice = () => {
             }
         } catch (err) {
             console.error("실시간 가격 조회 실패:", err);
-            setError("가격 조회 실패");
+            if (err.response?.status === 403) {
+                setError("해당 종목의 가격 정보가 없습니다.");
+            } else if (err.response?.status === 404) {
+                setError("해당 종목을 찾을 수 없습니다.");
+            } else {
+                setError("가격 조회 실패");
+            }
             setPrice(null);
         }
         setLoading(false);
-    }, [stockName]);
-
-    useEffect(() => {
-        fetchPrice();
-        const interval = setInterval(fetchPrice, 3000);
-        return () => clearInterval(interval);
-    }, [fetchPrice]);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
