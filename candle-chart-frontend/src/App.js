@@ -4,7 +4,6 @@ import {Link, Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 import CandleChart from './components/CandleChart';
 import NewsList from './components/NewsList';
 import RealtimePrice from './components/RealtimePrice';
-import PeriodicCandleChart from './components/PeriodicCandleChart';
 
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
@@ -64,7 +63,6 @@ function HomePage() {
 function ChartPage() {
     return (
         <div style={{padding: 20}}>
-            <h2 style={{marginBottom: 10}}>[ 한국투자증권 분봉차트 ]</h2>
             <CandleChart stockCode="000150" interval={1}/>
         </div>
     );
@@ -81,8 +79,7 @@ function BottomTabNav() {
     const isLoggedIn = !!localStorage.getItem('token');
 
     const tabs = [
-        {to: '/chart', label: '분봉'},
-        {to: '/periodic', label: '기간별차트'},
+        {to: '/chart', label: '차트'},
         {to: '/news', label: '뉴스'},
         {to: '/realtime', label: '실시간'},
         {to: '/board', label: '게시판'},
@@ -130,7 +127,6 @@ function App() {
                 <Routes>
                     <Route path="/" element={<HomePage/>}/>
                     <Route path="/chart" element={<ChartPage/>}/>
-                    <Route path="/periodic" element={<PeriodicCandleChart stockCode="000150" candleType="D"/>}/>
                     <Route path="/realtime" element={<RealtimePrice stockCode="000150"/>}/>
                     <Route path="/news" element={<NewsList/>}/>
 

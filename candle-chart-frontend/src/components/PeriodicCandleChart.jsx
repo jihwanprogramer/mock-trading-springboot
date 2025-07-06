@@ -1,14 +1,6 @@
-import React, {useState} from "react";
-import {Chart as ChartJS, LinearScale, TimeScale, Title, Tooltip} from "chart.js";
-import {Chart} from "react-chartjs-2";
-import {CandlestickController, CandlestickElement} from "chartjs-chart-financial";
-import 'chartjs-adapter-date-fns';
+import React, {useEffect, useRef, useState} from "react";
 import apiClient from "./api";
-
-ChartJS.register(
-    CandlestickController, CandlestickElement,
-    LinearScale, TimeScale, Title, Tooltip
-);
+import {createChart} from "lightweight-charts";
 
 const candleOptions = [
     {label: "일봉", value: "D"},
@@ -18,14 +10,71 @@ const candleOptions = [
 ];
 
 const PeriodicCandleChart = () => {
+    const chartContainerRef = useRef();
+    const candleSeriesRef = useRef();
+    const chartRef = useRef(null);
+
     const [stockCode, setStockCode] = useState("");
     const [candleType, setCandleType] = useState("D");
-    const [candles, setCandles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
+    // 차트 초기화 (마운트 시)
+    useEffect(() => {
+        if (!chartContainerRef.current) return;
 
+        const chart = createChart(chartContainerRef.current, {
+            width: 600,
+            height: 400,
+            layout: {
+                backgroundColor: "#fafafa",
+                textColor: "#000",
+            },
+            grid: {
+                vertLines: {color: "#eee"},
+                horzLines: {color: "#eee"},
+            },
+            priceScale: {
+                borderVisible: false,
+            },
+            timeScale: {
+                borderVisible: false,
+                timeVisible: true,
+                secondsVisible: false,
+            },
+        });
+
+        const candleSeries = chart.addCandlestickSeries({
+            upColor: "#00B15D",
+            downColor: "#E44343",
+            borderVisible: false,
+            wickUpColor: "#00B15D",
+            wickDownColor: "#E44343",
+        });
+
+        candleSeriesRef.current = candleSeries;
+        chartRef.current = chart;
+
+        const handleResize = () => {
+            if (chartContainerRef.current) {
+                chart.applyOptions({width: chartContainerRef.current.clientWidth});
+            }
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+            chart.remove();
+        };
+    }, []);
+
+    // 데이터 조회 함수
     const fetchCandles = async () => {
+        if (!stockCode) {
+            setErrorMsg("종목코드를 입력해주세요");
+            return;
+        }
         setLoading(true);
         setErrorMsg("");
         try {
@@ -34,18 +83,27 @@ const PeriodicCandleChart = () => {
 
             if (data.length === 0) {
                 setErrorMsg(`데이터가 없습니다. (DB에 해당 종목의 ${candleType}봉 데이터가 존재하지 않음)`);
-                setCandles([]);
+                candleSeriesRef.current.setData([]);
             } else {
-                setCandles(data);
+                // 시간 기준 오름차순 정렬 및 중복 제거
+                const processedData = data
+                    .map(c => ({
+                        time: Math.floor(new Date(c.date).getTime() / 1000), // timestamp 초단위
+                        open: c.openingPrice,
+                        high: c.highPrice,
+                        low: c.lowPrice,
+                        close: c.closingPrice,
+                    }))
+                    .sort((a, b) => a.time - b.time)
+                    .filter((item, index, arr) => index === 0 || item.time !== arr[index - 1].time);
+
+                candleSeriesRef.current.setData(processedData);
+                chartRef.current.timeScale().fitContent();
             }
         } catch (err) {
             console.error("차트 데이터 요청 실패:", err);
-            if (err.response) {
-                setErrorMsg(`요청 실패: ${err.response.status} - ${err.response.data.message || "서버 오류"}`);
-            } else {
-                setErrorMsg("서버와의 연결에 실패했습니다");
-            }
-            setCandles([]);
+            setErrorMsg("서버와 연결에 실패했습니다.");
+            candleSeriesRef.current.setData([]);
         }
         setLoading(false);
     };
@@ -55,107 +113,35 @@ const PeriodicCandleChart = () => {
         fetchCandles();
     };
 
-    const timeUnitMap = {
-        D: "day",
-        w: "week",
-        M: "month",
-        Y: "year"
-    };
-
-    const data = {
-        datasets: [{
-            label: `${candleType}봉`,
-            data: candles.map(c => ({
-                x: new Date(c.date),
-                o: c.openingPrice,
-                h: c.highPrice,
-                l: c.lowPrice,
-                c: c.closingPrice,
-            })),
-            borderColor: '#000000',
-            borderWidth: 1,
-            upColor: "#00B15D",
-            downColor: "#E44343",
-            unchangedColor: "#999999",
-        }]
-    };
-
-    const options = {
-        responsive: true,
-        plugins: {
-            tooltip: {enabled: true},
-            title: {
-                display: true,
-                text: `${stockCode} - ${candleType}봉 차트`,
-                font: {size: 18, weight: 'bold'}
-            }
-        },
-        scales: {
-            x: {
-                type: "time",
-                time: {
-                    unit: timeUnitMap[candleType] || "day",
-                    tooltipFormat: "yyyy-MM-dd"
-                },
-                grid: {display: false},
-                ticks: {font: {size: 12}}
-            },
-            y: {
-                beginAtZero: false,
-                grid: {color: "rgba(200,200,200,0.2)", borderDash: [3, 3]},
-                ticks: {
-                    font: {size: 12},
-                    callback: val => val.toLocaleString(),
-                },
-                title: {
-                    display: true,
-                    text: "Price",
-                    font: {size: 14, weight: "bold"},
-                }
-            }
-        }
-    };
-
-
     return (
         <div style={styles.container}>
-            <div style={{textAlign: 'center', marginBottom: 20}}>
-                <img
-                    src="/logo.png"
-                    alt="앱 로고"
-                    style={{width: 120, height: 'auto'}}
-                />
+            <div style={{textAlign: "center", marginBottom: 20}}>
+                <img src="/logo.png" alt="앱 로고" style={{width: 120, height: "auto"}}/>
             </div>
             <h2 style={styles.title}>기간별 봉 차트 조회</h2>
             <form onSubmit={handleSubmit} style={styles.form}>
                 <input
                     type="text"
                     value={stockCode}
-                    onChange={e => setStockCode(e.target.value)}
+                    onChange={(e) => setStockCode(e.target.value)}
                     placeholder="종목코드 입력"
                     style={styles.input}
                     required
                 />
-                <select
-                    value={candleType}
-                    onChange={e => setCandleType(e.target.value)}
-                    style={styles.select}
-                >
-                    {candleOptions.map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <select value={candleType} onChange={(e) => setCandleType(e.target.value)} style={styles.select}>
+                    {candleOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                        </option>
                     ))}
                 </select>
-                <button type="submit" style={styles.button}>조회</button>
+                <button type="submit" style={styles.button}>
+                    조회
+                </button>
             </form>
-
             {loading && <p>로딩 중...</p>}
-            {!loading && errorMsg && <p style={{color: 'red'}}>{errorMsg}</p>}
-            {!loading && candles.length > 0 && (
-                <>
-                    {console.log("candles", candles)}
-                    <Chart type="candlestick" data={data} options={options}/>
-                </>
-            )}
+            {!loading && errorMsg && <p style={{color: "red"}}>{errorMsg}</p>}
+            <div ref={chartContainerRef}/>
         </div>
     );
 };
@@ -210,7 +196,7 @@ const styles = {
         cursor: "pointer",
         fontWeight: "bold",
         fontSize: 16,
-    }
+    },
 };
 
 export default PeriodicCandleChart;
