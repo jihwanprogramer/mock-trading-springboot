@@ -60,11 +60,11 @@ class PeriodicCandleServiceTest {
     @DisplayName("findPeriodicCandle 테스트")
     void findPeriodicCandle_success() {
         // given
-        String stockCode = "005930";
+        String stockName = "삼성전자";
         String candleType = "D";
         Stock stock = Stock.builder()
-            .stockCode(stockCode)
-            .stockName("삼성전자")
+            .stockCode("005930")
+            .stockName(stockName)
             .build();
         List<PeriodicCandles> entityList = List.of(
             PeriodicCandles.builder()
@@ -74,17 +74,17 @@ class PeriodicCandleServiceTest {
                 .closingPrice(1000L)
                 .build()
         );
-        when(candleRepository.findByCandleTypeAndStock_StockCode(PeriodicCandleType.D, stockCode))
+        when(candleRepository.findByCandleTypeAndStock_StockName(PeriodicCandleType.D, stockName))
             .thenReturn(entityList);
 
         // when
-        List<PeriodicCandleResponseDto> result = periodicCandleService.findPeriodicCandle(stockCode,
+        List<PeriodicCandleResponseDto> result = periodicCandleService.findPeriodicCandle(stockName,
             candleType);
 
         // then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getClosingPrice()).isEqualTo(1000L);
-        verify(candleRepository, times(1)).findByCandleTypeAndStock_StockCode(PeriodicCandleType.D,
-            stockCode);
+        verify(candleRepository, times(1)).findByCandleTypeAndStock_StockName(PeriodicCandleType.D,
+            stockName);
     }
 }

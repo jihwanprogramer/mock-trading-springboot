@@ -1,5 +1,7 @@
 package com.example.mockstalk.domain.price.periodic_candles.service;
 
+import com.example.mockstalk.common.error.CustomRuntimeException;
+import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.domain.price.periodic_candles.dto.PeriodicCandleResponseDto;
 import com.example.mockstalk.domain.price.periodic_candles.entity.PeriodicCandleType;
 import com.example.mockstalk.domain.price.periodic_candles.entity.PeriodicCandles;
@@ -33,6 +35,10 @@ public class PeriodicCandleService {
 
         List<PeriodicCandles> periodicCandlesList = candleRepository.findByCandleTypeAndStock_StockName(
             periodicCandleType, stockName);
+
+        if (periodicCandlesList.isEmpty()) {
+            throw new CustomRuntimeException(ExceptionCode.NOT_FOUND_DATA);
+        }
 
         return periodicCandlesList.stream().map(PeriodicCandleResponseDto::from).toList();
 
