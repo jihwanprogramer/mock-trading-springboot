@@ -52,43 +52,43 @@
       "secrets": [
         {
           "name": "ACCOUNT_JWT_SECRET",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/ACCOUNT_JWT_SECRET-hCtTSs"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-ACCOUNT_JWT_SECRET-BkpS3u"
         },
         {
           "name": "DB_USERNAME",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/DB_USERNAME-QZa92b"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-DB_USERNAME-UmiVxX"
         },
         {
           "name": "DB_PASSWORD",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/DB_PASSWORD-MbtNsy"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-DB_PASSWORD-wd4WdW"
         },
         {
           "name": "JWT_SECRET",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/ACCOUNT_JWT_SECRET-hCtTSs"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-JWT_SECRET-4bkNWL"
         },
         {
           "name": "NAVER_CLIENT_ID",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/NAVER_CLIENT_ID-Ccf02A"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-NAVER_CLIENT_ID-BaGHGx"
         },
         {
           "name": "NAVER_CLIENT_SECRET",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/NAVER_CLIENT_SECRET-Vr6cNy"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-NAVER_CLIENT_SECRET-f9EAeJ"
         },
         {
           "name": "RABBITMQ_USERNAME",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/RABBITMQ_USERNAME-VHFW64"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-RABBITMQ_USERNAME-EqpXpK"
         },
         {
           "name": "RABBITMQ_PASSWORD",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/RABBITMQ_PASSWORD-w2ET4r"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-RABBITMQ_PASSWORD-xxKGuj"
         },
         {
           "name": "HANTU_APPSECRET",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/HANTU_APPSECRET-kC4PRV"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-HANTU_APPSECRET-xGxu1p"
         },
         {
           "name": "HANTU_APPKEY",
-          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/HANTU_APPKEY-jZLQi8"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-HANTU_APPKEY-2ROIR6"
         }
       ],
       "mountPoints": [],
