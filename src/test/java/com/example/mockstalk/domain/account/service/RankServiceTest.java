@@ -80,7 +80,7 @@ class RankServiceTest {
 	}
 
 	@Test
-	void getTopUserProfitRankings_정상() {
+	void getTopUserProfitRankings_OK() {
 		when(zSetOperations.reverseRangeWithScores("userProfitRanking", 0, 2))
 			.thenReturn(Set.of(tuple1));
 
@@ -91,7 +91,7 @@ class RankServiceTest {
 	}
 
 	@Test
-	void getTopUserProfitRankingsByInitialBalance_초기자산_필터링_정상() {
+	void getTopUserProfitRankingsByInitialBalance_OK() {
 		when(zSetOperations.reverseRangeWithScores("userProfitRanking", 0, 4))
 			.thenReturn(Set.of(tuple1, tuple2));
 
@@ -105,7 +105,7 @@ class RankServiceTest {
 	}
 
 	@Test
-	void getTopUserProfitRankingsByInitialBalance_빈결과() {
+	void getTopUserProfitRankingsByInitialBalance_emptyList() {
 		when(zSetOperations.reverseRangeWithScores("userProfitRanking", 0, 4))
 			.thenReturn(Set.of(tuple2));
 
@@ -115,20 +115,4 @@ class RankServiceTest {
 
 		assertTrue(result.isEmpty());
 	}
-
-	// @Test
-	// void updateUserProfitRanking() {
-	// }
-	//
-	// @Test
-	// void updateAllUserProfitRankings() {
-	// }
-	//
-	// @Test
-	// void getTopUserProfitRankings() {
-	// }
-	//
-	// @Test
-	// void getTopUserProfitRankingsByInitialBalance() {
-	// }
 }

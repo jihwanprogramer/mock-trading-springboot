@@ -101,7 +101,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void loginAccount_성공() {
+	void loginAccount_OK() {
 		when(passwordEncoder.matches("rawPassword", account.getPassword())).thenReturn(true);
 		when(accountJwtUtil.createAccountToken(account.getId())).thenReturn("mock.token");
 
@@ -111,7 +111,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void loginAccount_실패_비밀번호불일치() {
+	void loginAccount_False() {
 		when(passwordEncoder.matches("rawPassword", account.getPassword())).thenReturn(false);
 
 		assertThrows(CustomRuntimeException.class, () ->
@@ -120,7 +120,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void findAccountById_성공_캐시히트() {
+	void findAccountById_OK() {
 		when(valueOperations.get("accountAsset::" + account.getId()))
 			.thenReturn("2000000");
 		when(valueOperations.get("accountProfitRate::" + account.getId()))
@@ -134,17 +134,17 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void getProfitRateWithCache_캐시없음_계산진행() {
+	void getProfitRateWithCache_NOCACHE() {
 		when(valueOperations.get("accountProfitRate::" + account.getId())).thenReturn(null);
 		when(holdingsRepository.findByAccountId(account.getId())).thenReturn(Collections.emptyList());
 
 		BigDecimal result = accountService.getProfitRateWithCache(account.getId());
 
-		assertEquals(0, result.compareTo(BigDecimal.ZERO)); // ✅ scale 차이 없는 비교
+		assertEquals(0, result.compareTo(BigDecimal.ZERO)); //
 	}
 
 	@Test
-	void calculateTotalAsset_보유종목포함() {
+	void calculateTotalAsset_OK() {
 		when(holdingsRepository.findByAccountId(account.getId())).thenReturn(List.of(holdings));
 		when(valueOperations.get("stockPrice::005930")).thenReturn("10000");
 
@@ -154,17 +154,7 @@ class AccountServiceTest {
 	}
 
 	@Test
-	void getProfitRateWithCache_캐시MISS_계산() {
-		when(valueOperations.get("accountProfitRate::" + account.getId())).thenReturn(null);
-		when(holdingsRepository.findByAccountId(account.getId())).thenReturn(Collections.emptyList());
-
-		BigDecimal result = accountService.getProfitRateWithCache(account.getId());
-
-		assertEquals(0, result.compareTo(BigDecimal.ZERO));
-	}
-
-	@Test
-	void findHoldingsById_현재가조회_정상작동() {
+	void findHoldingsById_OK() {
 		when(holdingsRepository.findAllByAccount_Id(account.getId())).thenReturn(List.of(holdings));
 		when(valueOperations.get("stockPrice::005930")).thenReturn("10000");
 
