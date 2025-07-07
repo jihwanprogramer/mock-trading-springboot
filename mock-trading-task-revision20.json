@@ -21,60 +21,24 @@
           "value": "3.35.26.117"
         },
         {
-          "name": "ACCOUNT_JWT_SECRET",
-          "value": "TXlTdXBlclNlY3JldEtleUZvckpXVFNpZ25hdHVyZTEyee=="
-        },
-        {
           "name": "HANTU_ACCESS_TOKEN",
           "value": "null"
-        },
-        {
-          "name": "HANTU_APPSECRET",
-          "value": "Xk77+Cx1i5vvpDeA+VMtGcVQqKyayysqaPuEMcWjTiNBgBGLf7A4NXz9cB0u+GtLSfT6bt0T7fSZhjCcw2SD266yjzB7YBN14DTKUNyxlc/C0ToBLLGBwR9PVflcRuvLmgO4Vx+BYVZcFjqQrBs5GA1WVEaEPomxlaDcwXwCp4ZMYw1W62o="
-        },
-        {
-          "name": "RABBITMQ_USERNAME",
-          "value": "dikaprio"
         },
         {
           "name": "DB_PORT",
           "value": "3306"
         },
         {
-          "name": "NAVER_CLIENT_SECRET",
-          "value": "lztYZRhM3B"
-        },
-        {
-          "name": "RABBITMQ_PASSWORD",
-          "value": "Rlatjrwls123!"
-        },
-        {
           "name": "DB_NAME",
           "value": "mockstalk"
-        },
-        {
-          "name": "NAVER_CLIENT_ID",
-          "value": "3lIBKsC8XNz4mc3Tle6N"
         },
         {
           "name": "DB_HOST",
           "value": "mockstalk.cts6gswy2icv.ap-northeast-2.rds.amazonaws.com"
         },
         {
-          "name": "HANTU_APPKEY",
-          "value": "PSAwaI2yvBidzvuF4O3P4b8d0hszPmou0fDJ"
-        },
-        {
-          "name": "DB_USERNAME",
-          "value": "admin"
-        },
-        {
           "name": "REDIS_PORT",
           "value": "6379"
-        },
-        {
-          "name": "JWT_SECRET",
-          "value": "TXlTdXBlclNlY3JldEtleUZvckpXVFNpZ25hdHVyZTEyMw=="
         },
         {
           "name": "RABBITMQ_PORT",
@@ -83,10 +47,48 @@
         {
           "name": "RABBITMQ_HOST",
           "value": "b-8ffe8a76-a215-485c-b393-79aecb590344.mq.ap-northeast-2.on.aws"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "ACCOUNT_JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/ACCOUNT_JWT_SECRET-hCtTSs"
+        },
+        {
+          "name": "DB_USERNAME",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/DB_USERNAME-QZa92b"
         },
         {
           "name": "DB_PASSWORD",
-          "value": "rlatjrwls123"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/DB_PASSWORD-MbtNsy"
+        },
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/ACCOUNT_JWT_SECRET-hCtTSs"
+        },
+        {
+          "name": "NAVER_CLIENT_ID",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/NAVER_CLIENT_ID-Ccf02A"
+        },
+        {
+          "name": "NAVER_CLIENT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/NAVER_CLIENT_SECRET-Vr6cNy"
+        },
+        {
+          "name": "RABBITMQ_USERNAME",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/RABBITMQ_USERNAME-VHFW64"
+        },
+        {
+          "name": "RABBITMQ_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/RABBITMQ_PASSWORD-w2ET4r"
+        },
+        {
+          "name": "HANTU_APPSECRET",
+          "value": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/HANTU_APPSECRET-kC4PRV"
+        },
+        {
+          "name": "HANTU_APPKEY",
+          "value": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/HANTU_APPKEY-jZLQi8"
         }
       ],
       "mountPoints": [],
