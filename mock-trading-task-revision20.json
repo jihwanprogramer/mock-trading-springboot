@@ -84,11 +84,11 @@
         },
         {
           "name": "HANTU_APPSECRET",
-          "value": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/HANTU_APPSECRET-kC4PRV"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/HANTU_APPSECRET-kC4PRV"
         },
         {
           "name": "HANTU_APPKEY",
-          "value": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/HANTU_APPKEY-jZLQi8"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk/HANTU_APPKEY-jZLQi8"
         }
       ],
       "mountPoints": [],
