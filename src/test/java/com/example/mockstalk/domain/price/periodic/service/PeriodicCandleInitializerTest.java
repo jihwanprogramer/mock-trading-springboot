@@ -14,6 +14,7 @@ import com.example.mockstalk.domain.price.periodic_candles.service.PeriodicCandl
 import com.example.mockstalk.domain.price.periodic_candles.service.PeriodicCandleInitializer;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
+import com.example.mockstalk.domain.stock.service.StockService;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -31,11 +32,13 @@ class PeriodicCandleInitializerTest {
 
     @InjectMocks
     private PeriodicCandleInitializer periodicCandleInitializer;
-
+    @Mock
+    private StockService stockService;
     @Mock
     private PeriodicCandleApiService periodicCandleApiService;
     @Mock
     private StockRepository stockRepository;
+
 
     private Stock stock1;
     private Stock stock2;
