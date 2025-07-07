@@ -1,11 +1,12 @@
 package com.example.mockstalk.domain.user.service;
 
+import com.example.mockstalk.domain.auth.service.JwtTokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
-import com.example.mockstalk.common.jwttoken.JwtTokenService;
+
 import com.example.mockstalk.domain.user.dto.request.DeleteRequestDto;
 import com.example.mockstalk.domain.user.dto.request.SignupRequestDto;
 import com.example.mockstalk.domain.user.dto.request.UpdateRequestDto;

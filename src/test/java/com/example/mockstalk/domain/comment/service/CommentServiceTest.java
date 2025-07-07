@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 import com.example.mockstalk.domain.board.entity.Board;
 import com.example.mockstalk.domain.board.repository.BoardRepository;
 import com.example.mockstalk.domain.comment.dto.CommentRequestDto;
@@ -19,7 +20,6 @@ import com.example.mockstalk.domain.comment.entity.Comment;
 import com.example.mockstalk.domain.comment.repository.CommentRepository;
 import com.example.mockstalk.domain.user.entity.User;
 import com.example.mockstalk.domain.user.repository.UserRepository;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

@@ -2,6 +2,7 @@ package com.example.mockstalk.domain.account.controller;
 
 import java.math.BigDecimal;
 
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,7 +22,6 @@ import com.example.mockstalk.domain.account.dto.AccountSignInRequestDto;
 import com.example.mockstalk.domain.account.dto.UpdateAccountRequestDto;
 import com.example.mockstalk.domain.account.service.AccountService;
 import com.example.mockstalk.domain.account.service.RankService;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
