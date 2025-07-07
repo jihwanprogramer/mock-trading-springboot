@@ -109,6 +109,9 @@ const CombinedChart = () => {
                     }))
                     .sort((a, b) => a.time - b.time)
                     .filter((v, i, arr) => i === 0 || v.time !== arr[i - 1].time);
+                console.log("✅ 가공된 intraData:", intraData);
+                console.log("raw intraRes:", intraRes.data);
+
             }
 
             const periodRes = await apiClient.get(`/api/period/${stockName}/candle/${period}`);

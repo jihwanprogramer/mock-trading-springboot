@@ -195,17 +195,17 @@ public class IntradayCandleService {
 	}
 
 	// 조회용
-	public List<IntradayCandle> getCandles(String stockCode, String date, int interval) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-		LocalDateTime start = LocalDateTime.parse(date + "0000", formatter);
-		LocalDateTime end = LocalDateTime.parse(date + "2359", formatter);
-
-		CandleType type = getCandleTypeByInterval(interval);
-
-		return intradayCandleRepository.findByStock_StockCodeAndCandleTypeAndTimeStampBetween(
-			stockCode, type, start, end
-		);
-	}
+	// public List<IntradayCandle> getCandles(String stockCode, String date, int interval) {
+	// 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+	// 	LocalDateTime start = LocalDateTime.parse(date + "0000", formatter);
+	// 	LocalDateTime end = LocalDateTime.parse(date + "2359", formatter);
+	//
+	// 	CandleType type = getCandleTypeByInterval(interval);
+	//
+	// 	return intradayCandleRepository.findByStock_StockCodeAndCandleTypeAndTimeStampBetween(
+	// 		stockCode, type, start, end
+	// 	);
+	// }
 
 	private CandleType getCandleTypeByInterval(int interval) {
 		return switch (interval) {
