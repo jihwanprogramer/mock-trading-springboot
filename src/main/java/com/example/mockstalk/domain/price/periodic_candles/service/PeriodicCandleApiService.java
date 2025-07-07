@@ -124,8 +124,6 @@ public class PeriodicCandleApiService {
             .collect(Collectors.toList());
 
         periodicCandleService.saveCandlesAsync(entityList);
-
-        candleRepository.saveAll(entityList);
     }
 
 
