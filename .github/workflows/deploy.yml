@@ -2,7 +2,7 @@ name: Deploy Frontend & Backend to AWS ECS
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ main ]
   workflow_dispatch:
 
 env:
