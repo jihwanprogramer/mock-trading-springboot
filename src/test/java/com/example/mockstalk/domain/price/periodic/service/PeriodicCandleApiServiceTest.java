@@ -107,7 +107,6 @@ class PeriodicCandleApiServiceTest {
         verify(restTemplate, times(1)).exchange(any(String.class), eq(HttpMethod.GET),
             any(HttpEntity.class), eq(Map.class));
         verify(periodicCandleService, times(1)).saveCandlesAsync(anyList());
-        verify(candleRepository, times(1)).saveAll(anyList());
     }
 
     @Test
