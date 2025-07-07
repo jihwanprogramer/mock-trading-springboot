@@ -2,6 +2,9 @@ package com.example.mockstalk.common.config;
 
 import java.util.List;
 
+import com.example.mockstalk.domain.auth.jwt.JwtFilter;
+import com.example.mockstalk.domain.auth.jwt.JwtUtil;
+import com.example.mockstalk.domain.auth.service.JwtTokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,7 +17,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.example.mockstalk.common.jwttoken.JwtTokenService;
 
 import lombok.RequiredArgsConstructor;
 

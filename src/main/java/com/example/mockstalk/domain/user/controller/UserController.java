@@ -16,7 +16,7 @@ import com.example.mockstalk.common.response.ResponseMessage;
 import com.example.mockstalk.domain.user.dto.request.DeleteRequestDto;
 import com.example.mockstalk.domain.user.dto.request.SignupRequestDto;
 import com.example.mockstalk.domain.user.dto.request.UpdateRequestDto;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 import com.example.mockstalk.domain.user.service.UserService;
 
 import jakarta.validation.Valid;
