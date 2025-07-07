@@ -18,6 +18,10 @@ public interface IntradayCandleRepository extends JpaRepository<IntradayCandle, 
 	List<IntradayCandle> findByStock_StockCodeAndCandleTypeAndTimeStampBetween(String stockCode, CandleType type,
 		LocalDateTime start, LocalDateTime end);
 
+	List<IntradayCandle> findByStock_StockNameAndCandleTypeAndTimeStampBetween(
+		String stockName, CandleType type, LocalDateTime start, LocalDateTime end
+	);
+
 	Optional<IntradayCandle> findByStock_StockCodeAndTimeStamp(String stockCode, LocalDateTime timestamp);
 }
 
