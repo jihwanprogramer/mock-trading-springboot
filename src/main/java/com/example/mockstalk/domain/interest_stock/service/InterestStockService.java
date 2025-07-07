@@ -3,6 +3,7 @@ package com.example.mockstalk.domain.interest_stock.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 import org.springframework.stereotype.Service;
 
 import com.example.mockstalk.common.error.CustomRuntimeException;
@@ -14,7 +15,6 @@ import com.example.mockstalk.domain.interest_stock.repository.InterestStockRepos
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 import com.example.mockstalk.domain.user.entity.User;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
