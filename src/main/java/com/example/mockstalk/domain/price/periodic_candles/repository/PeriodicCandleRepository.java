@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface PeriodicCandleRepository extends JpaRepository<PeriodicCandles, Long> {
 
-    List<PeriodicCandles> findByCandleTypeAndStock_StockCode(PeriodicCandleType candleType,
-        String stockCode);
+    List<PeriodicCandles> findByCandleTypeAndStock_StockName(PeriodicCandleType candleType,
+        String stockName);
 
     @Modifying
     @Transactional
@@ -27,16 +27,6 @@ public interface PeriodicCandleRepository extends JpaRepository<PeriodicCandles,
 
     List<PeriodicCandles> findByStockAndCandleTypeAndDateIn(Stock stock,
         PeriodicCandleType candleType, Collection<LocalDateTime> dates);
-
-    @Query("SELECT p FROM PeriodicCandles p " +
-        "WHERE p.stock.stockCode = :stockCode " +
-        "AND p.candleType = :candleType " +
-        "ORDER BY p.date DESC")
-    List<PeriodicCandles> findByDateBetweenAndStock_StockCode(
-        @Param("weather") String stockCode,
-        @Param("startDate") LocalDateTime startDate,
-        @Param("endDate") LocalDateTime endDate,
-        @Param("candleType") PeriodicCandleType CandleType);
 
 
 }
