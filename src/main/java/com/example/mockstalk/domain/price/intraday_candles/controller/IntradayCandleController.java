@@ -41,18 +41,18 @@ public class IntradayCandleController {
 		return ResponseEntity.ok("모든 종목 캔들 수집 완료");
 	}
 
-	@GetMapping("/stocks/{stockCode}/candles")
+	@GetMapping("/stocks/{stockName}/candles")
 	public ResponseEntity<List<IntradayCandleDto>> getCandles(
-		@PathVariable String stockCode,
+		@PathVariable String stockName,
 		@RequestParam String date,
 		@RequestParam(defaultValue = "1") int interval) {
 
-		List<IntradayCandle> candles = intradayCandleService.getCandles(stockCode, date, interval);
+		List<IntradayCandle> candles = intradayCandleService.getCandlesByName(stockName, date, interval);
 		List<IntradayCandleDto> dtoList = candles.stream()
 			.map(IntradayCandleDto::fromEntity)
 			.toList();
 
-		log.info("조회완료: {}-{}건 (interval: {})", stockCode, dtoList.size(), interval);
+		log.info("조회완료: {} - {}건 (interval: {})", stockName, dtoList.size(), interval);
 
 		return ResponseEntity.ok(dtoList);
 	}

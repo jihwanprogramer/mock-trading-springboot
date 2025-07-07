@@ -215,4 +215,17 @@ public class IntradayCandleService {
 			default -> throw new IllegalArgumentException("지원하지 않는 interval: " + interval);
 		};
 	}
+
+	public List<IntradayCandle> getCandlesByName(String stockName, String date, int interval) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+		LocalDateTime start = LocalDateTime.parse(date + "0000", formatter);
+		LocalDateTime end = LocalDateTime.parse(date + "2359", formatter);
+
+		CandleType type = getCandleTypeByInterval(interval);
+
+		return intradayCandleRepository.findByStock_StockNameAndCandleTypeAndTimeStampBetween(
+			stockName, type, start, end
+		);
+	}
+
 }
