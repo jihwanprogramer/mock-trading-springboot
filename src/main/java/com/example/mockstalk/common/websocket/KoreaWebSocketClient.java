@@ -177,7 +177,7 @@ public class KoreaWebSocketClient {
 				String code = fields[0];        // 종목코드
 				String price = fields[2];       // 현재가
 
-				redisTemplate.opsForValue().set("stockPrice:" + code, price, Duration.ofMinutes(5));
+				redisTemplate.opsForValue().set("stockPrice::" + code, price, Duration.ofMinutes(5));
 				System.out.printf("[%s] 현재가 %s 저장됨%n", code, price);
 			}
 
