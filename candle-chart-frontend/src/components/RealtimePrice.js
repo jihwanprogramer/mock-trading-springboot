@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import apiClient from "./api";
 
 const RealtimePrice = () => {
@@ -6,19 +6,24 @@ const RealtimePrice = () => {
     const [price, setPrice] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [autoRefresh, setAutoRefresh] = useState(false);
+    const intervalRef = useRef(null);
 
-    const fetchPrice = async () => {
+    const fetchPrice = useCallback(async () => {
         if (!stockName.trim()) {
             setError("종목명을 입력해주세요.");
             setPrice(null);
             return;
         }
+
         setLoading(true);
         setError("");
+
         try {
             const res = await apiClient.get(`/api/price`, {
                 params: {stockName},
             });
+
             if (!res.data) {
                 setPrice(null);
                 setError("가격 정보 없음");
@@ -36,13 +41,29 @@ const RealtimePrice = () => {
             }
             setPrice(null);
         }
+
         setLoading(false);
-    };
+    }, [stockName]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         fetchPrice();
+        setAutoRefresh(true);
     };
+
+    useEffect(() => {
+        if (autoRefresh && stockName.trim()) {
+            intervalRef.current = setInterval(() => {
+                fetchPrice();
+            }, 5000);
+
+            return () => clearInterval(intervalRef.current);
+        }
+    }, [autoRefresh, stockName, fetchPrice]);
+
+    useEffect(() => {
+        return () => clearInterval(intervalRef.current);
+    }, []);
 
     return (
         <div style={styles.container}>
@@ -53,7 +74,11 @@ const RealtimePrice = () => {
                 <input
                     type="text"
                     value={stockName}
-                    onChange={(e) => setStockName(e.target.value)}
+                    onChange={(e) => {
+                        setStockName(e.target.value);
+                        setAutoRefresh(false);
+                        clearInterval(intervalRef.current);
+                    }}
                     placeholder="종목명 입력"
                     style={styles.input}
                 />
@@ -63,11 +88,8 @@ const RealtimePrice = () => {
             </form>
 
             {stockName && <h3 style={styles.subtitle}>{stockName} 현재가</h3>}
-
             {error && <p style={styles.error}>{error}</p>}
-
             {!error && loading && <p>불러오는 중...</p>}
-
             {!error && !loading && !isNaN(Number(price)) && (
                 <p style={styles.price}>{Number(price).toLocaleString()} 원</p>
             )}

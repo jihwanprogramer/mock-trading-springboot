@@ -16,10 +16,10 @@ const CombinedChart = () => {
     const maSeriesRef = useRef(null);
     const periodicCandleSeriesRef = useRef(null);
 
-    const [stockCode, setStockCode] = useState("");
+    const [stockName, setStockName] = useState("");
     const [date, setDate] = useState("");
     const [interval, setInterval] = useState(1);
-    const [period, setPeriod] = useState("D"); // 일, 주, 월, 년
+    const [period, setPeriod] = useState("D");
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -45,8 +45,6 @@ const CombinedChart = () => {
             },
         });
 
-        // ...생략...
-
         const candleSeries = chart.addCandlestickSeries({
             upColor: "#00B15D",
             downColor: "#E44343",
@@ -66,7 +64,6 @@ const CombinedChart = () => {
             wickUpColor: "rgba(0, 0, 255, 0.05)",
             wickDownColor: "rgba(255, 0, 0, 0.05)",
         });
-
 
         chartRef.current = chart;
         candleSeriesRef.current = candleSeries;
@@ -89,17 +86,16 @@ const CombinedChart = () => {
     }, []);
 
     const fetchChartData = async () => {
-        if (!stockCode || !date) return;
+        if (!stockName || !date) return;
         setLoading(true);
         setErrorMsg("");
 
         try {
             const dateStr = date.replace(/-/g, "");
 
-            // 분봉 데이터는 period === "D"인 경우만 요청
             let intraData = [];
             if (period === "D") {
-                const intraRes = await apiClient.get(`/api/intra/stocks/${stockCode}/candles`, {
+                const intraRes = await apiClient.get(`/api/intra/stocks/${stockName}/candles`, {
                     params: {date: dateStr, interval},
                 });
                 const intraRaw = intraRes.data?.data || intraRes.data || [];
@@ -113,10 +109,12 @@ const CombinedChart = () => {
                     }))
                     .sort((a, b) => a.time - b.time)
                     .filter((v, i, arr) => i === 0 || v.time !== arr[i - 1].time);
+                console.log("✅ 가공된 intraData:", intraData);
+                console.log("raw intraRes:", intraRes.data);
+
             }
 
-            // 기간별 캔들 조회
-            const periodRes = await apiClient.get(`/api/period/${stockCode}/candle/${period}`);
+            const periodRes = await apiClient.get(`/api/period/${stockName}/candle/${period}`);
             const periodRaw = periodRes.data?.data || [];
             const periodicCandles = periodRaw
                 .map((c) => ({
@@ -129,11 +127,9 @@ const CombinedChart = () => {
                 .sort((a, b) => a.time - b.time)
                 .filter((v, i, arr) => i === 0 || v.time !== arr[i - 1].time);
 
-            // MA 5일선 계산 (기간별 캔들 기준)
             const maPoints = periodRaw
                 .map((c, idx, arr) => {
-                    if (idx < 4) return null;
-                    if (!c.date) return null;
+                    if (idx < 4 || !c.date) return null;
                     const slice = arr.slice(idx - 4, idx + 1);
                     const avg = slice.reduce((sum, item) => sum + item.closingPrice, 0) / 5;
                     return {
@@ -142,7 +138,6 @@ const CombinedChart = () => {
                     };
                 })
                 .filter(Boolean);
-
 
             candleSeriesRef.current.setData(intraData);
             maSeriesRef.current.setData(maPoints);
@@ -172,9 +167,9 @@ const CombinedChart = () => {
             <h2 style={styles.title}>한국투자증권 종합지수</h2>
             <form onSubmit={handleSubmit} style={styles.form}>
                 <input
-                    value={stockCode}
-                    onChange={(e) => setStockCode(e.target.value)}
-                    placeholder="종목코드"
+                    value={stockName}
+                    onChange={(e) => setStockName(e.target.value)}
+                    placeholder="종목명"
                     required
                     style={styles.input}
                 />

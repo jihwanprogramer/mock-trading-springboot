@@ -21,60 +21,24 @@
           "value": "3.35.26.117"
         },
         {
-          "name": "ACCOUNT_JWT_SECRET",
-          "value": "TXlTdXBlclNlY3JldEtleUZvckpXVFNpZ25hdHVyZTEyee=="
-        },
-        {
           "name": "HANTU_ACCESS_TOKEN",
           "value": "null"
-        },
-        {
-          "name": "HANTU_APPSECRET",
-          "value": "Xk77+Cx1i5vvpDeA+VMtGcVQqKyayysqaPuEMcWjTiNBgBGLf7A4NXz9cB0u+GtLSfT6bt0T7fSZhjCcw2SD266yjzB7YBN14DTKUNyxlc/C0ToBLLGBwR9PVflcRuvLmgO4Vx+BYVZcFjqQrBs5GA1WVEaEPomxlaDcwXwCp4ZMYw1W62o="
-        },
-        {
-          "name": "RABBITMQ_USERNAME",
-          "value": "dikaprio"
         },
         {
           "name": "DB_PORT",
           "value": "3306"
         },
         {
-          "name": "NAVER_CLIENT_SECRET",
-          "value": "lztYZRhM3B"
-        },
-        {
-          "name": "RABBITMQ_PASSWORD",
-          "value": "Rlatjrwls123!"
-        },
-        {
           "name": "DB_NAME",
           "value": "mockstalk"
-        },
-        {
-          "name": "NAVER_CLIENT_ID",
-          "value": "3lIBKsC8XNz4mc3Tle6N"
         },
         {
           "name": "DB_HOST",
           "value": "mockstalk.cts6gswy2icv.ap-northeast-2.rds.amazonaws.com"
         },
         {
-          "name": "HANTU_APPKEY",
-          "value": "PSAwaI2yvBidzvuF4O3P4b8d0hszPmou0fDJ"
-        },
-        {
-          "name": "DB_USERNAME",
-          "value": "admin"
-        },
-        {
           "name": "REDIS_PORT",
           "value": "6379"
-        },
-        {
-          "name": "JWT_SECRET",
-          "value": "TXlTdXBlclNlY3JldEtleUZvckpXVFNpZ25hdHVyZTEyMw=="
         },
         {
           "name": "RABBITMQ_PORT",
@@ -83,10 +47,48 @@
         {
           "name": "RABBITMQ_HOST",
           "value": "b-8ffe8a76-a215-485c-b393-79aecb590344.mq.ap-northeast-2.on.aws"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "ACCOUNT_JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-ACCOUNT_JWT_SECRET-BkpS3u"
+        },
+        {
+          "name": "DB_USERNAME",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-DB_USERNAME-UmiVxX"
         },
         {
           "name": "DB_PASSWORD",
-          "value": "rlatjrwls123"
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-DB_PASSWORD-wd4WdW"
+        },
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-JWT_SECRET-4bkNWL"
+        },
+        {
+          "name": "NAVER_CLIENT_ID",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-NAVER_CLIENT_ID-BaGHGx"
+        },
+        {
+          "name": "NAVER_CLIENT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-NAVER_CLIENT_SECRET-f9EAeJ"
+        },
+        {
+          "name": "RABBITMQ_USERNAME",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-RABBITMQ_USERNAME-EqpXpK"
+        },
+        {
+          "name": "RABBITMQ_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-RABBITMQ_PASSWORD-xxKGuj"
+        },
+        {
+          "name": "HANTU_APPSECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-HANTU_APPSECRET-xGxu1p"
+        },
+        {
+          "name": "HANTU_APPKEY",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-HANTU_APPKEY-2ROIR6"
         }
       ],
       "mountPoints": [],
@@ -144,13 +146,13 @@
   "requiresCompatibilities": [
     "FARGATE"
   ],
-  "cpu": "1024",
-  "memory": "3072",
+  "cpu": "2048",
+  "memory": "4096",
   "runtimePlatform": {
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-  "registeredAt": "2025-07-06T18:05:42.291Z",
+  "registeredAt": "2025-07-08T00:39:32.210Z",
   "registeredBy": "arn:aws:iam::720063431739:root",
   "tags": []
 }

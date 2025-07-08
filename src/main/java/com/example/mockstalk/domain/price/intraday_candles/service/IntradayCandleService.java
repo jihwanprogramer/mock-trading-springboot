@@ -194,19 +194,6 @@ public class IntradayCandleService {
 		}
 	}
 
-	// 조회용
-	public List<IntradayCandle> getCandles(String stockCode, String date, int interval) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-		LocalDateTime start = LocalDateTime.parse(date + "0000", formatter);
-		LocalDateTime end = LocalDateTime.parse(date + "2359", formatter);
-
-		CandleType type = getCandleTypeByInterval(interval);
-
-		return intradayCandleRepository.findByStock_StockCodeAndCandleTypeAndTimeStampBetween(
-			stockCode, type, start, end
-		);
-	}
-
 	private CandleType getCandleTypeByInterval(int interval) {
 		return switch (interval) {
 			case 1 -> CandleType.MIN;
@@ -214,5 +201,76 @@ public class IntradayCandleService {
 			case 5 -> CandleType.MIN5;
 			default -> throw new IllegalArgumentException("지원하지 않는 interval: " + interval);
 		};
+	}
+
+	public List<IntradayCandle> getCandlesByName(String stockName, String date, int interval) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+		LocalDateTime start = LocalDateTime.parse(date + "0000", formatter);
+		LocalDateTime end = LocalDateTime.parse(date + "2359", formatter);
+
+		CandleType type = getCandleTypeByInterval(interval);
+
+		return intradayCandleRepository.findByStock_StockNameAndCandleTypeAndTimeStampBetween(
+			stockName, type, start, end
+		);
+	}
+
+	private List<IntradayCandle> aggregateCandles(List<IntradayCandle> sourceCandles, int interval,
+		CandleType targetType) {
+		List<IntradayCandle> result = new ArrayList<>();
+
+		for (int i = 0; i < sourceCandles.size(); i += interval) {
+			List<IntradayCandle> group = sourceCandles.subList(i, Math.min(i + interval, sourceCandles.size()));
+
+			IntradayCandle first = group.get(0);
+			IntradayCandle last = group.get(group.size() - 1);
+
+			IntradayCandle aggregated = new IntradayCandle();
+			aggregated.setStock(first.getStock());
+			aggregated.setTimeStamp(first.getTimeStamp());
+			aggregated.setCandleType(targetType);
+
+			aggregated.setOpeningPrice(first.getOpeningPrice());
+			aggregated.setClosingPrice(last.getClosingPrice());
+			aggregated.setHighPrice(
+				group.stream().map(IntradayCandle::getHighPrice).max(Long::compareTo).orElse(first.getHighPrice()));
+			aggregated.setLowPrice(
+				group.stream().map(IntradayCandle::getLowPrice).min(Long::compareTo).orElse(first.getLowPrice()));
+
+			aggregated.setTradingVolume(group.stream().mapToLong(IntradayCandle::getTradingVolume).sum());
+			aggregated.setTradingValue(group.stream().mapToLong(IntradayCandle::getTradingValue).sum());
+
+			aggregated.setStockCode(first.getStockCode());
+			aggregated.setStockName(first.getStockName());
+
+			result.add(aggregated);
+		}
+
+		return result;
+	}
+
+	@Transactional
+	public void generateAndSaveMultiIntervalCandlesByCode(String stockCode, String date) {
+		Stock stock = stockRepository.findByStockCode(stockCode);
+		if (stock == null) {
+			throw new IllegalArgumentException("해당 코드의 종목을 찾을 수 없습니다: " + stockCode);
+		}
+
+		CandleType baseType = CandleType.MIN;
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+		LocalDateTime start = LocalDateTime.parse(date + "0000", formatter);
+		LocalDateTime end = LocalDateTime.parse(date + "2359", formatter);
+
+		List<IntradayCandle> oneMinCandles =
+			intradayCandleRepository.findByStock_StockCodeAndCandleTypeAndTimeStampBetween(
+				stockCode, baseType, start, end
+			);
+
+		List<IntradayCandle> candles3m = aggregateCandles(oneMinCandles, 3, CandleType.MIN3);
+		intradayCandleRepository.saveAll(candles3m);
+
+		List<IntradayCandle> candles5m = aggregateCandles(oneMinCandles, 5, CandleType.MIN5);
+		intradayCandleRepository.saveAll(candles5m);
 	}
 }

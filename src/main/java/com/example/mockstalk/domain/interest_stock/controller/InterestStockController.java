@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.mockstalk.common.response.ResponseMessage;
 import com.example.mockstalk.domain.interest_stock.dto.request.InterestRequestDto;
 import com.example.mockstalk.domain.interest_stock.service.InterestStockService;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 

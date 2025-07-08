@@ -13,7 +13,7 @@ import com.example.mockstalk.domain.comment.dto.CommentResponseDto;
 import com.example.mockstalk.domain.comment.entity.Comment;
 import com.example.mockstalk.domain.comment.repository.CommentRepository;
 import com.example.mockstalk.domain.user.repository.UserRepository;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 
 import lombok.AllArgsConstructor;
 

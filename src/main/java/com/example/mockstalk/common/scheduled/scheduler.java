@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class scheduler {
+
 	private final LivePriceService livePriceService;
 	private final RabbitTemplate rabbitTemplate;
 	private final StockService stockService;
@@ -51,8 +52,9 @@ public class scheduler {
 	public void refreshToken() {
 		synchronized (tokenLock) {
 			Boolean exists = redisTemplate.hasKey("accessToken::koreainvestment");
-			if (Boolean.TRUE.equals(exists))
+			if (Boolean.TRUE.equals(exists)) {
 				return;
+			}
 
 			redisTemplate.delete("accessToken::koreainvestment");
 			tokenService.getAccessToken();
