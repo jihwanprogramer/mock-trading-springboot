@@ -28,10 +28,12 @@ import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 @ClientEndpoint
 @RequiredArgsConstructor
 @Slf4j
+@Component
 public class KoreaWebSocketClient {
 
     private Session session;
@@ -202,7 +204,7 @@ public class KoreaWebSocketClient {
         Map<String, Object> message = new HashMap<>();
         message.put("header", header);
         message.put("body", body);
-
+        System.out.println(header);
         return objectMapper.writeValueAsString(message);
     }
 
