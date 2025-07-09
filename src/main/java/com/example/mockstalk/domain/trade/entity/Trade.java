@@ -1,43 +1,55 @@
 package com.example.mockstalk.domain.trade.entity;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import com.example.mockstalk.common.baseEntity.BaseEntity;
-import jakarta.persistence.*;
+import com.example.mockstalk.domain.order.entity.Type;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @Table(name = "trade")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Trade extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = true)
-    private Long orderId;
+	@Column
+	private Long orderId;
 
-    @Column(nullable = true)
-    private Long accountId;
+	@Column
+	private Long accountId;
 
-    @Column(nullable = true)
-    private Long quantity;
+	@Column
+	private Type orderType;
 
-    @Column(nullable = true)
-    private Long price;
+	@Column
+	private Long quantity;
 
-    @Column(nullable = true)
-    private LocalDateTime traderDate;
+	@Column
+	private BigDecimal price;
 
-    @Column(nullable = true)
-    private double charge;
+	@Column
+	private LocalDateTime traderDate;
 
-    @Column(nullable = false)
-    private boolean trade;
+	@Column
+	private double charge;
 
+	@Column(nullable = false)
+	private boolean trade;
 
 }
