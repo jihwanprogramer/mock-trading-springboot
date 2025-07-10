@@ -3,8 +3,10 @@ package com.example.mockstalk.domain.interest_stock.entity;
 import com.example.mockstalk.common.baseEntity.BaseEntity;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.user.entity.User;
+import com.fasterxml.jackson.core.JsonToken;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "interestStock")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class InterestStock extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +35,6 @@ public class InterestStock extends BaseEntity {
         this.user = user;
         this.stock = stock;
     }
+
+
 }

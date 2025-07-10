@@ -6,7 +6,6 @@ import com.example.mockstalk.domain.stock.entity.Stock;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface PeriodicCandleRepository extends JpaRepository<PeriodicCandles, Long> {
 
-    Optional<PeriodicCandles> findByCandleTypeAndStock_StockCode(PeriodicCandleType candleType,
-        String stockCode);
+    List<PeriodicCandles> findByCandleTypeAndStock_StockName(PeriodicCandleType candleType,
+        String stockName);
 
     @Modifying
     @Transactional
@@ -28,4 +27,6 @@ public interface PeriodicCandleRepository extends JpaRepository<PeriodicCandles,
 
     List<PeriodicCandles> findByStockAndCandleTypeAndDateIn(Stock stock,
         PeriodicCandleType candleType, Collection<LocalDateTime> dates);
+
+
 }

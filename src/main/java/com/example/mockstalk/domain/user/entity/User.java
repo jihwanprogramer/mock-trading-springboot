@@ -9,7 +9,16 @@ import com.example.mockstalk.domain.board.entity.Board;
 import com.example.mockstalk.domain.comment.entity.Comment;
 import com.example.mockstalk.domain.interest_stock.entity.InterestStock;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,7 +59,7 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user")
 	private List<Board> boards = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<InterestStock> interestStocks = new ArrayList<>();
 
 	// 회원가입
@@ -61,6 +70,7 @@ public class User extends BaseEntity {
 		this.walletAddress = walletAddress;
 		this.userRole = userRole;
 	}
+
 	@Builder
 	public User(Long id, String email, String password, String nickname, String walletAddress, UserRole userRole) {
 		this.id = id;
@@ -73,9 +83,12 @@ public class User extends BaseEntity {
 
 	//수정
 	public void updateUser(String nickname, String password) {
-		this.nickname = nickname;
-		this.password = password;
-
+		if (nickname != null && !nickname.isEmpty()) {
+			this.nickname = nickname;
+		}
+		if (password != null && !password.isEmpty()) {
+			this.password = password;
+		}
 	}
 
 }

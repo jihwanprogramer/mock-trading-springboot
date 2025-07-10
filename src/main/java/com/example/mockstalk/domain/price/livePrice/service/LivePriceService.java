@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.example.mockstalk.common.error.CustomRuntimeException;
+import com.example.mockstalk.common.error.ExceptionCode;
 import com.example.mockstalk.common.hantutoken.TokenResponseDto;
+import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -111,5 +114,21 @@ public class LivePriceService {
 	// 캐시된 데이터 조회
 	public String getCachedStockPrice(String stockCode) {
 		return (String)redisTemplate.opsForValue().get("stockPrice::" + stockCode);
+	}
+
+	public String getCurrentPriceByStockName(String stockName) {
+		System.out.println("메서드 진입");
+		Stock stock = stockRepository.findByStockName(stockName)
+			.orElseThrow(() -> new CustomRuntimeException(ExceptionCode.STOCK_NOT_FOUND));
+
+		System.out.println("종목 찾음");
+		String redisKey = "stockPrice::" + stock.getStockCode();
+		String result = (String)redisTemplate.opsForValue().get(redisKey);
+
+		if (result == null) {
+			throw new CustomRuntimeException(ExceptionCode.NOT_FOUND_PRICE);
+		}
+
+		return result; // 문자열로 반환
 	}
 }

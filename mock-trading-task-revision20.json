@@ -1,0 +1,158 @@
+{
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:720063431739:task-definition/mock-trading-task:20",
+  "containerDefinitions": [
+    {
+      "name": "mock-app",
+      "image": "720063431739.dkr.ecr.ap-northeast-2.amazonaws.com/mock-backend:latest",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "name": "mock-app-8081-tcp",
+          "containerPort": 8081,
+          "hostPort": 8081,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "REDIS_HOST",
+          "value": "3.35.26.117"
+        },
+        {
+          "name": "HANTU_ACCESS_TOKEN",
+          "value": "null"
+        },
+        {
+          "name": "DB_PORT",
+          "value": "3306"
+        },
+        {
+          "name": "DB_NAME",
+          "value": "mockstalk"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "mockstalk.cts6gswy2icv.ap-northeast-2.rds.amazonaws.com"
+        },
+        {
+          "name": "REDIS_PORT",
+          "value": "6379"
+        },
+        {
+          "name": "RABBITMQ_PORT",
+          "value": "5671"
+        },
+        {
+          "name": "RABBITMQ_HOST",
+          "value": "b-8ffe8a76-a215-485c-b393-79aecb590344.mq.ap-northeast-2.on.aws"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "ACCOUNT_JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-ACCOUNT_JWT_SECRET-BkpS3u"
+        },
+        {
+          "name": "DB_USERNAME",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-DB_USERNAME-UmiVxX"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-DB_PASSWORD-wd4WdW"
+        },
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-JWT_SECRET-4bkNWL"
+        },
+        {
+          "name": "NAVER_CLIENT_ID",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-NAVER_CLIENT_ID-BaGHGx"
+        },
+        {
+          "name": "NAVER_CLIENT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-NAVER_CLIENT_SECRET-f9EAeJ"
+        },
+        {
+          "name": "RABBITMQ_USERNAME",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-RABBITMQ_USERNAME-EqpXpK"
+        },
+        {
+          "name": "RABBITMQ_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-RABBITMQ_PASSWORD-xxKGuj"
+        },
+        {
+          "name": "HANTU_APPSECRET",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-HANTU_APPSECRET-xGxu1p"
+        },
+        {
+          "name": "HANTU_APPKEY",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:720063431739:secret:mockstalk-HANTU_APPKEY-2ROIR6"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/mock-trading-task",
+          "awslogs-create-group": "true",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "mock-trading-task",
+  "executionRoleArn": "arn:aws:iam::720063431739:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "revision": 20,
+  "volumes": [],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EC2",
+    "FARGATE"
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "2048",
+  "memory": "4096",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "registeredAt": "2025-07-08T00:39:32.210Z",
+  "registeredBy": "arn:aws:iam::720063431739:root",
+  "tags": []
+}

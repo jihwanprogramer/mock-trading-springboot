@@ -6,9 +6,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.example.mockstalk.common.hantutoken.TokenService;
-import com.example.mockstalk.common.websoket.KoreaWebSocketClient;
+import com.example.mockstalk.common.websocket.KoreaWebSocketClient;
 import com.example.mockstalk.domain.price.livePrice.service.LivePriceService;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
+import com.example.mockstalk.domain.stock.service.StockService;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +17,16 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class scheduler {
+
 	private final LivePriceService livePriceService;
 	private final RabbitTemplate rabbitTemplate;
-
+	private final StockService stockService;
 	private final StockRepository stockRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final TokenService tokenService;
 	private final Object tokenLock = new Object();
+	// private final WebSocketClientManager webSocketClientManager;
+	private final KoreaWebSocketClient koreaWebSocketClient;
 
 	@PostConstruct
 	public void init() throws Exception {
@@ -30,8 +34,9 @@ public class scheduler {
 		tokenService.getAccessToken(); // 시작 시 1회 실행
 		tokenService.getApprovalKey(); // 시작 시 1회 실행
 		// livePriceService.cacheAllStockPrices();
-		KoreaWebSocketClient client = new KoreaWebSocketClient(redisTemplate, stockRepository, rabbitTemplate);
-		client.connect();
+
+		koreaWebSocketClient.connect();
+
 		System.out.println("실행 완료");
 	}
 
@@ -47,8 +52,9 @@ public class scheduler {
 	public void refreshToken() {
 		synchronized (tokenLock) {
 			Boolean exists = redisTemplate.hasKey("accessToken::koreainvestment");
-			if (Boolean.TRUE.equals(exists))
+			if (Boolean.TRUE.equals(exists)) {
 				return;
+			}
 
 			redisTemplate.delete("accessToken::koreainvestment");
 			tokenService.getAccessToken();

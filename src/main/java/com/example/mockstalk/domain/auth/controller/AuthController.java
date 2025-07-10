@@ -1,11 +1,11 @@
 package com.example.mockstalk.domain.auth.controller;
 
-import com.example.mockstalk.common.config.JwtUtil;
+import com.example.mockstalk.domain.auth.jwt.JwtUtil;
 import com.example.mockstalk.common.response.ResponseMessage;
 import com.example.mockstalk.domain.auth.service.AuthService;
-import com.example.mockstalk.domain.user.dto.request.LoginRequestDto;
-import com.example.mockstalk.domain.user.dto.response.LoginResponseDto;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
+import com.example.mockstalk.domain.auth.dto.request.LoginRequestDto;
+import com.example.mockstalk.domain.auth.dto.response.LoginResponseDto;
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +18,7 @@ import java.time.Duration;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -61,13 +61,16 @@ public class AuthController {
 
         // 3. 로그아웃 처리
         authService.logout(accessToken, userId);
-
         return ResponseEntity.ok(ResponseMessage.success("로그아웃 완료"));
     }
     // AccessToken 재발급
     @PostMapping("/reissue")
-    public ResponseEntity<ResponseMessage<?>> reissue(@CookieValue("refreshToken") String refreshToken) {
-        String newAccessToken = authService.reissueAccessToken(refreshToken);
+    public ResponseEntity<ResponseMessage<?>> reissue(@CookieValue("refreshToken") String refreshToken, HttpServletRequest request) {
+        // 1. 요청 헤더에서 AccessToken 추출 및 Bearer 제거
+        String rawToken = request.getHeader("Authorization");
+        String accessToken = jwtUtil.substringToken(rawToken);
+
+        String newAccessToken = authService.reissueAccessToken(refreshToken,accessToken);
         return ResponseEntity.ok(ResponseMessage.success("토큰 재발급 성공", newAccessToken));
     }
 

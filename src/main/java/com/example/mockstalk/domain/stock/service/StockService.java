@@ -8,27 +8,28 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
+
 import com.example.mockstalk.common.error.CustomRuntimeException;
 import com.example.mockstalk.common.error.ExceptionCode;
+import com.example.mockstalk.domain.stock.dto.StockResponseDto;
 import com.example.mockstalk.domain.stock.entity.Stock;
 import com.example.mockstalk.domain.stock.entity.StockStatus;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 public class StockService {
+	private final StockRepository stockRepository;
 	@PersistenceContext
 	private EntityManager em;
-
-	private final StockRepository stockRepository;
 
 	private static final int BATCH_SIZE = 1000;
 
@@ -76,5 +77,11 @@ public class StockService {
 		} catch (IOException e) {
 			throw new CustomRuntimeException(ExceptionCode.CSV_FILE_READ_FAILED);
 		}
+	}
+
+	public List<StockResponseDto> getAllStocks() {
+		return stockRepository.findAll().stream()
+			.map(StockResponseDto::from)
+			.toList();
 	}
 }

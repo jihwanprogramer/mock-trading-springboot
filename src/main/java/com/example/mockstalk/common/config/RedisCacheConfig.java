@@ -42,4 +42,5 @@ public class RedisCacheConfig {
 		template.setValueSerializer(new GenericJackson2JsonRedisSerializer()); // JSON 값
 		return template;
 	}
+
 }

@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.mockstalk.common.response.ResponseMessage;
 import com.example.mockstalk.domain.comment.dto.CommentRequestDto;
 import com.example.mockstalk.domain.comment.service.CommentService;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/boards")
+@RequestMapping("/api/boards")
 @RequiredArgsConstructor
 public class CommentController {
 
@@ -45,7 +45,7 @@ public class CommentController {
 	@GetMapping("/{boardId}/comments")
 	public ResponseEntity<ResponseMessage<?>> findBoardByBoardId(
 		@PathVariable Long boardId,
-		@PageableDefault(size = 10, sort = "created_at", direction = DESC) Pageable pageable) {
+		@PageableDefault(size = 10, sort = "createdAt", direction = DESC) Pageable pageable) {
 		return ResponseEntity.ok(
 			ResponseMessage.success(commentService.findCommentByBoardId(boardId, pageable)));
 	}

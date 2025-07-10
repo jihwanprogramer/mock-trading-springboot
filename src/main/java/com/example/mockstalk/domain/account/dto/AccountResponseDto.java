@@ -13,6 +13,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class AccountResponseDto {
+	private final Long id;
 	private final String accountName;
 	private final BigDecimal initialBalance;  // 초기 설정 잔고
 	private final BigDecimal currentBalance;  // 현재 잔고
@@ -23,6 +24,7 @@ public class AccountResponseDto {
 	// 단건 조회용 of
 	public static AccountResponseDto of(Account account, BigDecimal totalAsset, BigDecimal profitRate) {
 		return AccountResponseDto.builder()
+			.id(account.getId())
 			.accountName(account.getAccountName())
 			.initialBalance(account.getInitialBalance())
 			.currentBalance(account.getCurrentBalance())
@@ -35,6 +37,7 @@ public class AccountResponseDto {
 	// 다건 조회용 of
 	public static AccountResponseDto of(Account account) {
 		return AccountResponseDto.builder()
+			.id(account.getId())
 			.accountName(account.getAccountName())
 			.initialBalance(account.getInitialBalance())
 			.currentBalance(account.getCurrentBalance())

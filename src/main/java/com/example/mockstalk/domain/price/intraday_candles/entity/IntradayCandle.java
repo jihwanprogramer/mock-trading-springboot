@@ -19,8 +19,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Entity
 @Builder
 @Table(name = "intraday_candles")
@@ -66,4 +68,13 @@ public class IntradayCandle extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CandleType candleType;
+
+	public void updateFrom(IntradayCandle other) {
+		this.openingPrice = other.getOpeningPrice();
+		this.closingPrice = other.getClosingPrice();
+		this.highPrice = other.getHighPrice();
+		this.lowPrice = other.getLowPrice();
+		this.tradingVolume = other.getTradingVolume();
+		this.tradingValue = other.getTradingValue();
+	}
 }

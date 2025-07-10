@@ -1,15 +1,7 @@
 package com.example.mockstalk.domain.price.livePrice.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.startsWith;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -29,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
+
 import com.example.mockstalk.common.hantutoken.TokenResponseDto;
 import com.example.mockstalk.domain.stock.repository.StockRepository;
 
@@ -42,6 +35,9 @@ class LivePriceServiceTest {
 
 	@Mock
 	private RedisTemplate<String, Object> redisTemplate;
+
+	@Mock
+	private RedisTemplate<String, String> stringRedisTemplate;
 
 	@Mock
 	private ValueOperations<String, Object> valueOperations;

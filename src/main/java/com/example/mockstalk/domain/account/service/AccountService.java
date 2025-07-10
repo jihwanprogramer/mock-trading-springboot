@@ -26,7 +26,7 @@ import com.example.mockstalk.domain.account.repository.AccountRepository;
 import com.example.mockstalk.domain.holdings.entity.Holdings;
 import com.example.mockstalk.domain.holdings.repository.HoldingsRepository;
 import com.example.mockstalk.domain.user.entity.User;
-import com.example.mockstalk.domain.user.service.CustomUserDetails;
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -100,6 +100,7 @@ public class AccountService {
 	}
 
 	// 로그인한 계좌 정보 조회
+	@Transactional(readOnly = true)
 	public AccountResponseDto findAccountByToken() {
 		Long accountId = AccountContextHolder.getAccountId();
 
@@ -259,6 +260,8 @@ public class AccountService {
 
 		// 캐시에 없으면 계산하고 저장
 		BigDecimal calculated = calculateTotalAsset(accountId);
+
+		// 1분 정도 TTL 설정 (원하는 주기로 조정 가능)
 		redisTemplate.opsForValue().set(key, calculated.toPlainString(), Duration.ofMinutes(1));
 
 		return calculated;
