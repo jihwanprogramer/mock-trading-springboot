@@ -1,9 +1,16 @@
 package com.example.mockstalk.domain.auth.jwt;
 
+import java.io.IOException;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.example.mockstalk.domain.auth.security.CustomUserDetails;
 import com.example.mockstalk.domain.auth.service.JwtTokenService;
 import com.example.mockstalk.domain.user.entity.User;
 import com.example.mockstalk.domain.user.entity.UserRole;
-import com.example.mockstalk.domain.auth.security.CustomUserDetails;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -13,10 +20,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
-import java.io.IOException;
 
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
@@ -24,13 +27,12 @@ public class JwtFilter extends OncePerRequestFilter {
 	private final JwtUtil jwtUtil;
 	private final JwtTokenService tokenService;
 
-
 	public JwtFilter(JwtUtil jwtUtil, JwtTokenService tokenService) {
 		this.jwtUtil = jwtUtil;
 		this.tokenService = tokenService;
 
-
 	}
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
 		HttpServletResponse response,
@@ -72,28 +74,31 @@ public class JwtFilter extends OncePerRequestFilter {
 
 			//Access 토큰 타입 검사
 			String tokenType = claims.get("tokenType", String.class);
-			if(!"access".equals(tokenType)){
+			if (!"access".equals(tokenType)) {
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Token이 필요합니다.");
 				return;
 			}
 
-  			// 1. JWT Claims에서 userId 추출
+			// 1. JWT Claims에서 userId 추출
 			Long userId = Long.parseLong(claims.getSubject()); // subject = userId
+			String email = claims.get("email", String.class);
+			String role = claims.get("userRole", String.class);
 
 			// 2. 최소 정보만으로 User 객체 직접 생성 (DB 조회 없음)
 			User user = User.builder()
-					.id(userId)
-					.build();
+				.id(userId)
+				.email(email)
+				.userRole(UserRole.valueOf(role))
+				.build();
 
 			// CustomUserDetails 생성
 			CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
 			// 인증 객체 생성 및 등록
 			UsernamePasswordAuthenticationToken authentication =
-					new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+				new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
 
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-
 
 			//관리자 접근 체크
 			if (url.startsWith("/admin")) {
