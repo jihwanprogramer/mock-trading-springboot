@@ -45,10 +45,25 @@ services:
     ports:
       - "8081:8081"
     environment:
+      SPRING_PROFILES_ACTIVE: local
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: mockstalk
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-      HANTU_APPKEY: ${HANTU_APPKEY}
-      HANTU_APPSECRET: ${HANTU_APPSECRET}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+      JWT_SECRET: ${JWT_SECRET:-local-dev-jwt-secret-change-me}
+      ACCOUNT_JWT_SECRET: ${ACCOUNT_JWT_SECRET:-local-dev-account-jwt-secret}
+      HANTU_APPKEY: ${HANTU_APPKEY:-}
+      HANTU_APPSECRET: ${HANTU_APPSECRET:-}
+      HANTU_ACCESS_TOKEN: ${HANTU_ACCESS_TOKEN:-}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID:-}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET:-}
     depends_on:
       - mysql
       - redis

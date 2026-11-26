@@ -60,7 +60,7 @@ public class SecurityConfig {
 			// 요청별 인증/인가 설정
 			.authorizeHttpRequests(user -> user
 				.requestMatchers("/api/auth/login", "/api/users/signup", "/api/auth/reissue"
-					, "/health")
+					, "/health", "/api/test/price")
 				.permitAll()
 				.requestMatchers("/admin/**")
 				.hasRole("ADMIN")
