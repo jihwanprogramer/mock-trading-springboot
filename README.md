@@ -1,131 +1,308 @@
 # Mockstalk
+
 **Spring Boot 기반 모의 주식 투자 서비스**
-가상 자산으로 주식을 주문하고, 시세가 조건에 맞을 때 체결까지 반영하는 모의 투자 서비스입니다.
-실시간 주식 데이터를 활용해 사용자가 가상의 자산으로 주식을 거래하고, 주문부터 체결 및 자산 관리까지 경험할 수 있는 모의 투자 서비스입니다.
-이 저장소에서 제가 맡은 핵심은 주문 체결입니다. 같은 지정가 주문에 시세 이벤트가 겹치면 체결이 여러 번 저장될 수 있었습니다. 주문 단위 Redisson 락을 잡고, 락 안에서 DB 상태를 다시 읽은 뒤, 주문 상태와 Trade를 한 트랜잭션으로 저장합니다. 커밋이 끝난 뒤에 락을 해제합니다.
-주문 유형에 따른 체결 처리, Redis 기반 데이터 관리, RabbitMQ를 활용한 비동기 메시지 처리 등을 구현했습니다.
-| 항목 | 내용 |
-|---|---|
-| 기간 | 2025.05 ~ 2025.07 |
-| 팀 | 6인. 백엔드와 프론트엔드를 나눠 개발 |
-| 제가 맡은 역할 | 팀장, 주문·체결 백엔드 |
-| 서버 | Java 17, Spring Boot 3.5, MySQL, Redis, RabbitMQ, Redisson |
-<br>
-## 1. 프로젝트 소개
+
+실시간 주식 데이터를 활용해 가상의 자산으로 주식을 거래하고, 주문부터 체결 및 자산 관리까지 경험할 수 있는 모의 투자 서비스입니다.
+
+한국투자증권 Open API와 WebSocket을 통해 주식 시세를 수신하고, Redis와 RabbitMQ를 활용해 지정가 주문의 체결을 처리합니다.
+
 ## 1. Project Overview
-Mockstalk은 사용자가 계좌를 만들고 시세를 확인한 뒤, 시장가 또는 지정가로 모의 매수·매도를 하는 서비스입니다. 체결 내역과 보유 종목, 관심 종목, 종목 게시글, 뉴스 검색을 함께 제공합니다. 시세와 뉴스에는 한국투자증권 Open API와 네이버 뉴스 검색 API를 사용합니다.
-### 프로젝트 소개
-주문 API가 요청을 저장하는 것만으로는 체결이 끝나지 않습니다. 시장가는 저장 직후 현재가로 체결하고, 지정가는 이후 시세가 조건을 만족할 때 체결합니다. 같은 주문을 두 경로가 동시에 처리하면 Trade가 중복될 수 있어, 체결 시점의 동시성 제어가 필요했습니다.
-Mockstalk은 한국투자증권 Open API와 네이버 뉴스 검색 API를 연동한 모의 주식 투자 서비스입니다.
-주문 상태 이름은 직관과 다릅니다. 지정가 대기 주문은 `PENDING`이 아니라 `COMPLETED`로 저장합니다. 체결이 끝나면 `SETTLE`입니다. `PENDING`과 `CANCELED`도 상태 값으로 있습니다.
-사용자는 계좌를 생성하고 주식 시세를 확인한 뒤 시장가 및 지정가 주문을 통해 모의 거래를 진행할 수 있습니다. 체결 내역과 보유 종목을 조회할 수 있으며, 관심 종목과 커뮤니티 등 투자에 필요한 기능도 제공합니다.
-## 2. 주요 기능
-단순히 주문 요청을 저장하는 데 그치지 않고, 주문 상태에 따른 체결 처리와 계좌 잔고 반영까지 이어지는 백엔드 흐름을 구현하는 데 중점을 두었습니다.
-서비스 전체 기능은 다음과 같습니다. 주문과 체결을 제외한 회원, 차트, 커뮤니티, 뉴스는 팀 기능입니다.
+
 | 항목 | 내용 |
 |---|---|
-| 프로젝트명 | Mockstalk |
-| 프로젝트 유형 | 모의 주식 투자 서비스 |
+| 프로젝트 | Mockstalk |
 | 개발 기간 | 2025.05 ~ 2025.07 |
 | 팀 구성 | 6인 |
-| 담당 역할 | 팀장 및 백엔드 개발 |
-| 주요 기술 | Java, Spring Boot, MySQL, Redis, RabbitMQ, Redisson |
-- 회원가입, 로그인, JWT 발급과 재발급, 로그아웃 시 토큰 블랙리스트
-- 한국투자증권 Open API로 현재가와 차트 데이터를 조회
-- 시장가·지정가 매수와 매도, 체결 내역 조회
-- 계좌, 잔고, 보유 종목, 수익률 랭킹
-- 관심 종목, 종목 게시글과 댓글, 네이버 뉴스 검색
+| 담당 역할 | 팀장 / 백엔드 개발 |
+| 주요 담당 | 주문·체결 처리, 주문 데이터 관리, 동시성 제어 |
+
 ### 주요 기능
-## 3. 기술 스택 및 선택 이유
-- **회원 및 인증:** 회원가입, 로그인, JWT 기반 인증 및 토큰 재발급
-- **주식 데이터:** 한국투자증권 Open API 기반 시세 및 차트 데이터 조회
-- **주문 및 체결:** 시장가·지정가 매수/매도 주문과 체결 내역 관리
-- **계좌 관리:** 계좌 생성, 잔고 및 보유 종목 조회
-- **자산 랭킹:** 사용자별 수익률을 기준으로 랭킹 제공
-- **관심 종목:** 계좌별 관심 종목 등록 및 관리
-- **커뮤니티:** 종목별 게시글과 댓글
-- **뉴스:** 네이버 뉴스 검색 API 연동
-기술을 고른 이유는 체결 경로에서 맡은 역할입니다.
-<br>
-| 기술 | 이 프로젝트에서 쓴 이유 |
-|---|---|
-| Spring Boot 3.5, Java 17 | REST API와 주문 서비스를 구성 |
-| Spring Data JPA, QueryDSL | 주문·체결 저장과 커서 페이지 조회 |
-| MySQL 8 | 사용자, 계좌, 주문, 체결의 기준 데이터 |
-| Redis | 현재가, 종목 ID 매핑, 지정가 대기 주문. DB를 매 시세마다 전체 조회하지 않기 위해 사용 |
-| RabbitMQ | 시세 수신과 체결 판단을 분리. 수신 스레드가 체결 트랜잭션을 직접 끝내지 않게 함 |
-| Redisson | 주문 ID마다 락을 걸어, 같은 주문의 체결이 겹치지 않게 함 |
-| JUnit 5, Mockito, Spring Boot Test | 단위 테스트 |
-| H2 | 테스트 프로파일의 기본 DB. 운영 MySQL 설정을 바꾸지 않음 |
-| Testcontainers | 체결 통합 테스트에서 MySQL 8.0, Redis 7, RabbitMQ 3-management를 실제 기동 |
-## 2. System Architecture
-## 4. 전체 시스템 아키텍처
-### 전체 시스템 구성
-아래는 팀 서비스 전체입니다. 제가 구현하고 통합 테스트로 확인한 구간은 시세 이후의 주문 체결과 락입니다.
-서비스는 Spring Boot 애플리케이션을 중심으로 MySQL, Redis, RabbitMQ를 연결하는 구조로 구성했습니다.
-외부 API를 통한 주식 데이터 수집과 애플리케이션 내부의 주문·체결 처리를 분리하고, Redis를 이용해 시세와 주문 관련 데이터를 관리합니다.
+
+- 회원가입, 로그인 및 JWT 인증
+- 실시간 주식 시세 및 차트 조회
+- 시장가·지정가 매수 및 매도
+- 주문 체결 및 계좌 잔고 관리
+- 수익률 기반 자산 랭킹
+- 관심 종목, 커뮤니티 및 뉴스 조회
+
+## 2. Architecture
+
+### System Architecture
+
 ```mermaid
 flowchart TB
-    USER["Client"]
-    API["Spring Boot Application"]
-    subgraph client [Client]
-        USER[사용자]
+    Client[Client]
+    Server[Spring Boot]
+
+    subgraph Backend
+        Auth[Auth / User]
+        Stock[Stock / Price]
+        Order[Order]
+        Trade[Trade]
+        Account[Account / Holdings]
     end
-    USER --> API
-    subgraph APP["Backend"]
-        AUTH["Auth / User"]
-        STOCK["Stock / Price"]
-        ORDER["Order"]
-        TRADE["Trade"]
-        ACCOUNT["Account / Holdings"]
-        LISTENER["StockPriceListener"]
-    subgraph app [Spring Boot]
-        AUTH[회원 / JWT]
-        STOCK[시세 / 차트]
-        ORDER[주문]
-        TRADE[체결]
-        ACCOUNT[계좌 / 보유]
-        NEWS[뉴스]
-    end
-    API --> AUTH
-    API --> STOCK
-    API --> ORDER
-    API --> ACCOUNT
-    USER --> AUTH
-    USER --> STOCK
-    USER --> ORDER
-    USER --> ACCOUNT
-    USER --> NEWS
-    subgraph INFRA["Data & Messaging"]
-        MYSQL[("MySQL")]
-        REDIS[("Redis")]
-        RABBIT["RabbitMQ"]
-    end
-    KIS[한국투자증권 Open API]
-    NAVER[네이버 뉴스 API]
-    KIS --> STOCK
-    NAVER --> NEWS
-    ORDER --> REDIS
-    ORDER --> MYSQL
-    ORDER --> MYSQL[(MySQL)]
-    TRADE --> MYSQL
-    ACCOUNT --> MYSQL
-    STOCK --> REDIS[(Redis)]
-    ORDER --> REDIS
-    ACCOUNT --> REDIS
-    RABBIT --> LISTENER
-    LISTENER --> TRADE
-    KIS["한국투자증권 API / WebSocket"]
-    NAVER["네이버 뉴스 API"]
-    KIS --> STOCK
-    STOCK --> REDIS
-    NAVER --> API
+
+    MySQL[(MySQL)]
+    Redis[(Redis)]
+    RabbitMQ[(RabbitMQ)]
+
+    KIS[Korea Investment & Securities API]
+    Naver[Naver News API]
+
+    Client --> Server
+    Server --> Auth
+    Server --> Stock
+    Server --> Order
+    Server --> Trade
+    Server --> Account
+
+    Auth --> MySQL
+    Stock --> MySQL
+    Stock --> Redis
+    Order --> MySQL
+    Order --> Redis
+    Trade --> MySQL
+    Account --> MySQL
+
+    KIS --> Stock
+    Stock --> RabbitMQ
+    RabbitMQ --> Trade
+    Naver --> Server
 ```
-> 위 다이어그램은 전체 구성 요소를 나타낸 개략도입니다. 시세 수신 후 지정가 체결과 시장가 주문 경로는 아래에서 구분합니다.
-인증, 차트, 뉴스, 커뮤니티, 랭킹은 이 그림의 주변 기능입니다. 체결의 실제 호출 순서는 다음 절의 다이어그램이 기준입니다.
-### 주문 및 체결 데이터 흐름
-## 5. 시세 수신부터 지정가 주문 체결까지
-**시장가 주문**
+
+### 지정가 주문 처리 흐름
+
+실시간 시세를 Redis에 저장하고 RabbitMQ 이벤트로 전달해 지정가 주문 체결을 처리합니다.
+
 ```mermaid
-flowchart LR
-    WS[KoreaWebSocketClient]
+flowchart TD
+    A[KIS WebSocket 시세 수신]
+    B[Redis 현재가 저장]
+    C[종목 코드로 Stock ID 조회]
+    D[RabbitMQ 이벤트 발행]
+    E[StockPriceListener 수신]
+    F[대기 주문 조회]
+    G{지정가 조건 충족?}
+    H[주문 체결 처리]
+    I[주문 상태 변경 및 Trade 저장]
+
+    A --> B --> C --> D --> E --> F --> G
+    G -->|Yes| H --> I
+    G -->|No| F
+```
+
+시장가 주문은 Redis에 저장된 현재가를 조회한 뒤 체결 서비스를 직접 호출하며, 지정가 주문은 시세 이벤트를 통해 체결 조건을 확인합니다.
+
+## 3. Tech Stack
+
+| 구분 | 기술 | 활용 |
+|---|---|---|
+| Language | Java 17 | 백엔드 개발 |
+| Framework | Spring Boot 3.5 | REST API 및 서비스 구현 |
+| Security | Spring Security, JWT | 인증 및 인가 |
+| ORM | Spring Data JPA | 데이터 접근 |
+| Query | QueryDSL | 동적 쿼리 및 페이징 |
+| Database | MySQL 8.0 | 서비스 데이터 저장 |
+| Cache | Redis | 현재가, 대기 주문 및 캐시 관리 |
+| Messaging | RabbitMQ | 시세 이벤트 비동기 처리 |
+| Concurrency | Redisson | 주문 단위 분산 락 |
+| External API | 한국투자증권, 네이버 검색 API | 주식 시세 및 뉴스 데이터 |
+| Deployment | Docker, GitHub Actions, AWS ECR, ECS Fargate | 컨테이너 빌드 및 배포 |
+| Test | JUnit 5, Mockito, AssertJ, H2, Testcontainers | 단위 및 통합 테스트 |
+
+## 4. Key Features
+
+### 주문 및 체결 관리
+
+- 시장가·지정가 매수 및 매도 주문
+- 주문 상태에 따른 체결 처리
+- 체결 내역 및 계좌 보유 종목 관리
+- Redis를 활용한 지정가 대기 주문 관리
+
+### 주식 및 자산 관리
+
+- 실시간 주식 시세 및 차트 조회
+- 계좌별 보유 자산 및 수익률 조회
+- 수익률 기반 사용자 랭킹
+- 관심 종목 관리
+
+### 커뮤니티 및 뉴스
+
+- 사용자 간 게시글 및 댓글 기능
+- 네이버 뉴스 검색 API를 활용한 주식 관련 뉴스 조회
+
+## 5. Technical Challenges
+
+### 1) Redis와 RabbitMQ를 활용한 지정가 주문 처리
+
+**문제**
+
+기존에는 주기적으로 DB에서 미체결 주문을 조회하고 현재가와 비교하는 방식으로 지정가 주문을 처리했습니다. 주문이 늘어날수록 반복적인 DB 조회가 발생할 수 있다는 점을 개선하고자 했습니다.
+
+**해결**
+
+- 지정가 주문을 Redis에 종목별 대기 목록으로 관리
+- WebSocket으로 수신한 시세를 Redis에 저장
+- 시세 정보를 RabbitMQ 이벤트로 발행
+- Listener에서 이벤트를 수신해 해당 종목의 대기 주문 체결 조건 확인
+- 조건을 충족한 주문만 체결 서비스 호출
+
+이를 통해 시세가 변경될 때 대기 주문을 처리하는 이벤트 기반 흐름으로 구성했습니다.
+
+### 2) Redisson을 활용한 중복 체결 방지
+
+**문제**
+
+동일한 주문에 여러 시세 이벤트가 동시에 전달되면 여러 요청이 체결 처리를 진행할 수 있었습니다. 이 과정에서 동일 주문에 대한 Trade 데이터가 중복 생성되는 문제가 발생했습니다.
+
+**해결**
+
+1. 주문 ID를 기준으로 Redisson 분산 락 적용
+2. 락 획득 후 DB에서 주문 상태 재조회
+3. 이미 체결된 주문이면 추가 체결 처리 중단
+4. TransactionTemplate을 이용해 주문 상태 변경과 Trade 저장을 하나의 트랜잭션으로 처리
+5. 트랜잭션 커밋 이후 락 해제
+
+**검증 결과**
+
+동일 주문에 4개의 이벤트가 동시에 전달되는 상황을 테스트했습니다.
+
+| 구분 | Trade 생성 결과 |
+|---|---:|
+| 수정 전 | 4건 |
+| 수정 후 | 1건 |
+
+중복 이벤트가 발생해도 하나의 주문에 하나의 체결 내역만 생성되는 것을 확인했습니다.
+
+### 3) RabbitMQ 이벤트 재전달 상황에서의 데이터 정합성
+
+**문제**
+
+체결 처리 도중 예외가 발생하면 RabbitMQ 메시지가 재전달될 수 있습니다. 이미 체결된 주문이 다시 처리되면 중복 데이터가 생성될 가능성이 있었습니다.
+
+**해결**
+
+- 체결 처리 전 DB에서 주문 상태 재확인
+- 이미 체결된 주문은 추가 처리하지 않도록 예외 처리
+- 주문 상태 변경과 Trade 저장을 트랜잭션으로 묶어 실패 시 롤백
+- 재전달된 이벤트에서도 최종 체결 결과가 중복되지 않는지 검증
+
+이를 통해 메시지가 재전달되는 상황에서도 주문 상태와 체결 데이터의 일관성을 확인했습니다.
+
+## 6. Test & Verification
+
+### 테스트 환경
+
+| 항목 | 환경 |
+|---|---|
+| 단위 테스트 | JUnit 5, Mockito, AssertJ |
+| 테스트 DB | H2 |
+| 통합 테스트 | Testcontainers |
+| 데이터베이스 | MySQL 8.0 |
+| 캐시 | Redis 7 |
+| 메시지 브로커 | RabbitMQ 3-management |
+
+### 검증 항목
+
+- 시장가 주문의 현재가 조회 및 체결 처리
+- 지정가 주문의 체결 조건 확인
+- 동시 이벤트 전달 시 중복 체결 방지
+- 트랜잭션 실패 시 주문 상태 및 Trade 데이터 롤백
+- RabbitMQ 메시지 재전달 시 중복 처리 방지
+- Redis 대기 주문과 DB 주문 데이터 연동
+
+<badge color="success">테스트 통과</badge>
+
+| 결과 | 수치 |
+|---|---:|
+| 테스트 스위트 | 30개 |
+| 전체 테스트 | 100개 |
+| 성공 | 100개 |
+| 실패 | 0개 |
+| 스킵 | 0개 |
+
+실제 한국투자증권 WebSocket 연결 환경이나 다중 서버 인스턴스 환경에서의 운영 검증은 아직 진행하지 않았습니다. 현재 결과는 테스트 환경에서 확인한 내용입니다.
+
+## 7. Team & Contribution
+
+### Team
+
+- 총 6인 팀 프로젝트
+- 팀장으로서 역할 분담 및 개발 일정 조율
+- 백엔드 개발 담당
+
+### My Contribution
+
+**주문 및 체결 도메인 중심의 백엔드 개발**
+
+- 시장가·지정가 주문 API 구현
+- 주문 상태에 따른 체결 처리 로직 구현
+- Redis 기반 지정가 대기 주문 관리
+- RabbitMQ 시세 이벤트 발행 및 지정가 체결 처리 흐름 구현
+- Redisson 분산 락을 활용한 중복 체결 방지
+- 주문 및 체결 데이터 정합성 테스트 작성
+
+팀장으로서 각 팀원의 작업 범위와 완료 기준을 구체화하고, 진행 상황을 확인하며 일정과 역할을 조율했습니다.
+
+## 8. Getting Started
+
+### Requirements
+
+- JDK 17
+- Docker
+- Docker Compose
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/jihwanprogramer/mock-trading-springboot.git
+cd mock-trading-springboot
+```
+
+### 2. Run Infrastructure
+
+```bash
+docker compose up -d mysql redis rabbitmq
+```
+
+### 3. Configure Environment Variables
+
+| 환경 변수 | 설명 |
+|---|---|
+| DB_HOST, DB_PORT, DB_NAME | MySQL 접속 정보 |
+| DB_USERNAME, DB_PASSWORD | MySQL 인증 정보 |
+| REDIS_HOST, REDIS_PORT | Redis 접속 정보 |
+| RABBITMQ_HOST, RABBITMQ_PORT | RabbitMQ 접속 정보 |
+| RABBITMQ_USERNAME, RABBITMQ_PASSWORD | RabbitMQ 인증 정보 |
+| JWT_SECRET, ACCOUNT_JWT_SECRET | JWT 서명 키 |
+| HANTU_APPKEY, HANTU_APPSECRET | 한국투자증권 API 인증 정보 |
+| HANTU_ACCESS_TOKEN | 한국투자증권 접근 토큰 |
+| NAVER_CLIENT_ID, NAVER_CLIENT_SECRET | 네이버 API 인증 정보 |
+
+실제 인증 정보는 저장소에 포함하지 않고 환경 변수로 설정해야 합니다.
+
+### 4. Run Application
+
+```bash
+./gradlew bootRun --args='--spring.profiles.active=local'
+```
+
+기본 실행 포트: `8081`
+
+### 5. Run Tests
+
+```bash
+./gradlew test
+```
+
+### Test Price Event API
+
+```http
+POST /api/test/price?stockId={stockId}&currentPrice={currentPrice}
+```
+
+테스트용 API로 RabbitMQ 이벤트를 발행합니다. 실제 WebSocket 수신 흐름과 달리 이 API는 Redis 현재가를 갱신하지 않습니다.
+
+---
+
+**Repository:** https://github.com/jihwanprogramer/mock-trading-springboot
